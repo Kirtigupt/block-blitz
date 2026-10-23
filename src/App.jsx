@@ -14,6 +14,7 @@ import { PlayerProfileModal } from './components/PlayerProfileModal';
 import { ExitConfirmModal } from './components/ExitConfirmModal';
 import { OnboardingModal } from './components/OnboardingModal';
 import { WelcomeBackModal } from './components/WelcomeBackModal';
+import { WelcomeLandingScreen } from './components/WelcomeLandingScreen';
 import { SettingsModal } from './components/SettingsModal';
 import { loadStoredSettings, saveStoredSettings } from './utils/settings';
 import { triggerHaptic, setHapticsEnabled } from './utils/haptics';
@@ -120,11 +121,14 @@ export function App() {
   const [showHelp, setShowHelp] = useState(false);
   const [notification, setNotification] = useState(null);
 
-  // Screen Flow State: Level Map -> Intro Animation -> Gameplay
-  const [showLevelMap, setShowLevelMap] = useState(true);
+  // Screen Flow State: Welcome Screen -> Level Map -> Intro Animation -> Gameplay
+  // Every time the application opens or reloads, show the Welcome Landing page first
+  const [showWelcomeScreen, setShowWelcomeScreen] = useState(true);
+  const [showLevelMap, setShowLevelMap] = useState(false);
   const [hasStartedGame, setHasStartedGame] = useState(false);
   const [showLevelIntro, setShowLevelIntro] = useState(false);
   const [introLevelConfig, setIntroLevelConfig] = useState(null);
+  const [isAuthChecking, setIsAuthChecking] = useState(() => Boolean(getToken()));
 
   // Dragging State (Unified for Mobile Touch and Desktop Mouse)
   const [touchDragShape, setTouchDragShape] = useState(null);
@@ -143,6 +147,8 @@ export function App() {
   const [scoreSaved, setScoreSaved] = useState(false);
 
   // Refs for state persistence and single-fire celebrations
+  const userRef = useRef(null);
+  const authPromiseRef = useRef(null);
   const previousPersonalBestRef = useRef(highScore);
   const hasSubmittedCurrentGameRef = useRef(false);
   const hasCelebratedHighScoreRef = useRef(false);
@@ -174,16 +180,21 @@ export function App() {
     };
   }, [desktopDragShape]);
 
+  // Keep userRef synchronized with user state for synchronous access
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
+
   // Restore authenticated session on mount if token exists
   useEffect(() => {
-    const restoreSession = async () => {
-      const token = getToken();
-      if (!token) return;
+    const token = getToken();
+    if (!token) return;
 
-      try {
-        const res = await apiGetMe();
+    authPromiseRef.current = apiGetMe()
+      .then((res) => {
         if (res.user) {
           const authUser = res.user;
+          userRef.current = authUser;
           setUser(authUser);
           const userId = authUser._id || authUser.id;
 
@@ -209,14 +220,16 @@ export function App() {
             // Ignore
           }
         }
-      } catch (err) {
+      })
+      .catch((err) => {
         console.warn('Session expired or unreachable:', err.message);
         clearToken();
+        userRef.current = null;
         setUser(null);
-      }
-    };
-
-    restoreSession();
+      })
+      .finally(() => {
+        setIsAuthChecking(false);
+      });
   }, []);
 
   // Submit game score to backend when game over occurs (strictly once per game over)
@@ -369,10 +382,11 @@ export function App() {
     [triggerCelebration]
   );
 
-  // Central interaction blocker (pauses gameplay during map, intro, modals)
+  // Central interaction blocker (pauses gameplay during welcome screen, map, intro, modals)
   const isInputBlocked =
     gameOver ||
     showLevelCompleteModal ||
+    showWelcomeScreen ||
     showLevelMap ||
     showLevelIntro ||
     showExitConfirmModal ||
@@ -1053,6 +1067,7 @@ export function App() {
 
   // Auth Handlers with Account Isolation & Systematic Onboarding Flow
   const handleAuthSuccess = useCallback((authenticatedUser, isNewRegistration = false) => {
+    userRef.current = authenticatedUser;
     setUser(authenticatedUser);
     const userId = authenticatedUser._id || authenticatedUser.id;
 
@@ -1102,8 +1117,10 @@ export function App() {
     hasCelebratedHighScoreRef.current = false;
     isHighScoreCelebrationActiveRef.current = false;
 
-    // Do NOT automatically launch gameplay immediately. Show Level Map.
+    // Navigate to Level Map and dismiss Welcome Landing Screen
+    setShowWelcomeScreen(false);
     setShowLevelMap(true);
+    setShowAuthModal(false);
     setHasStartedGame(false);
 
     // Systematic Onboarding Flow:
@@ -1111,13 +1128,46 @@ export function App() {
       setShowOnboardingModal(true);
       setShowWelcomeBackModal(false);
     } else {
-      setShowWelcomeBackModal(true);
+      setShowWelcomeBackModal(false);
       setShowOnboardingModal(false);
     }
   }, []);
 
+  // Handle Play Now from Welcome Landing Screen
+  const handlePlayNow = useCallback(async () => {
+    sounds.playSelect();
+
+    // If an auth check is currently in flight, wait for it
+    if (authPromiseRef.current && isAuthChecking) {
+      try {
+        await authPromiseRef.current;
+      } catch {
+        // Ignore
+      }
+    }
+
+    const currentUser = userRef.current || user;
+    if (currentUser) {
+      // Valid authenticated session exists -> navigate directly to Level Map
+      setShowWelcomeScreen(false);
+      setShowLevelMap(true);
+    } else {
+      // No authenticated session -> display Sign Up / Login modal
+      setShowAuthModal(true);
+    }
+  }, [user, isAuthChecking]);
+
+  // Handle Continue as Guest from Auth Modal
+  const handleGuestContinueFromAuth = useCallback(() => {
+    setShowAuthModal(false);
+    setShowWelcomeScreen(false);
+    setShowLevelMap(true);
+    sounds.playSelect();
+  }, []);
+
   const handleLogout = useCallback(() => {
     clearToken();
+    userRef.current = null;
     setUser(null);
     setShowProfileModal(false);
     setShowOnboardingModal(false);
@@ -1165,7 +1215,9 @@ export function App() {
     setJustPlacedCells(new Set());
     setClearingCells(new Set());
 
-    setShowLevelMap(true);
+    // Return to Welcome Landing Screen
+    setShowWelcomeScreen(true);
+    setShowLevelMap(false);
     setHasStartedGame(false);
     sounds.playSelect();
   }, []);
@@ -1192,6 +1244,14 @@ export function App() {
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
+      // If Welcome Landing Screen is visible, Enter triggers Play Now
+      if (showWelcomeScreen) {
+        if (e.key === 'Enter') {
+          handlePlayNow();
+        }
+        return;
+      }
+
       // If Onboarding modal is open, Enter or Escape proceeds to map
       if (showOnboardingModal) {
         if (e.key === 'Escape' || e.key === 'Enter') {
@@ -1245,6 +1305,8 @@ export function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [
+    showWelcomeScreen,
+    handlePlayNow,
     showOnboardingModal,
     showWelcomeBackModal,
     showExitConfirmModal,
@@ -1454,6 +1516,11 @@ export function App() {
           onSelectLevel={handleStartLevelWithIntro}
           onBackToGame={hasStartedGame ? handleBackToGame : null}
           hasActiveGame={hasStartedGame}
+          onReturnToWelcome={() => {
+            setShowWelcomeScreen(true);
+            setShowLevelMap(false);
+            sounds.playSelect();
+          }}
         />
       )}
 
@@ -1475,6 +1542,20 @@ export function App() {
         <AuthModal
           onClose={() => setShowAuthModal(false)}
           onAuthSuccess={handleAuthSuccess}
+          onContinueAsGuest={handleGuestContinueFromAuth}
+        />
+      )}
+
+      {/* Initial Welcome / Landing Screen (Always shown on startup/reload) */}
+      {showWelcomeScreen && (
+        <WelcomeLandingScreen
+          user={user}
+          unlockedLevel={unlockedLevel}
+          completedCount={completedLevels.size}
+          highScore={highScore}
+          onPlayNow={handlePlayNow}
+          onOpenAuth={() => setShowAuthModal(true)}
+          onLogout={handleLogout}
         />
       )}
 

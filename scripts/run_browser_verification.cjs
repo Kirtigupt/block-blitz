@@ -77,9 +77,20 @@ function assert(condition, testName) {
     const pageTitle = await page.title();
     assert(pageTitle.includes('BLOCK BLITZ'), `Page loaded with title "${pageTitle}"`);
 
-    // Verify initial state is Campaign Map
+    // Verify initial state is Welcome Landing Screen (not Level Map)
+    await page.waitForSelector('.welcome-landing-screen', { timeout: 5000 });
+    assert(await page.$('.welcome-landing-screen') !== null, 'Welcome Landing Screen is displayed first on fresh visit');
+    assert(await page.$('.campaign-map-screen') === null, 'Level Map is NOT displayed immediately on startup');
+
+    // Click "Play Now" as guest -> Auth modal appears
+    await page.waitForSelector('.welcome-play-now-btn', { timeout: 5000 });
+    await page.click('.welcome-play-now-btn');
+    await page.waitForSelector('.auth-card', { timeout: 5000 });
+
+    // Continue as guest into Level Map
+    await page.click('.guest-continue-btn');
     await page.waitForSelector('.campaign-map-screen', { timeout: 5000 });
-    assert(await page.$('.campaign-map-screen') !== null, 'Campaign Map is the landing screen on fresh visit');
+    assert(await page.$('.campaign-map-screen') !== null, 'Level Map opens after continuing to campaign');
 
     // Launch into Level 1 to enter gameplay playfield
     await page.waitForSelector('.dock-launch-btn');
@@ -299,7 +310,17 @@ function assert(condition, testName) {
     console.log('\n[Journey 13: Page Refresh & Auth/Progression Persistence]');
     await page.reload({ waitUntil: 'networkidle0' });
     
-    // On fresh reload, app opens Campaign Map; launch level to check Header
+    // On reload, app always displays Welcome Landing Screen first
+    await page.waitForSelector('.welcome-landing-screen', { timeout: 5000 });
+    assert(await page.$('.welcome-landing-screen') !== null, 'Welcome Landing Screen is displayed first on reload');
+    assert(await page.$('.campaign-map-screen') === null, 'Level Map is NOT displayed immediately on reload');
+
+    // Click "Play Now" as authenticated user -> directly navigates to Level Map without login prompt
+    await page.click('.welcome-play-now-btn');
+    await page.waitForSelector('.campaign-map-screen', { timeout: 5000 });
+    assert(await page.$('.campaign-map-screen') !== null, 'Directly navigated to Campaign Map without login prompt');
+
+    // Launch level to check Header
     await page.waitForSelector('.dock-launch-btn', { timeout: 5000 });
     await page.click('.dock-launch-btn');
     await page.waitForSelector('.intro-start-btn', { timeout: 5000 });
@@ -320,23 +341,20 @@ function assert(condition, testName) {
     await logoutBtn.click();
     await sleep(500);
 
-    // On logout, app returns to Campaign Map; launch level to enter gameplay header
-    await page.waitForSelector('.dock-launch-btn', { timeout: 5000 });
-    await page.click('.dock-launch-btn');
-    await page.waitForSelector('.intro-start-btn', { timeout: 5000 });
-    await page.click('.intro-start-btn');
-    await page.waitForSelector('.campaign-map-screen', { hidden: true });
+    // On logout, app returns to Welcome Landing Screen
+    await page.waitForSelector('.welcome-landing-screen', { timeout: 5000 });
+    assert(await page.$('.welcome-landing-screen') !== null, 'Successfully logged out and returned to Welcome Landing Screen');
 
-    // Confirm logged out: Sign in CTA button appears
-    await page.waitForSelector('.auth-cta-btn', { timeout: 5000 });
-    assert(await page.$('.auth-cta-btn') !== null, 'Successfully logged out (Sign In button reappeared)');
-
-    // Register User B
-    await page.click('.auth-cta-btn');
+    // Click "Play Now" in guest mode to open Auth Modal
+    await page.click('.welcome-play-now-btn');
     await page.waitForSelector('.auth-card', { timeout: 5000 });
-    const regTabB = await page.$('.auth-tab:nth-child(2)');
-    if (regTabB) await regTabB.click();
-    await sleep(200);
+    await sleep(250);
+    await page.evaluate(() => {
+      const btns = Array.from(document.querySelectorAll('.auth-tab'));
+      const regTab = btns.find(b => b.textContent.includes('Create Account'));
+      if (regTab) regTab.click();
+    });
+    await sleep(250);
 
     await page.type('#auth-username', testUserB);
     await page.type('#auth-email', testEmailB);

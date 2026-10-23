@@ -30,7 +30,8 @@ export const LevelMap = ({
   totalScore = 0,
   onSelectLevel,
   onBackToGame,
-  hasActiveGame = false
+  hasActiveGame = false,
+  onReturnToWelcome = null
 }) => {
   // Currently selected level for the action dock
   const [selectedLevelNum, setSelectedLevelNum] = useState(
@@ -198,6 +199,17 @@ export const LevelMap = ({
             >
               <ArrowLeft size={16} />
               <span>Back to Game</span>
+            </button>
+          ) : onReturnToWelcome ? (
+            <button
+              type="button"
+              className="campaign-brand-tag clickable"
+              onClick={onReturnToWelcome}
+              title="Return to Welcome Landing"
+              aria-label="Return to Welcome Screen"
+            >
+              <span className="brand-dot" />
+              <span>BLOCK BLITZ</span>
             </button>
           ) : (
             <div className="campaign-brand-tag">

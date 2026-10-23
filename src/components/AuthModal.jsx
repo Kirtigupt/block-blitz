@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { X, Lock, Mail, User, AlertCircle, Loader2, ArrowRight } from 'lucide-react';
+import { X, Lock, Mail, User, AlertCircle, Loader2, ArrowRight, ShieldCheck, Play } from 'lucide-react';
 import { apiLogin, apiRegister, setToken } from '../utils/api';
 
-export const AuthModal = ({ onClose, onAuthSuccess, initialMode = 'login' }) => {
+export const AuthModal = ({ onClose, onAuthSuccess, onContinueAsGuest, initialMode = 'login' }) => {
   const [mode, setMode] = useState(initialMode); // 'login' or 'register'
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -74,12 +74,26 @@ export const AuthModal = ({ onClose, onAuthSuccess, initialMode = 'login' }) => 
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-backdrop" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
       <div className="auth-card" onClick={(e) => e.stopPropagation()}>
+        {/* Top Header with Pilot Badge and Aligned Close Button */}
         <div className="auth-header">
-          <div className="auth-tabs">
+          <div className="auth-brand-badge" id="auth-modal-title">
+            <ShieldCheck size={13} className="auth-badge-icon" />
+            <span>PILOT AUTHENTICATION</span>
+          </div>
+          <button className="close-btn" onClick={onClose} aria-label="Close modal">
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Modern Segmented Control for Sign In / Create Account */}
+        <div className="auth-tabs-container">
+          <div className="auth-tabs" role="tablist">
             <button
               type="button"
+              role="tab"
+              aria-selected={mode === 'login'}
               className={`auth-tab ${mode === 'login' ? 'active' : ''}`}
               onClick={() => handleSwitchMode('login')}
             >
@@ -87,24 +101,25 @@ export const AuthModal = ({ onClose, onAuthSuccess, initialMode = 'login' }) => 
             </button>
             <button
               type="button"
+              role="tab"
+              aria-selected={mode === 'register'}
               className={`auth-tab ${mode === 'register' ? 'active' : ''}`}
               onClick={() => handleSwitchMode('register')}
             >
               Create Account
             </button>
           </div>
-          <button className="close-btn" onClick={onClose} aria-label="Close modal">
-            <X size={20} />
-          </button>
         </div>
 
+        {/* Error Feedback Banner */}
         {errorMessage && (
-          <div className="auth-error-banner">
+          <div className="auth-error-banner" role="alert">
             <AlertCircle size={16} />
             <span>{errorMessage}</span>
           </div>
         )}
 
+        {/* Form Inputs */}
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <label htmlFor="auth-username" className="form-label">
@@ -116,11 +131,12 @@ export const AuthModal = ({ onClose, onAuthSuccess, initialMode = 'login' }) => 
                 id="auth-username"
                 type="text"
                 className="form-input"
-                placeholder={mode === 'login' ? 'player or player@mail.com' : 'Choose a username'}
+                placeholder={mode === 'login' ? 'Enter username or email' : 'Choose a pilot username'}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={loading}
                 autoFocus
+                autoComplete="username"
               />
             </div>
           </div>
@@ -134,10 +150,11 @@ export const AuthModal = ({ onClose, onAuthSuccess, initialMode = 'login' }) => 
                   id="auth-email"
                   type="email"
                   className="form-input"
-                  placeholder="yourname@domain.com"
+                  placeholder="Enter email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={loading}
+                  autoComplete="email"
                 />
               </div>
             </div>
@@ -151,10 +168,11 @@ export const AuthModal = ({ onClose, onAuthSuccess, initialMode = 'login' }) => 
                 id="auth-password"
                 type="password"
                 className="form-input"
-                placeholder="••••••••"
+                placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
+                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
               />
             </div>
           </div>
@@ -174,9 +192,26 @@ export const AuthModal = ({ onClose, onAuthSuccess, initialMode = 'login' }) => 
           </button>
         </form>
 
+        {/* Subtle Visual Divider */}
+        <div className="auth-divider">
+          <span>OR</span>
+        </div>
+
+        {/* Secondary Guest Continue Action */}
         <div className="auth-footer">
-          <button type="button" className="guest-continue-btn" onClick={onClose}>
-            Continue as Guest (Offline Mode)
+          <button
+            type="button"
+            className="guest-continue-btn"
+            onClick={() => {
+              if (onContinueAsGuest) {
+                onContinueAsGuest();
+              } else {
+                onClose();
+              }
+            }}
+          >
+            <Play size={13} fill="currentColor" />
+            <span>Continue as Guest (Offline Mode)</span>
           </button>
         </div>
       </div>
