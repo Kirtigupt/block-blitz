@@ -392,6 +392,7 @@ export function App() {
   const isInputBlocked =
     gameOver ||
     showLevelCompleteModal ||
+    Boolean(completedLevelData) ||
     showWelcomeScreen ||
     showLevelMap ||
     showLevelIntro ||
@@ -549,14 +550,18 @@ export function App() {
           ((currentPersonalBest > 0 && currentScore <= currentPersonalBest && projectedScore > currentPersonalBest) ||
            (currentPersonalBest === 0 && currentScore < 100 && projectedScore >= 100));
 
+        let bonusToAward = 0;
         if (isLevelComplete) {
           const hasBonusBeenAwarded = awardedLevelBonusesRef.current.has(currentLevel);
-          const bonusToAward = hasBonusBeenAwarded ? 0 : levelConfig.bonusPoints;
+          bonusToAward = hasBonusBeenAwarded ? 0 : levelConfig.bonusPoints;
           if (!hasBonusBeenAwarded) {
             awardedLevelBonusesRef.current.add(currentLevel);
           }
 
           const nextLevelNum = Math.min(100, currentLevel + 1);
+
+          // Always update levelProgress to reflect completed objective
+          setLevelProgress(nextLevelProgress);
 
           // Record completed level and persist to user-scoped storage
           setCompletedLevels((prev) => {
@@ -585,14 +590,39 @@ export function App() {
             return nextMax;
           });
 
+          // Persist currentLevel update so reload immediately shows next level
+          try {
+            localStorage.setItem(
+              getStorageKey(CURRENT_LEVEL_KEY, user?._id || user?.id),
+              nextLevelNum.toString()
+            );
+          } catch {
+            // Ignore
+          }
+
           // Sync progression to server if authenticated
           if (user) {
             apiUpdateProgression({
               completedLevel: currentLevel,
               currentLevel: nextLevelNum
-            }).catch((err) => {
-              console.warn('Failed to sync progression to server:', err.message);
-            });
+            })
+              .then((res) => {
+                if (res?.progression) {
+                  setUser((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          unlockedLevel: res.progression.unlockedLevel,
+                          currentLevel: res.progression.currentLevel,
+                          completedLevels: res.progression.completedLevels
+                        }
+                      : null
+                  );
+                }
+              })
+              .catch((err) => {
+                console.warn('Failed to sync progression to server:', err.message);
+              });
           }
 
           updateScoreAndHigh(totalPointsGained + bonusToAward);
@@ -704,14 +734,18 @@ export function App() {
           ((currentPersonalBest > 0 && currentScore <= currentPersonalBest && projectedScore > currentPersonalBest) ||
            (currentPersonalBest === 0 && currentScore < 100 && projectedScore >= 100));
 
+        let bonusToAward = 0;
         if (isLevelComplete) {
           const hasBonusBeenAwarded = awardedLevelBonusesRef.current.has(currentLevel);
-          const bonusToAward = hasBonusBeenAwarded ? 0 : levelConfig.bonusPoints;
+          bonusToAward = hasBonusBeenAwarded ? 0 : levelConfig.bonusPoints;
           if (!hasBonusBeenAwarded) {
             awardedLevelBonusesRef.current.add(currentLevel);
           }
 
           const nextLevelNum = Math.min(100, currentLevel + 1);
+
+          // Always update levelProgress to reflect completed objective
+          setLevelProgress(nextLevelProgress);
 
           // Record completed level and persist to user-scoped storage
           setCompletedLevels((prev) => {
@@ -740,14 +774,39 @@ export function App() {
             return nextMax;
           });
 
+          // Persist currentLevel update so reload immediately shows next level
+          try {
+            localStorage.setItem(
+              getStorageKey(CURRENT_LEVEL_KEY, user?._id || user?.id),
+              nextLevelNum.toString()
+            );
+          } catch {
+            // Ignore
+          }
+
           // Sync progression to server if authenticated
           if (user) {
             apiUpdateProgression({
               completedLevel: currentLevel,
               currentLevel: nextLevelNum
-            }).catch((err) => {
-              console.warn('Failed to sync progression to server:', err.message);
-            });
+            })
+              .then((res) => {
+                if (res?.progression) {
+                  setUser((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          unlockedLevel: res.progression.unlockedLevel,
+                          currentLevel: res.progression.currentLevel,
+                          completedLevels: res.progression.completedLevels
+                        }
+                      : null
+                  );
+                }
+              })
+              .catch((err) => {
+                console.warn('Failed to sync progression to server:', err.message);
+              });
           }
 
           updateScoreAndHigh(tilePoints + bonusToAward);
@@ -1000,8 +1059,19 @@ export function App() {
     setCurrentLevel(nextLevelNum);
     setShowLevelMap(true);
     setHasStartedGame(false);
+    try {
+      localStorage.setItem(
+        getStorageKey(CURRENT_LEVEL_KEY, user?._id || user?.id),
+        nextLevelNum.toString()
+      );
+    } catch {
+      // Ignore
+    }
+    if (user) {
+      apiUpdateProgression({ currentLevel: nextLevelNum }).catch(() => {});
+    }
     sounds.playSelect();
-  }, [currentLevel]);
+  }, [currentLevel, user]);
 
   const handleRestart = useCallback((targetLevel = currentLevel) => {
     voiceAnnouncer.cancel();

@@ -21,20 +21,18 @@ export const LevelMap = ({
   onReturnToWelcome = null
 }) => {
   // Selected level for the launch dock
-  const [selectedLevelNum, setSelectedLevelNum] = useState(
-    Math.min(currentLevel, unlockedLevel)
-  );
+  const defaultSelected = Math.max(1, Math.min(currentLevel, unlockedLevel));
+  const [selectedLevelNum, setSelectedLevelNum] = useState(defaultSelected);
+  const [prevProps, setPrevProps] = useState({ currentLevel, unlockedLevel });
+
+  // Sync selected level if external currentLevel or unlockedLevel changes during render
+  if (prevProps.currentLevel !== currentLevel || prevProps.unlockedLevel !== unlockedLevel) {
+    setPrevProps({ currentLevel, unlockedLevel });
+    setSelectedLevelNum(defaultSelected);
+  }
 
   // Subtle locked feedback banner state
   const [lockedFeedback, setLockedFeedback] = useState(null);
-
-  // Sync selected level if external currentLevel changes
-  const [prevCurrentLevel, setPrevCurrentLevel] = useState(currentLevel);
-  if (currentLevel !== prevCurrentLevel) {
-    setPrevCurrentLevel(currentLevel);
-    const target = Math.min(currentLevel, unlockedLevel);
-    setSelectedLevelNum(target);
-  }
 
   const scrollContainerRef = useRef(null);
   const selectedCardRef = useRef(null);

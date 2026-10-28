@@ -2948,7 +2948,14 @@ body {
 .level-map-screen {
   position: fixed;
   inset: 0;
-  background: #3e5898;
+  background-color: #0b111e;
+  background-image:
+    radial-gradient(ellipse 90% 45% at 50% 0%, rgba(6, 182, 212, 0.12) 0%, transparent 70%),
+    radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.04) 0%, transparent 60%),
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
+  background-position: center top, center center, center center, center center;
   z-index: 1000;
   display: flex;
   flex-direction: column;
@@ -2960,8 +2967,11 @@ body {
 .adventure-top-header,
 .campaign-header {
   height: 52px;
-  background: #3e5898;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(11, 17, 30, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.14);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -2979,7 +2989,7 @@ body {
   justify-content: center;
   background: transparent;
   border: none;
-  color: #a4bded;
+  color: #94a3b8;
   cursor: pointer;
   border-radius: 50%;
   padding: 0;
@@ -2988,13 +2998,13 @@ body {
 
 .adventure-back-btn:hover,
 .campaign-back-btn:hover {
-  color: #ffffff;
+  color: #38bdf8;
   transform: scale(1.08);
 }
 
 .adventure-back-btn:active,
 .campaign-back-btn:active {
-  color: #ffffff;
+  color: #38bdf8;
   transform: scale(0.92);
 }
 
@@ -3049,9 +3059,9 @@ body {
 .adventure-trophy-svg {
   width: 82px;
   height: 82px;
-  color: #233560;
+  color: #334155;
   margin-bottom: 12px;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.45));
   transition: all 0.3s ease;
 }
 
@@ -3062,8 +3072,8 @@ body {
 
 .adventure-trophy-subtitle {
   font-size: 0.98rem;
-  font-weight: 700;
-  color: #b7cbef;
+  font-weight: 600;
+  color: #94a3b8;
   margin: 0;
   max-width: 250px;
   line-height: 1.35;
@@ -3184,27 +3194,28 @@ body {
   50% { transform: translate(-50%, -3px); }
 }
 
-/* Locked Slate Blue Tile (Matches screenshot 4 to 96) */
+/* Locked Slate Charcoal Tile (High Contrast & Clear Readability) */
 .adventure-block.locked-stone,
 .level-tile-stone.locked-stone {
-  background: #273b6a;
-  border: 1px solid #1f2f55;
-  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.04), inset -1px -1px 0 rgba(0, 0, 0, 0.25);
+  background: #131b2e;
+  border: 1px solid #1e293b;
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.04), inset -1px -1px 0 rgba(0, 0, 0, 0.35);
   cursor: pointer;
 }
 
 .adv-locked-number {
   font-size: 0.78rem;
   font-weight: 700;
-  color: #6e8cc8;
+  color: #64748b;
   line-height: 1;
 }
 
 /* Selected Tile Highlight */
 .adventure-block.selected-stone,
 .level-tile-stone.selected-stone {
-  outline: 2.5px solid #ffffff;
+  outline: 2.5px solid #38bdf8;
   outline-offset: 1px;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
   z-index: 6;
 }
 
@@ -3220,9 +3231,12 @@ body {
   justify-content: center;
   align-items: center;
   padding: 12px 18px max(14px, env(safe-area-inset-bottom)) 18px;
-  background: #3e5898;
+  background: rgba(11, 17, 30, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   z-index: 100;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(56, 189, 248, 0.14);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.45);
 }
 
 .adventure-play-btn,
