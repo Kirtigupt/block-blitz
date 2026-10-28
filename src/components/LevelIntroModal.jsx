@@ -6,8 +6,6 @@ export const LevelIntroModal = ({ levelConfig, onIntroComplete }) => {
   const [hasStarted, setHasStarted] = useState(false);
 
   useEffect(() => {
-    sounds.playLevelStart();
-
     const timer = setTimeout(() => {
       if (!hasStarted) {
         setHasStarted(true);

@@ -16,6 +16,7 @@ class VoiceAnnouncer {
     this.hasUserInteracted = false;
     this.lastSpokenText = '';
     this.lastSpokenTime = 0;
+    this.lastGoodMoveTime = 0;
     this.pendingTimeout = null;
 
     // Load legacy or existing voice preference if available
@@ -181,29 +182,35 @@ class VoiceAnnouncer {
     }
   }
 
-  // --- Specialized Announcement Helpers (Task 3) ---
+  // --- Specialized Announcement Helpers (Phase 2) ---
+
+  announceGameStart() {
+    this.speak("Let's play!", 1.15, 1.08);
+  }
 
   announceLevelStart() {
-    this.speak('Level started.', 1.15, 1.05);
+    this.announceGameStart();
   }
 
   announceGoodMove() {
+    const now = Date.now();
+    // Throttle to avoid excessive repetition: at most once every 10 seconds
+    if (now - this.lastGoodMoveTime < 10000) return;
+    this.lastGoodMoveTime = now;
     this.speak('Nice move!', 1.2, 1.1);
   }
 
   announceLineClear(linesCount, streak = 0) {
     if (linesCount <= 0) return;
 
-    if (linesCount >= 4) {
-      this.speak('Multi clear!', 1.25, 1.12);
-    } else if (linesCount === 3) {
-      this.speak('Triple clear!', 1.2, 1.1);
-    } else if (linesCount === 2) {
-      this.speak('Double clear!', 1.15, 1.08);
-    } else if (streak >= 4) {
+    if (streak >= 3) {
       this.speak('Amazing combo!', 1.25, 1.12);
-    } else if (streak === 3) {
-      this.speak('Combo x3!', 1.18, 1.1);
+    } else if (linesCount >= 4) {
+      this.speak('Mega blast!', 1.25, 1.12);
+    } else if (linesCount === 3) {
+      this.speak('Triple blast!', 1.2, 1.1);
+    } else if (linesCount === 2) {
+      this.speak('Double blast!', 1.15, 1.08);
     } else if (streak === 2) {
       this.speak('Combo x2!', 1.15, 1.08);
     } else {
@@ -211,12 +218,24 @@ class VoiceAnnouncer {
     }
   }
 
+  announceComboMilestone() {
+    this.speak('Amazing combo!', 1.25, 1.12);
+  }
+
   announceLevelComplete() {
     this.speak('Level completed!', 1.2, 1.05);
   }
 
+  announceCampaignComplete() {
+    this.speak('Campaign champion!', 1.25, 1.08);
+  }
+
+  announceGameOver() {
+    this.speak('Game over!', 1.05, 1.02);
+  }
+
   announceLevelFailed() {
-    this.speak('Level failed. Try again!', 1.05, 1.02);
+    this.announceGameOver();
   }
 }
 

@@ -148,9 +148,9 @@ export const Header = ({
             className="level-badge-pill"
             onClick={onOpenLevelMap}
             title={`Level ${currentLevel} • Open Level Map`}
-            aria-label="Open Level Map"
+            aria-label={`Current Level: ${currentLevel}. Open Level Map`}
           >
-            <Map size={12} className="lvl-map-icon" />
+            <Map size={14} className="lvl-map-icon" />
             <span>LVL {currentLevel}</span>
           </button>
         </div>
@@ -195,22 +195,22 @@ export const Header = ({
           <div className="header-group-settings">
             <button
               type="button"
-              className={`action-btn sound-btn ${isMuted ? 'btn-muted' : ''}`}
+              className={`action-btn sound-btn desktop-audio-toggle ${isMuted ? 'btn-muted' : ''}`}
               onClick={onToggleMute}
               title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
               aria-label="Toggle Sound"
             >
-              {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+              {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
             </button>
 
             <button
               type="button"
-              className={`action-btn voice-btn ${!isVoiceEnabled ? 'btn-muted' : ''}`}
+              className={`action-btn voice-btn desktop-audio-toggle ${!isVoiceEnabled ? 'btn-muted' : ''}`}
               onClick={onToggleVoice}
               title={isVoiceEnabled ? 'Mute Voice Announcements' : 'Enable Voice Announcements'}
               aria-label="Toggle Voice"
             >
-              {isVoiceEnabled ? <Mic size={15} /> : <MicOff size={15} />}
+              {isVoiceEnabled ? <Mic size={16} /> : <MicOff size={16} />}
             </button>
 
             <button

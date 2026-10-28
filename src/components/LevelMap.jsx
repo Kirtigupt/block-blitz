@@ -228,9 +228,13 @@ export const LevelMap = ({
 
         <div className="campaign-header-stats">
           <div className="campaign-stat-pill" title={`${completedCount} of 100 stages cleared`}>
-            <Star size={14} className="stat-star-gold" />
+            {completedCount >= TOTAL_LEVELS ? (
+              <Crown size={14} className="stat-star-gold" />
+            ) : (
+              <Star size={14} className="stat-star-gold" />
+            )}
             <span className="stat-val">{completedCount} / {TOTAL_LEVELS}</span>
-            <span className="stat-lbl">CLEARED</span>
+            <span className="stat-lbl">{completedCount >= TOTAL_LEVELS ? 'CONQUERED' : 'CLEARED'}</span>
           </div>
 
           <div className="campaign-stat-pill score-pill" title={`Total Campaign Score: ${totalScore.toLocaleString()}`}>
@@ -495,7 +499,9 @@ export const LevelMap = ({
               aria-label={`Play Level ${selectedConfig.level}`}
             >
               <span>
-                {selectedConfig.level === unlockedLevel
+                {selectedConfig.level === 100 && completedLevels.has(100)
+                  ? 'REPLAY LEVEL 100 (CHAMPION)'
+                  : selectedConfig.level === unlockedLevel
                   ? 'START LEVEL ' + selectedConfig.level
                   : completedLevels.has(selectedConfig.level)
                   ? 'REPLAY LEVEL ' + selectedConfig.level

@@ -9,7 +9,8 @@ import {
   Smartphone,
   RotateCcw,
   Check,
-  Info
+  Info,
+  Lightbulb
 } from 'lucide-react';
 import { DEFAULT_SETTINGS } from '../utils/settings';
 import { isHapticsSupported } from '../utils/haptics';
@@ -213,11 +214,11 @@ export const SettingsModal = ({
             </div>
           </div>
 
-          {/* Section: Visuals & Motion */}
+          {/* Section: Visuals & Gameplay */}
           <div className="settings-section">
             <div className="settings-section-header">
               <Sparkles size={16} className="section-icon" />
-              <h3>VISUALS & MOTION</h3>
+              <h3>VISUALS & GAMEPLAY</h3>
             </div>
 
             {/* 5. Reduce Animations */}
@@ -235,6 +236,31 @@ export const SettingsModal = ({
                 className={`switch-toggle ${settings.reduceAnimations ? 'switch-on' : 'switch-off'}`}
                 onClick={() => handleToggle('reduceAnimations')}
                 aria-label="Toggle Reduce Animations"
+              >
+                <span className="switch-thumb" />
+              </button>
+            </div>
+
+            {/* 6. Gameplay Hints */}
+            <div className="setting-row">
+              <div className="setting-info">
+                <div className="setting-label-row">
+                  <span className="setting-label">
+                    <Lightbulb size={13} style={{ display: 'inline', marginRight: 5, verticalAlign: 'middle', color: '#fbbf24' }} />
+                    Gameplay Hints
+                  </span>
+                </div>
+                <span className="setting-desc">
+                  Show helpful placement guidance and drag-drop hints beneath the block tray
+                </span>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={settings.gameplayHints}
+                className={`switch-toggle ${settings.gameplayHints ? 'switch-on' : 'switch-off'}`}
+                onClick={() => handleToggle('gameplayHints')}
+                aria-label="Toggle Gameplay Hints"
               >
                 <span className="switch-thumb" />
               </button>
@@ -282,8 +308,7 @@ export const SettingsModal = ({
             <Info size={14} className="notice-icon" />
             <div className="notice-content">
               <span>
-                <strong>System Note:</strong> Background music is omitted as none exists in the sound engine.
-                Puzzle hints are omitted as no solver engine is present. Settings persist locally and do not affect progression or scores.
+                <strong>Audio System Note:</strong> Master Sound independently controls overall audio. Sound effects and voice announcements can be muted independently. Settings persist across sessions. Background music is omitted as none exists in the sound engine.
               </span>
             </div>
           </div>

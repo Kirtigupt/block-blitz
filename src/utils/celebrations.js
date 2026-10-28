@@ -24,7 +24,7 @@ export const getClearCelebration = (clearedLines, currentStreak, turnPoints, isN
     }
     return {
       title: 'MULTI CLEAR!',
-      spoken: 'Multi clear!',
+      spoken: currentStreak >= 3 ? 'Amazing combo!' : 'Mega blast!',
       points: turnPoints,
       sub: `${sub}${recordBadge}`,
       tier: 'mega_clear',
@@ -38,7 +38,7 @@ export const getClearCelebration = (clearedLines, currentStreak, turnPoints, isN
     const baseSub = currentStreak > 1 ? `3 LINES • COMBO x${currentStreak}! 🔥` : 'TRIPLE LINE CLEAR!';
     return {
       title: 'TRIPLE CLEAR!',
-      spoken: 'Triple clear!',
+      spoken: currentStreak >= 3 ? 'Amazing combo!' : 'Triple blast!',
       points: turnPoints,
       sub: `${baseSub}${recordBadge}`,
       tier: 'triple_clear',
@@ -52,7 +52,7 @@ export const getClearCelebration = (clearedLines, currentStreak, turnPoints, isN
     const baseSub = currentStreak > 1 ? `2 LINES • COMBO x${currentStreak}! 🔥` : 'DOUBLE LINE CLEAR!';
     return {
       title: 'DOUBLE CLEAR!',
-      spoken: 'Double clear!',
+      spoken: currentStreak >= 3 ? 'Amazing combo!' : 'Double blast!',
       points: turnPoints,
       sub: `${baseSub}${recordBadge}`,
       tier: 'double_clear',
@@ -77,7 +77,7 @@ export const getClearCelebration = (clearedLines, currentStreak, turnPoints, isN
   if (currentStreak === 3) {
     return {
       title: 'COMBO x3!',
-      spoken: 'Combo x3!',
+      spoken: 'Amazing combo!',
       points: turnPoints,
       sub: `3 Clears in a row! 🔥🔥${recordBadge}`,
       tier: 'combo',
@@ -145,7 +145,7 @@ export const getNoValidMoveCelebration = (customSub = 'No space on board for thi
 export const getStartGameCelebration = () => {
   return {
     title: "LET'S PLAY!",
-    spoken: 'Level started.',
+    spoken: "Let's play!",
     points: null,
     sub: 'Clear lines & build combos!',
     tier: 'start',
@@ -158,8 +158,8 @@ export const getStartGameCelebration = () => {
  */
 export const getGameOverCelebration = (finalScore) => {
   return {
-    title: 'LEVEL FAILED',
-    spoken: 'Level failed. Try again!',
+    title: 'GAME OVER',
+    spoken: 'Game over!',
     points: finalScore,
     sub: 'Out of valid moves on board',
     tier: 'gameover',
@@ -170,14 +170,21 @@ export const getGameOverCelebration = (finalScore) => {
 /**
  * Celebration for completing a level objective
  */
-export const getLevelCompleteCelebration = (levelConfig, bonusPoints) => {
+export const getLevelCompleteCelebration = (levelConfig, bonusPoints = 0) => {
   const levelNum = levelConfig?.level || 1;
   const levelTitle = levelConfig?.title || 'Objective Achieved';
+  const isFinal = levelNum >= 100;
+  const sub = isFinal
+    ? 'Zenith of Legends • Campaign Champion! 🏆'
+    : bonusPoints > 0
+    ? `${levelTitle} • +${bonusPoints.toLocaleString()} BONUS! ⭐`
+    : `${levelTitle} • STAGE REPLAYED! ⭐`;
+
   return {
-    title: `LEVEL ${levelNum} COMPLETE!`,
-    spoken: 'Level completed!',
+    title: isFinal ? 'CAMPAIGN COMPLETE!' : `LEVEL ${levelNum} COMPLETE!`,
+    spoken: isFinal ? 'Campaign champion!' : 'Level completed!',
     points: bonusPoints,
-    sub: `${levelTitle} • +${bonusPoints.toLocaleString()} BONUS! ⭐`,
+    sub,
     tier: 'level_complete',
     triggerConfetti: true,
     screenShake: 'subtle'

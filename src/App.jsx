@@ -13,7 +13,6 @@ import { LeaderboardModal } from './components/LeaderboardModal';
 import { PlayerProfileModal } from './components/PlayerProfileModal';
 import { ExitConfirmModal } from './components/ExitConfirmModal';
 import { OnboardingModal } from './components/OnboardingModal';
-import { WelcomeBackModal } from './components/WelcomeBackModal';
 import { WelcomeLandingScreen } from './components/WelcomeLandingScreen';
 import { SettingsModal } from './components/SettingsModal';
 import { loadStoredSettings, saveStoredSettings } from './utils/settings';
@@ -143,7 +142,6 @@ export function App() {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showExitConfirmModal, setShowExitConfirmModal] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
-  const [showWelcomeBackModal, setShowWelcomeBackModal] = useState(false);
   const [scoreSaved, setScoreSaved] = useState(false);
 
   // Refs for state persistence and single-fire celebrations
@@ -219,6 +217,10 @@ export function App() {
           } catch {
             // Ignore
           }
+
+          // Restore user-scoped settings
+          const userSettings = loadStoredSettings(userId);
+          setSettings(userSettings);
         }
       })
       .catch((err) => {
@@ -243,7 +245,10 @@ export function App() {
           if (res.stats?.highScore) {
             setHighScore(res.stats.highScore);
             try {
-              localStorage.setItem(HIGH_SCORE_KEY, res.stats.highScore.toString());
+              localStorage.setItem(
+                getStorageKey(HIGH_SCORE_KEY, user._id || user.id),
+                res.stats.highScore.toString()
+              );
             } catch {
               // Ignore
             }
@@ -275,7 +280,7 @@ export function App() {
   const handleUpdateSettings = useCallback((partial) => {
     setSettings((prev) => {
       const next = { ...prev, ...partial };
-      saveStoredSettings(next);
+      saveStoredSettings(next, user?._id || user?.id);
 
       sounds.setMasterSound(next.masterSound);
       sounds.setSoundEffectsEnabled(next.soundEffects);
@@ -289,14 +294,14 @@ export function App() {
 
       return next;
     });
-  }, []);
+  }, [user]);
 
-  // Quick sound mute toggle handler for header button / keyboard
+  // Quick sound mute toggle handler for header button / keyboard (toggles SFX independently)
   const handleToggleMute = useCallback(() => {
-    handleUpdateSettings({ masterSound: !settings.masterSound });
-  }, [settings.masterSound, handleUpdateSettings]);
+    handleUpdateSettings({ soundEffects: !settings.soundEffects });
+  }, [settings.soundEffects, handleUpdateSettings]);
 
-  // Quick voice toggle handler for header button / keyboard
+  // Quick voice toggle handler for header button / keyboard (toggles Voice independently)
   const handleToggleVoice = useCallback(() => {
     handleUpdateSettings({ voiceAnnouncements: !settings.voiceAnnouncements });
   }, [settings.voiceAnnouncements, handleUpdateSettings]);
@@ -391,7 +396,6 @@ export function App() {
     showLevelIntro ||
     showExitConfirmModal ||
     showOnboardingModal ||
-    showWelcomeBackModal ||
     showSettingsModal;
 
   // Handle selecting a shape from the bottom tray
@@ -592,7 +596,11 @@ export function App() {
 
           updateScoreAndHigh(totalPointsGained + bonusToAward);
           sounds.playLevelComplete();
-          voiceAnnouncer.announceLevelComplete();
+          if (currentLevel >= 100) {
+            voiceAnnouncer.announceCampaignComplete();
+          } else {
+            voiceAnnouncer.announceLevelComplete();
+          }
           triggerHaptic('level_complete');
           triggerCelebration(getLevelCompleteCelebration(levelConfig, bonusToAward));
         } else {
@@ -650,18 +658,20 @@ export function App() {
           setHoverPos(null);
 
           if (isLevelComplete) {
-            const nextLevelNum = currentLevel + 1;
+            const isFinalLevel = currentLevel >= 100;
+            const nextLevelNum = Math.min(100, currentLevel + 1);
             setCompletedLevelData({
               levelConfig,
-              nextLevelConfig: getLevelConfig(nextLevelNum),
-              bonusPoints: levelConfig.bonusPoints,
-              totalScore: projectedScore + (awardedLevelBonusesRef.current.has(currentLevel) ? levelConfig.bonusPoints : 0)
+              nextLevelConfig: isFinalLevel ? null : getLevelConfig(nextLevelNum),
+              bonusPoints: bonusToAward,
+              totalScore: projectedScore + bonusToAward,
+              isCampaignComplete: isFinalLevel
             });
             setShowLevelCompleteModal(true);
           } else if (isGameOver(clearedGrid, updatedShapes)) {
             setGameOver(true);
             sounds.playGameOver();
-            voiceAnnouncer.announceLevelFailed();
+            voiceAnnouncer.announceGameOver();
             triggerHaptic('game_over');
             // Never let Game Over overwrite an active High Score celebration
             if (!isHighScoreCelebrationActiveRef.current) {
@@ -745,15 +755,22 @@ export function App() {
           setSelectedShape(null);
           setHoverPos(null);
           sounds.playLevelComplete();
-          voiceAnnouncer.announceLevelComplete();
+          if (currentLevel >= 100) {
+            voiceAnnouncer.announceCampaignComplete();
+          } else {
+            voiceAnnouncer.announceLevelComplete();
+          }
           triggerHaptic('level_complete');
           triggerCelebration(getLevelCompleteCelebration(levelConfig, bonusToAward));
           setTimeout(() => {
+            const isFinalLevel = currentLevel >= 100;
+            const nextLevelNum = Math.min(100, currentLevel + 1);
             setCompletedLevelData({
               levelConfig,
-              nextLevelConfig: getLevelConfig(nextLevelNum),
-              bonusPoints: levelConfig.bonusPoints,
-              totalScore: projectedScore + (awardedLevelBonusesRef.current.has(currentLevel) ? levelConfig.bonusPoints : 0)
+              nextLevelConfig: isFinalLevel ? null : getLevelConfig(nextLevelNum),
+              bonusPoints: bonusToAward,
+              totalScore: projectedScore + bonusToAward,
+              isCampaignComplete: isFinalLevel
             });
             setShowLevelCompleteModal(true);
           }, 240);
@@ -773,12 +790,14 @@ export function App() {
               isHighScoreCelebrationActiveRef.current = false;
             }, 1800);
             triggerCelebration(getHighScoreCelebration(projectedScore));
+          } else if (!isGameOver(newGrid, updatedShapes)) {
+            voiceAnnouncer.announceGoodMove();
           }
 
           if (isGameOver(newGrid, updatedShapes)) {
             setGameOver(true);
             sounds.playGameOver();
-            voiceAnnouncer.announceLevelFailed();
+            voiceAnnouncer.announceGameOver();
             triggerHaptic('game_over');
             if (!isHighScoreCelebrationActiveRef.current) {
               triggerCelebration(getGameOverCelebration(projectedScore));
@@ -945,7 +964,7 @@ export function App() {
     setShowLevelMap(false);
     setHasStartedGame(true);
     sounds.playLevelStart();
-    voiceAnnouncer.announceLevelStart();
+    voiceAnnouncer.announceGameStart();
     triggerCelebration(getStartGameCelebration());
   }, [triggerCelebration]);
 
@@ -974,7 +993,7 @@ export function App() {
     setClearingLines(null);
     setScreenShake(null);
     setNotification(null);
-    const nextLevelNum = targetLevel || Math.min(100, currentLevel + 1);
+    const nextLevelNum = targetLevel || Math.min(100, currentLevel >= 100 ? 100 : currentLevel + 1);
     setShowLevelCompleteModal(false);
     setCompletedLevelData(null);
     setCurrentLevel(nextLevelNum);
@@ -1094,6 +1113,10 @@ export function App() {
       // Ignore
     }
 
+    // Restore user-scoped settings
+    const userSettings = loadStoredSettings(userId);
+    setSettings(userSettings);
+
     // Reset current attempt states so previous account / guest data is never retained
     setScore(0);
     setStreak(0);
@@ -1126,9 +1149,7 @@ export function App() {
     // Systematic Onboarding Flow:
     if (isNewRegistration) {
       setShowOnboardingModal(true);
-      setShowWelcomeBackModal(false);
     } else {
-      setShowWelcomeBackModal(false);
       setShowOnboardingModal(false);
     }
   }, []);
@@ -1171,7 +1192,6 @@ export function App() {
     setUser(null);
     setShowProfileModal(false);
     setShowOnboardingModal(false);
-    setShowWelcomeBackModal(false);
 
     // Completely clear user-specific state and restore Guest state
     const guestUnlocked = Number(localStorage.getItem(getStorageKey(UNLOCKED_LEVEL_KEY, null))) || 1;
@@ -1194,6 +1214,10 @@ export function App() {
     setHighScore(guestHigh);
     previousPersonalBestRef.current = guestHigh;
     awardedLevelBonusesRef.current = new Set(guestCompleted);
+
+    // Restore guest settings
+    const guestSettings = loadStoredSettings(null);
+    setSettings(guestSettings);
 
     // Wipe gameplay attempt
     setScore(0);
@@ -1229,18 +1253,6 @@ export function App() {
     sounds.playSelect();
   }, []);
 
-  const handleResumeFromWelcomeBack = useCallback(() => {
-    setShowWelcomeBackModal(false);
-    // Resume current unlocked level with intro animation
-    handleStartLevelWithIntro(unlockedLevel);
-  }, [unlockedLevel, handleStartLevelWithIntro]);
-
-  const handleViewMapFromWelcomeBack = useCallback(() => {
-    setShowWelcomeBackModal(false);
-    setShowLevelMap(true);
-    sounds.playSelect();
-  }, []);
-
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -1256,16 +1268,6 @@ export function App() {
       if (showOnboardingModal) {
         if (e.key === 'Escape' || e.key === 'Enter') {
           handleProceedFromOnboarding();
-        }
-        return;
-      }
-
-      // If Welcome Back modal is open, Escape views map, Enter resumes level
-      if (showWelcomeBackModal) {
-        if (e.key === 'Escape') {
-          handleViewMapFromWelcomeBack();
-        } else if (e.key === 'Enter') {
-          handleResumeFromWelcomeBack();
         }
         return;
       }
@@ -1308,11 +1310,8 @@ export function App() {
     showWelcomeScreen,
     handlePlayNow,
     showOnboardingModal,
-    showWelcomeBackModal,
     showExitConfirmModal,
     handleProceedFromOnboarding,
-    handleViewMapFromWelcomeBack,
-    handleResumeFromWelcomeBack,
     handleCancelExit,
     handleOpenExitModal,
     isInputBlocked,
@@ -1376,6 +1375,7 @@ export function App() {
             grid={grid}
             selectedShape={selectedShape}
             unplaceableShakeId={unplaceableShakeId}
+            showHints={settings.gameplayHints}
             onSelectShape={handleSelectShape}
             onUnplaceableAttempt={handleUnplaceableAttempt}
             onDragStart={handleDesktopDragStart}
@@ -1470,17 +1470,6 @@ export function App() {
         />
       )}
 
-      {/* Existing User Welcome Back Modal */}
-      {showWelcomeBackModal && user && (
-        <WelcomeBackModal
-          user={user}
-          unlockedLevel={unlockedLevel}
-          completedCount={completedLevels.size}
-          highScore={highScore}
-          onResumeLevel={handleResumeFromWelcomeBack}
-          onViewMap={handleViewMapFromWelcomeBack}
-        />
-      )}
 
       {/* Exit Level Confirmation Modal */}
       {showExitConfirmModal && (

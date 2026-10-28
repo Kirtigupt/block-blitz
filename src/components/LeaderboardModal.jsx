@@ -145,14 +145,27 @@ export const LeaderboardModal = ({
               <span className="leaderboard-subtitle">Top Block Blitz Masters</span>
             </div>
           </div>
-          <button
-            type="button"
-            className="leaderboard-close-btn"
-            onClick={onClose}
-            aria-label="Close leaderboard"
-          >
-            <X size={18} />
-          </button>
+          <div className="leaderboard-header-actions">
+            <button
+              type="button"
+              className="leaderboard-refresh-btn"
+              onClick={fetchLeaderboard}
+              disabled={loading}
+              title="Refresh Leaderboard"
+              aria-label="Refresh Leaderboard"
+            >
+              <RotateCcw size={14} className={loading ? 'spinning-loader' : ''} />
+              <span>Refresh</span>
+            </button>
+            <button
+              type="button"
+              className="leaderboard-close-btn"
+              onClick={onClose}
+              aria-label="Close leaderboard"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {/* Content Body */}
@@ -208,10 +221,10 @@ export const LeaderboardModal = ({
                       {top2.username}
                     </span>
                     <span className="podium-score">
-                      {top2.highScore.toLocaleString()} PTS
+                      {(top2.totalScore || top2.highScore).toLocaleString()} PTS
                     </span>
                     <span className="podium-sub-tag">
-                      {top2.completedLevelsCount} Stages
+                      Best: {top2.highScore.toLocaleString()} • {top2.completedLevelsCount} Stages
                     </span>
                     <div className="podium-pillar pillar-2">
                       <span className="pillar-rank-text">2</span>
@@ -234,10 +247,10 @@ export const LeaderboardModal = ({
                       {top1.username}
                     </span>
                     <span className="podium-score prominent-score">
-                      {top1.highScore.toLocaleString()} PTS
+                      {(top1.totalScore || top1.highScore).toLocaleString()} PTS
                     </span>
                     <span className="podium-sub-tag prominent-tag">
-                      {top1.completedLevelsCount} Stages • {top1.totalScore.toLocaleString()} Total
+                      Best: {top1.highScore.toLocaleString()} • {top1.completedLevelsCount} Stages
                     </span>
                     <div className="podium-pillar pillar-1">
                       <span className="pillar-rank-text">1</span>
@@ -255,10 +268,10 @@ export const LeaderboardModal = ({
                       {top3.username}
                     </span>
                     <span className="podium-score">
-                      {top3.highScore.toLocaleString()} PTS
+                      {(top3.totalScore || top3.highScore).toLocaleString()} PTS
                     </span>
                     <span className="podium-sub-tag">
-                      {top3.completedLevelsCount} Stages
+                      Best: {top3.highScore.toLocaleString()} • {top3.completedLevelsCount} Stages
                     </span>
                     <div className="podium-pillar pillar-3">
                       <span className="pillar-rank-text">3</span>
@@ -330,6 +343,9 @@ export const LeaderboardModal = ({
                         <div className="col-rank">{getRankBadge(player.rank)}</div>
 
                         <div className="col-player">
+                          <div className="player-avatar-circle" title={player.username}>
+                            {player.username.charAt(0).toUpperCase()}
+                          </div>
                           <span className="player-display-name">{player.username}</span>
                           {isMe && <span className="player-you-pill">YOU</span>}
                         </div>

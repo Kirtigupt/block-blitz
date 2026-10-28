@@ -10,11 +10,21 @@ export const getGlobalLeaderboard = async (req, res) => {
   try {
     const limit = Math.min(Math.max(Number(req.query.limit) || 20, 1), 100);
 
-    // 1. Aggregate cumulative scores and max scores from the Game collection
+    // 1. Aggregate cumulative scores and max scores from the Game collection,
+    //    de-duplicating by game session to prevent counting identical games more than once.
     const gameAggregations = await Game.aggregate([
       {
         $group: {
-          _id: '$user',
+          _id: {
+            user: '$user',
+            sessionOrId: { $ifNull: ['$gameSessionId', '$_id'] }
+          },
+          score: { $max: '$score' }
+        }
+      },
+      {
+        $group: {
+          _id: '$_id.user',
           totalScore: { $sum: '$score' },
           maxScore: { $max: '$score' },
           gamesCount: { $sum: 1 }
@@ -58,19 +68,19 @@ export const getGlobalLeaderboard = async (req, res) => {
     });
 
     // 4. Deterministic multi-tier sort:
-    //    Primary: Highest Single-Game Score (descending)
-    //    Tie-breaker 1: Number of Completed Levels (descending)
-    //    Tie-breaker 2: Cumulative Career Score (descending)
+    //    Primary: Total Valid Score across completed games (descending)
+    //    Tie-breaker 1: Highest Single-Game Score (descending)
+    //    Tie-breaker 2: Number of Completed Levels (descending)
     //    Tie-breaker 3: Account Seniority (createdAt ascending)
     candidates.sort((a, b) => {
+      if (b.totalScore !== a.totalScore) {
+        return b.totalScore - a.totalScore;
+      }
       if (b.highScore !== a.highScore) {
         return b.highScore - a.highScore;
       }
       if (b.completedLevelsCount !== a.completedLevelsCount) {
         return b.completedLevelsCount - a.completedLevelsCount;
-      }
-      if (b.totalScore !== a.totalScore) {
-        return b.totalScore - a.totalScore;
       }
       return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
     });
@@ -116,8 +126,8 @@ export const getGlobalLeaderboard = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      rankingMetric: 'highest_score',
-      rankingDescription: 'Ranked primarily by Highest Single-Game Score (High Score). Tie-breakers: Completed Levels, Cumulative Career Score, Seniority.',
+      rankingMetric: 'total_score',
+      rankingDescription: 'Ranked primarily by Total Valid Score across completed games. Tie-breakers: Highest Single-Game Score, Stages Cleared, Seniority.',
       count: leaderboard.length,
       totalPlayers: eligiblePlayers.length,
       leaderboard,

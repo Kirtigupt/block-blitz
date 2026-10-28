@@ -7,6 +7,7 @@ export const BlockTray = ({
   grid,
   selectedShape,
   unplaceableShakeId,
+  showHints = true,
   onSelectShape,
   onUnplaceableAttempt,
   onDragStart,
@@ -42,13 +43,15 @@ export const BlockTray = ({
           );
         })}
       </div>
-      <div className="tray-hint">
-        {selectedShape ? (
-          <span className="hint-active">Click or release on any cell to place</span>
-        ) : (
-          <span className="hint-default">Drag or tap a block above to place</span>
-        )}
-      </div>
+      {showHints && (
+        <div className="tray-hint">
+          {selectedShape ? (
+            <span className="hint-active">Click or release on any cell to place</span>
+          ) : (
+            <span className="hint-default">Drag or tap a block above to place</span>
+          )}
+        </div>
+      )}
     </div>
   );
 };
