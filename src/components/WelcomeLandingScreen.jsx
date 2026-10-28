@@ -2,16 +2,10 @@ import React, { useEffect } from 'react';
 import {
   Play,
   ArrowRight,
-  ShieldCheck,
-  Sparkles,
-  Target,
   Flame,
-  LogIn,
-  LogOut,
-  Crown
+  ArrowLeftRight
 } from 'lucide-react';
 import { BLOCK_PALETTE } from '../constants/blocks';
-import { getLevelConfig } from '../constants/levels';
 
 // 6x6 visual game preview showing an exciting mid-game state with combo & ghost piece
 const PREVIEW_GRID = [
@@ -31,16 +25,11 @@ const PREVIEW_TRAY_PIECES = [
 ];
 
 export const WelcomeLandingScreen = ({
-  user,
-  unlockedLevel = 1,
-  completedCount = 0,
-  highScore = 0,
+  user = null,
   onPlayNow,
   onOpenAuth,
-  onLogout
+  onSwitchAccount
 }) => {
-  const currentLevelConfig = getLevelConfig(unlockedLevel);
-
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Enter') {
@@ -89,19 +78,6 @@ export const WelcomeLandingScreen = ({
 
       {/* Main Arcade Stage Container */}
       <div className="welcome-arcade-container">
-        {/* Top Badge */}
-        {user ? (
-          <div className="welcome-landing-badge user-badge">
-            <ShieldCheck size={14} className="badge-shield-icon" />
-            <span>PILOT READY • {user.username}</span>
-          </div>
-        ) : (
-          <div className="welcome-landing-badge guest-badge">
-            <Sparkles size={14} className="badge-sparkle-icon" />
-            <span>TACTICAL ARCADE PUZZLE</span>
-          </div>
-        )}
-
         {/* Hero Branding */}
         <header className="welcome-hero-header">
           <h1 className="welcome-landing-game-title">BLOCK BLITZ</h1>
@@ -189,39 +165,6 @@ export const WelcomeLandingScreen = ({
           </div>
         </div>
 
-        {/* Compact Feature Highlights Strip */}
-        <div className="welcome-features-strip">
-          <div className="feature-pill">
-            <div className="feature-icon-wrap cyan">
-              <Target size={16} />
-            </div>
-            <div className="feature-meta">
-              <span className="feature-title">100 Levels</span>
-              <span className="feature-desc">10 Thematic Chapters</span>
-            </div>
-          </div>
-
-          <div className="feature-pill">
-            <div className="feature-icon-wrap orange">
-              <Flame size={16} />
-            </div>
-            <div className="feature-meta">
-              <span className="feature-title">Combos & Streaks</span>
-              <span className="feature-desc">Score Multipliers</span>
-            </div>
-          </div>
-
-          <div className="feature-pill">
-            <div className="feature-icon-wrap gold">
-              <Crown size={16} />
-            </div>
-            <div className="feature-meta">
-              <span className="feature-title">Global Leaderboard</span>
-              <span className="feature-desc">Cloud Rankings</span>
-            </div>
-          </div>
-        </div>
-
         {/* Primary Action Button: Prominent PLAY NOW */}
         <div className="welcome-cta-zone">
           <button
@@ -236,55 +179,37 @@ export const WelcomeLandingScreen = ({
             <ArrowRight size={20} className="arrow-pulse" />
           </button>
 
-          {/* Secondary Sign-In or Active Pilot Status */}
-          {user ? (
-            <div className="welcome-pilot-status-bar">
-              <div className="welcome-pilot-greeting">
-                Welcome Back, <span className="highlight-name">{user.username}</span>!
+          {/* Authentication-Based Context Subtext */}
+          <div className="welcome-auth-footer">
+            {user ? (
+              <div className="welcome-logged-in-container">
+                <p className="welcome-auth-subtext auth-logged-in">
+                  Welcome back, <span className="welcome-user-highlight">{user.username}</span>!
+                </p>
+                <button
+                  type="button"
+                  className="welcome-switch-account-btn"
+                  onClick={onSwitchAccount}
+                  aria-label="Switch to another account"
+                >
+                  <ArrowLeftRight size={12} className="switch-account-icon" />
+                  <span>Switch Account</span>
+                </button>
               </div>
-
-              <div className="welcome-pilot-stats-row">
-                <div className="welcome-stat-card">
-                  <span className="welcome-stat-label">STAGE</span>
-                  <span className="welcome-stat-value">LVL {unlockedLevel}</span>
-                  <span className="welcome-stat-sub">{currentLevelConfig?.title || 'Active'}</span>
-                </div>
-                <div className="welcome-stat-card">
-                  <span className="welcome-stat-label">CLEARED</span>
-                  <span className="welcome-stat-value">{completedCount}</span>
-                  <span className="welcome-stat-sub">of 100</span>
-                </div>
-                <div className="welcome-stat-card">
-                  <span className="welcome-stat-label">RECORD</span>
-                  <span className="welcome-stat-value">{highScore.toLocaleString()}</span>
-                  <span className="welcome-stat-sub">PTS</span>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                className="welcome-switch-btn"
-                onClick={onLogout}
-                title="Sign out of current account"
-              >
-                <LogOut size={13} />
-                <span>Switch Account</span>
-              </button>
-            </div>
-          ) : (
-            <div className="welcome-guest-subtext">
-              <span className="welcome-subtext-msg">Already have an account?</span>
-              <button
-                type="button"
-                className="welcome-signin-btn"
-                onClick={onOpenAuth}
-                title="Sign in to sync your cloud profile"
-              >
-                <LogIn size={14} />
-                <span>Sign In</span>
-              </button>
-            </div>
-          )}
+            ) : (
+              <p className="welcome-auth-subtext auth-logged-out">
+                Already have an account?{' '}
+                <button
+                  type="button"
+                  className="welcome-signin-link-btn welcome-signin-btn"
+                  onClick={onOpenAuth}
+                  aria-label="Sign in to your account"
+                >
+                  Sign in
+                </button>
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>

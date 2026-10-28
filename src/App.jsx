@@ -155,6 +155,7 @@ export function App() {
   const notificationTimeoutRef = useRef(null);
   const unplaceableTimeoutRef = useRef(null);
   const currentGameSessionIdRef = useRef('sess_default');
+  const authOriginRef = useRef(null);
 
   // Track window mouse movements during desktop drag
   useEffect(() => {
@@ -1140,14 +1141,21 @@ export function App() {
     hasCelebratedHighScoreRef.current = false;
     isHighScoreCelebrationActiveRef.current = false;
 
-    // Navigate to Level Map and dismiss Welcome Landing Screen
-    setShowWelcomeScreen(false);
-    setShowLevelMap(true);
-    setShowAuthModal(false);
-    setHasStartedGame(false);
+    // Navigate to Level Map, or remain on Welcome Screen if switching accounts
+    if (authOriginRef.current === 'switch_account' || authOriginRef.current === 'welcome_signin') {
+      setShowWelcomeScreen(true);
+      setShowLevelMap(false);
+      setShowAuthModal(false);
+      setHasStartedGame(false);
+    } else {
+      setShowWelcomeScreen(false);
+      setShowLevelMap(true);
+      setShowAuthModal(false);
+      setHasStartedGame(false);
+    }
 
     // Systematic Onboarding Flow:
-    if (isNewRegistration) {
+    if (isNewRegistration && authOriginRef.current !== 'switch_account' && authOriginRef.current !== 'welcome_signin') {
       setShowOnboardingModal(true);
     } else {
       setShowOnboardingModal(false);
@@ -1157,6 +1165,7 @@ export function App() {
   // Handle Play Now from Welcome Landing Screen
   const handlePlayNow = useCallback(async () => {
     sounds.playSelect();
+    authOriginRef.current = 'play_now';
 
     // If an auth check is currently in flight, wait for it
     if (authPromiseRef.current && isAuthChecking) {
@@ -1245,6 +1254,14 @@ export function App() {
     setHasStartedGame(false);
     sounds.playSelect();
   }, []);
+
+  // Handle Switch Account from Welcome Screen
+  const handleSwitchAccount = useCallback(() => {
+    authOriginRef.current = 'switch_account';
+    handleLogout();
+    setShowAuthModal(true);
+    sounds.playSelect();
+  }, [handleLogout]);
 
   // Systematic Onboarding Flow Callbacks
   const handleProceedFromOnboarding = useCallback(() => {
@@ -1543,7 +1560,11 @@ export function App() {
           completedCount={completedLevels.size}
           highScore={highScore}
           onPlayNow={handlePlayNow}
-          onOpenAuth={() => setShowAuthModal(true)}
+          onOpenAuth={() => {
+            authOriginRef.current = 'welcome_signin';
+            setShowAuthModal(true);
+          }}
+          onSwitchAccount={handleSwitchAccount}
           onLogout={handleLogout}
         />
       )}

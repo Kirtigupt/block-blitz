@@ -1,65 +1,46 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import {
-  ArrowLeft,
-  Check,
-  Lock,
-  Play,
-  Star,
-  Trophy,
-  Target,
-  Zap,
-  Sparkles,
-  Crown,
-  Flame,
-  Layers,
-  Gem
+  ChevronLeft,
+  Lock
 } from 'lucide-react';
 import {
-  LEVEL_CONFIGS,
   TOTAL_LEVELS,
-  CHAPTER_CONFIGS,
-  getLevelConfig,
-  getChapterForLevel
+  getLevelConfig
 } from '../constants/levels';
+import { ADVENTURE_MOSAIC_MAPPING } from '../constants/adventureLayout';
 import { sounds } from '../utils/soundEffects';
 
 export const LevelMap = ({
   currentLevel = 1,
   unlockedLevel = 1,
   completedLevels = new Set(),
-  totalScore = 0,
+  _totalScore = 0,
   onSelectLevel,
-  onBackToGame,
-  hasActiveGame = false,
+  _onBackToGame = null,
+  _hasActiveGame = false,
   onReturnToWelcome = null
 }) => {
-  // Currently selected level for the action dock
+  // Selected level for the launch dock
   const [selectedLevelNum, setSelectedLevelNum] = useState(
     Math.min(currentLevel, unlockedLevel)
   );
 
-  // Chapter filter: 0 = All Chapters, 1..10 = specific chapter
-  const [activeChapterFilter, setActiveChapterFilter] = useState(() => {
-    const activeChapter = getChapterForLevel(Math.min(currentLevel, unlockedLevel))?.chapter || 0;
-    return activeChapter;
-  });
+  // Subtle locked feedback banner state
+  const [lockedFeedback, setLockedFeedback] = useState(null);
 
-  // Track previous currentLevel to sync selected level without cascading effects
+  // Sync selected level if external currentLevel changes
   const [prevCurrentLevel, setPrevCurrentLevel] = useState(currentLevel);
   if (currentLevel !== prevCurrentLevel) {
     setPrevCurrentLevel(currentLevel);
     const target = Math.min(currentLevel, unlockedLevel);
     setSelectedLevelNum(target);
-    const ch = getChapterForLevel(target);
-    if (ch && activeChapterFilter !== 0) {
-      setActiveChapterFilter(ch.chapter);
-    }
   }
 
   const scrollContainerRef = useRef(null);
   const selectedCardRef = useRef(null);
+  const feedbackTimerRef = useRef(null);
 
-  // Auto-scroll to selected level card
+  // Auto-scroll selected level tile into view on mount or selection
   useEffect(() => {
     const timer = setTimeout(() => {
       if (selectedCardRef.current) {
@@ -71,24 +52,33 @@ export const LevelMap = ({
     }, 150);
 
     return () => clearTimeout(timer);
-  }, [selectedLevelNum, activeChapterFilter]);
+  }, [selectedLevelNum]);
 
-  const handleLaunchLevel = useCallback((targetLevel) => {
-    const levelToLaunch = targetLevel || selectedLevelNum || Math.min(currentLevel, unlockedLevel);
-    if (levelToLaunch > unlockedLevel) {
-      sounds.playInvalid();
-      return;
-    }
-    sounds.playSelect();
-    onSelectLevel(levelToLaunch);
-  }, [selectedLevelNum, currentLevel, unlockedLevel, onSelectLevel]);
+  const handleLaunchLevel = useCallback(
+    (targetLevel) => {
+      const levelToLaunch = targetLevel || selectedLevelNum || Math.min(currentLevel, unlockedLevel);
+      if (levelToLaunch > unlockedLevel) {
+        sounds.playInvalid();
+        const requiredStage = Math.max(1, levelToLaunch - 1);
+        setLockedFeedback(`Stage ${levelToLaunch} is locked. Clear Stage ${requiredStage} to unlock.`);
+        if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
+        feedbackTimerRef.current = setTimeout(() => setLockedFeedback(null), 3200);
+        return;
+      }
+      sounds.playSelect();
+      onSelectLevel(levelToLaunch);
+    },
+    [selectedLevelNum, currentLevel, unlockedLevel, onSelectLevel]
+  );
 
-  // Keyboard navigation: Enter launches, Escape backs to game
+  // Keyboard navigation (Escape = back to welcome, Enter = play selected)
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && hasActiveGame && onBackToGame) {
-        e.preventDefault();
-        onBackToGame();
+      if (e.key === 'Escape') {
+        if (onReturnToWelcome) {
+          e.preventDefault();
+          onReturnToWelcome();
+        }
       } else if (e.key === 'Enter') {
         e.preventDefault();
         handleLaunchLevel(selectedLevelNum);
@@ -97,347 +87,196 @@ export const LevelMap = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [hasActiveGame, onBackToGame, handleLaunchLevel, selectedLevelNum]);
+  }, [onReturnToWelcome, handleLaunchLevel, selectedLevelNum]);
 
-  const handleCardClick = (level) => {
-    const isUnlocked = level.level <= unlockedLevel;
+  const handleTileClick = (levelNumber) => {
+    setSelectedLevelNum(levelNumber);
+    const isUnlocked = levelNumber <= unlockedLevel;
+
     if (!isUnlocked) {
       sounds.playInvalid();
+      const requiredStage = Math.max(1, levelNumber - 1);
+      setLockedFeedback(`Stage ${levelNumber} is locked. Clear Stage ${requiredStage} to unlock.`);
+      if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
+      feedbackTimerRef.current = setTimeout(() => setLockedFeedback(null), 3200);
       return;
     }
 
+    setLockedFeedback(null);
     sounds.playSelect();
-    setSelectedLevelNum(level.level);
   };
 
-  const handleCardDoubleClick = (level) => {
-    if (level.level <= unlockedLevel) {
-      handleLaunchLevel(level.level);
+  const handleTileDoubleClick = (levelNumber) => {
+    if (levelNumber <= unlockedLevel) {
+      handleLaunchLevel(levelNumber);
     }
   };
 
   const completedCount = completedLevels.size;
-  const progressPercent = Math.round((completedCount / TOTAL_LEVELS) * 100);
   const selectedConfig = useMemo(() => getLevelConfig(selectedLevelNum), [selectedLevelNum]);
-  const selectedChapter = useMemo(() => getChapterForLevel(selectedLevelNum), [selectedLevelNum]);
+  const isSelectedLocked = selectedLevelNum > unlockedLevel;
+  const isSelectedCompleted = completedLevels.has(selectedLevelNum);
 
-  // Compute chapter progress for each chapter (0 to 10 completed)
-  const chapterProgressMap = useMemo(() => {
-    const map = {};
-    CHAPTER_CONFIGS.forEach((ch) => {
-      const chapterLevels = LEVEL_CONFIGS.filter((l) => l.chapter === ch.chapter);
-      const completedInCh = chapterLevels.filter((l) => completedLevels.has(l.level)).length;
-      map[ch.chapter] = {
-        total: chapterLevels.length,
-        completed: completedInCh,
-        percent: Math.round((completedInCh / chapterLevels.length) * 100),
-        isCompleted: completedInCh === chapterLevels.length,
-        isUnlocked: unlockedLevel >= ch.start
+  // Prepare mosaic tile data mapped to coordinates
+  const mosaicTiles = useMemo(() => {
+    return ADVENTURE_MOSAIC_MAPPING.map((entry) => {
+      const config = getLevelConfig(entry.level);
+      const isCompleted = completedLevels.has(entry.level);
+      const isCurrent = entry.level === unlockedLevel;
+      const isLocked = entry.level > unlockedLevel;
+      const isSelected = entry.level === selectedLevelNum;
+      const isBoss = config?.isBoss || entry.level % 10 === 0;
+
+      return {
+        ...entry,
+        config,
+        isCompleted,
+        isCurrent,
+        isLocked,
+        isSelected,
+        isBoss
       };
     });
-    return map;
-  }, [completedLevels, unlockedLevel]);
-
-  // Filter levels based on selected chapter tab
-  const displayedLevels = useMemo(() => {
-    if (activeChapterFilter === 0) {
-      return LEVEL_CONFIGS;
-    }
-    return LEVEL_CONFIGS.filter((lvl) => lvl.chapter === activeChapterFilter);
-  }, [activeChapterFilter]);
-
-  const renderObjectiveSummary = (lvl) => {
-    switch (lvl.type) {
-      case 'lines':
-        return `Clear ${lvl.target} lines`;
-      case 'score':
-        return `Score ${lvl.target.toLocaleString()} pts`;
-      case 'streak':
-        return `${lvl.target}x Combo Streak`;
-      case 'clear_pattern':
-        return `Break ${lvl.target} gems`;
-      case 'multilines':
-        return `${lvl.target} Multi-Clears`;
-      case 'placed':
-        return `Place ${lvl.target} pieces`;
-      default:
-        return lvl.description || `Target: ${lvl.target}`;
-    }
-  };
-
-  const renderObjectiveIcon = (type, color) => {
-    switch (type) {
-      case 'score':
-        return <Trophy size={13} style={{ color }} />;
-      case 'streak':
-        return <Flame size={13} style={{ color }} />;
-      case 'multilines':
-        return <Layers size={13} style={{ color }} />;
-      case 'clear_pattern':
-        return <Gem size={13} style={{ color }} />;
-      case 'placed':
-        return <Sparkles size={13} style={{ color }} />;
-      default:
-        return <Target size={13} style={{ color }} />;
-    }
-  };
+  }, [completedLevels, unlockedLevel, selectedLevelNum]);
 
   return (
-    <div className="campaign-map-screen" role="region" aria-label="Campaign Level Map">
-      {/* Ambient Cyberpunk Glow */}
-      <div className="map-ambient-glow" />
+    <div
+      className="campaign-map-screen adventure-map-screen"
+      role="region"
+      aria-label="Adventure Campaign Level Map"
+    >
+      {/* 1. Sleek Top Navigation Header */}
+      <header className="adventure-top-header campaign-header">
+        <button
+          type="button"
+          className="adventure-back-btn campaign-back-btn"
+          onClick={() => {
+            if (onReturnToWelcome) {
+              onReturnToWelcome();
+            }
+          }}
+          aria-label="Back to Welcome"
+          title="Back to Welcome"
+        >
+          <ChevronLeft size={28} strokeWidth={2.8} />
+        </button>
 
-      {/* 1. Top Navigation & Stats Bar */}
-      <header className="campaign-header">
-        <div className="campaign-header-left">
-          {hasActiveGame && onBackToGame ? (
-            <button
-              className="campaign-back-btn"
-              onClick={onBackToGame}
-              title="Return to active game"
-              aria-label="Back to Game"
-            >
-              <ArrowLeft size={16} />
-              <span>Back to Game</span>
-            </button>
-          ) : onReturnToWelcome ? (
-            <button
-              type="button"
-              className="campaign-brand-tag clickable"
-              onClick={onReturnToWelcome}
-              title="Return to Welcome Landing"
-              aria-label="Return to Welcome Screen"
-            >
-              <span className="brand-dot" />
-              <span>BLOCK BLITZ</span>
-            </button>
-          ) : (
-            <div className="campaign-brand-tag">
-              <span className="brand-dot" />
-              <span>BLOCK BLITZ</span>
-            </div>
-          )}
+        <h1 className="adventure-screen-title">Adventure</h1>
 
-          <div className="campaign-title-block">
-            <h1 className="campaign-title">CAMPAIGN MAP</h1>
-            <span className="campaign-subtitle">
-              100 Progressive Stages • 10 Thematic Chapters
-            </span>
-          </div>
-        </div>
-
-        <div className="campaign-header-stats">
-          <div className="campaign-stat-pill" title={`${completedCount} of 100 stages cleared`}>
-            {completedCount >= TOTAL_LEVELS ? (
-              <Crown size={14} className="stat-star-gold" />
-            ) : (
-              <Star size={14} className="stat-star-gold" />
-            )}
-            <span className="stat-val">{completedCount} / {TOTAL_LEVELS}</span>
-            <span className="stat-lbl">{completedCount >= TOTAL_LEVELS ? 'CONQUERED' : 'CLEARED'}</span>
-          </div>
-
-          <div className="campaign-stat-pill score-pill" title={`Total Campaign Score: ${totalScore.toLocaleString()}`}>
-            <Trophy size={14} className="stat-trophy-cyan" />
-            <span className="stat-val">{totalScore.toLocaleString()}</span>
-            <span className="stat-lbl">PTS</span>
-          </div>
-
-          <div className="campaign-stat-pill stage-pill" title={`Highest Stage Unlocked: Level ${unlockedLevel}`}>
-            <Sparkles size={14} className="stat-sparkle-cyan" />
-            <span className="stat-val">LVL {unlockedLevel}</span>
-            <span className="stat-lbl">ACTIVE</span>
-          </div>
-        </div>
+        {/* Header Right Spacer for balanced centering */}
+        <div className="adventure-header-spacer" aria-hidden="true" />
       </header>
 
-      {/* Overall Campaign Progress Bar */}
-      <div className="campaign-progress-bar-wrap" title={`Campaign Completion: ${progressPercent}%`}>
-        <div className="campaign-progress-bar-fill" style={{ width: `${progressPercent}%` }} />
-      </div>
-
-      {/* 2. Chapter Quick Selector Tabs with Chapter Progress */}
-      <nav className="chapter-tabs-nav" aria-label="Filter stages by chapter">
-        <div className="chapter-tabs-track">
-          <button
-            type="button"
-            className={`chapter-tab-pill ${activeChapterFilter === 0 ? 'active' : ''}`}
-            onClick={() => {
-              sounds.playSelect();
-              setActiveChapterFilter(0);
-            }}
-          >
-            <span className="tab-title">All Chapters</span>
-            <span className="tab-range">1-100</span>
-            <span className="tab-ch-progress">{completedCount}/{TOTAL_LEVELS}</span>
-          </button>
-
-          {CHAPTER_CONFIGS.map((ch) => {
-            const isActive = activeChapterFilter === ch.chapter;
-            const chProgress = chapterProgressMap[ch.chapter] || { completed: 0, total: 10, isUnlocked: false };
-            return (
-              <button
-                key={ch.chapter}
-                type="button"
-                className={`chapter-tab-pill ${isActive ? 'active' : ''} ${!chProgress.isUnlocked ? 'locked' : ''}`}
-                onClick={() => {
-                  sounds.playSelect();
-                  setActiveChapterFilter(ch.chapter);
-                }}
-                style={{ '--chapter-color': ch.color }}
-                title={`Chapter ${ch.chapter}: ${ch.name} (${chProgress.completed}/10 cleared)`}
-              >
-                <div className="tab-title-line">
-                  {!chProgress.isUnlocked && <Lock size={10} className="tab-lock-icon" />}
-                  <span className="tab-title">Ch {ch.chapter}</span>
-                  {chProgress.isCompleted && <Check size={11} className="tab-check-icon" />}
-                </div>
-                <span className="tab-range">{ch.range}</span>
-                <span className="tab-ch-progress">{chProgress.completed}/10</span>
-              </button>
-            );
-          })}
-        </div>
-      </nav>
-
-      {/* 3. Main Content: Responsive 100-Level Grid */}
-      <main className="campaign-grid-container" ref={scrollContainerRef}>
-        <div className="campaign-grid-wrapper">
-          {/* Chapter Banner when viewing a single chapter */}
-          {activeChapterFilter > 0 && (
-            <div
-              className="active-chapter-banner"
-              style={{
-                borderColor: CHAPTER_CONFIGS[activeChapterFilter - 1].color,
-                background: `linear-gradient(135deg, ${CHAPTER_CONFIGS[activeChapterFilter - 1].color}15, rgba(15, 23, 42, 0.6))`
-              }}
+      {/* 2. Main Scrollable Canvas */}
+      <main className="campaign-grid-container adventure-scroll-container" ref={scrollContainerRef}>
+        <div className="adventure-content-wrapper">
+          {/* Trophy Challenge Banner */}
+          <div className="adventure-trophy-banner">
+            <svg
+              viewBox="0 0 120 120"
+              className={`adventure-trophy-svg ${completedCount >= TOTAL_LEVELS ? 'trophy-champion' : ''}`}
+              aria-hidden="true"
             >
-              <div className="banner-left">
-                <span className="banner-ch-number" style={{ color: CHAPTER_CONFIGS[activeChapterFilter - 1].color }}>
-                  CHAPTER {activeChapterFilter} • {chapterProgressMap[activeChapterFilter]?.completed || 0}/10 COMPLETED
-                </span>
-                <h2 className="banner-ch-name">
-                  {CHAPTER_CONFIGS[activeChapterFilter - 1].name}
-                </h2>
-                <span className="banner-ch-range">
-                  Levels {CHAPTER_CONFIGS[activeChapterFilter - 1].range} • Chapter Boss Challenge at Level {CHAPTER_CONFIGS[activeChapterFilter - 1].end}
-                </span>
+              {/* Left Handle */}
+              <path
+                d="M 28 28 C 14 28 10 48 24 60 C 30 66 38 66 42 63"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="7"
+                strokeLinecap="round"
+              />
+              {/* Right Handle */}
+              <path
+                d="M 92 28 C 106 28 110 48 96 60 C 90 66 82 66 78 63"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="7"
+                strokeLinecap="round"
+              />
+              {/* Trophy Cup Body */}
+              <path
+                d="M 32 20 L 88 20 C 88 20 88 56 60 66 C 32 56 32 20 32 20 Z"
+                fill="currentColor"
+              />
+              {/* Cup Rim Highlight */}
+              <rect x="30" y="18" width="60" height="5" rx="2.5" fill="rgba(255, 255, 255, 0.08)" />
+              {/* Star in Center of Cup */}
+              <path
+                d="M 60 32 L 63 40 L 72 40 L 65 45 L 68 53 L 60 48 L 52 53 L 55 45 L 48 40 L 57 40 Z"
+                fill="rgba(255, 255, 255, 0.18)"
+              />
+              {/* Stem */}
+              <path d="M 54 66 L 66 66 L 64 80 L 56 80 Z" fill="currentColor" />
+              {/* Pedestal Base */}
+              <rect x="42" y="80" width="36" height="8" rx="2" fill="rgba(255, 255, 255, 0.06)" />
+              <rect x="34" y="88" width="52" height="10" rx="3" fill="currentColor" />
+            </svg>
 
-                {/* Chapter Mini Progress Track */}
-                <div className="chapter-progress-track">
-                  <div
-                    className="chapter-progress-fill"
-                    style={{
-                      width: `${chapterProgressMap[activeChapterFilter]?.percent || 0}%`,
-                      backgroundColor: CHAPTER_CONFIGS[activeChapterFilter - 1].color
-                    }}
-                  />
-                </div>
-              </div>
-              <button
-                type="button"
-                className="banner-view-all-btn"
-                onClick={() => setActiveChapterFilter(0)}
-              >
-                View All 100 Levels
-              </button>
+            <p className="adventure-trophy-subtitle">
+              Take part in the Adventure and win the trophy.
+            </p>
+          </div>
+
+          {/* Locked Stage Feedback Toast */}
+          {lockedFeedback && (
+            <div className="locked-feedback-toast adventure-toast" role="alert">
+              <Lock size={14} className="toast-lock-icon" />
+              <span>{lockedFeedback}</span>
             </div>
           )}
 
-          {/* Grid of Level Cards */}
-          <div className="levels-responsive-grid">
-            {displayedLevels.map((lvl) => {
-              const isCompleted = completedLevels.has(lvl.level);
-              const isCurrent = lvl.level === unlockedLevel;
-              const isLocked = lvl.level > unlockedLevel;
-              const isSelected = lvl.level === selectedLevelNum;
-
+          {/* 3. The 100-Block Adventure Trophy Sculpture Matrix */}
+          <div
+            className="adventure-mosaic-grid campaign-tiles-grid"
+            role="grid"
+            aria-label="Adventure Trophy Stages 1 to 100"
+          >
+            {mosaicTiles.map((tile) => {
               return (
                 <div
-                  key={lvl.level}
-                  ref={isSelected ? selectedCardRef : null}
-                  className={`level-card-item ${isCompleted ? 'completed' : ''} ${
-                    isCurrent ? 'current' : ''
-                  } ${isLocked ? 'locked' : 'unlocked'} ${isSelected ? 'selected' : ''} ${
-                    lvl.isBoss ? 'boss-stage' : ''
-                  }`}
-                  onClick={() => handleCardClick(lvl)}
-                  onDoubleClick={() => handleCardDoubleClick(lvl)}
-                  role="button"
-                  tabIndex={isLocked ? -1 : 0}
-                  aria-label={`Level ${lvl.level}: ${lvl.title}. ${
-                    isCompleted ? 'Completed' : isLocked ? 'Locked' : 'Unlocked'
+                  key={tile.level}
+                  ref={tile.isSelected ? selectedCardRef : null}
+                  className={`adventure-block level-tile-stone level-card-item ${
+                    tile.isCompleted ? 'completed' : ''
+                  } ${tile.isCurrent ? 'current-unlocked' : ''} ${
+                    tile.isLocked ? 'locked-stone' : 'unlocked-stone'
+                  } ${tile.isSelected ? 'selected-stone' : ''} ${
+                    tile.isBoss ? 'boss-stone' : ''
                   }`}
                   style={{
-                    '--lvl-accent': lvl.accentColor || '#38bdf8'
+                    gridRow: tile.row,
+                    gridColumn: tile.col
                   }}
+                  onClick={() => handleTileClick(tile.level)}
+                  onDoubleClick={() => handleTileDoubleClick(tile.level)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Level ${tile.level}: ${tile.config?.title || `Stage ${tile.level}`}. ${
+                    tile.isCompleted ? 'Completed' : tile.isLocked ? 'Locked' : 'Unlocked'
+                  }`}
                 >
-                  {/* Card Header */}
-                  <div className="card-top-row">
-                    <div className="card-top-left">
-                      <span className="card-level-badge">
-                        LVL {lvl.level}
-                      </span>
-                      <span className="card-chapter-tag">
-                        CH {lvl.chapter}
-                      </span>
-                    </div>
-
-                    <div className="card-status-badges">
-                      {lvl.isBoss && (
-                        <span className="card-boss-badge" title="Chapter Boss Challenge">
-                          <Crown size={11} /> BOSS
-                        </span>
-                      )}
-
-                      {isCompleted ? (
-                        <span className="card-completed-badge" title="Completed">
-                          <Check size={12} />
-                        </span>
-                      ) : isCurrent ? (
-                        <span className="card-current-badge">
-                          YOU
-                        </span>
-                      ) : isLocked ? (
-                        <span className="card-lock-badge">
-                          <Lock size={12} />
-                        </span>
-                      ) : null}
-                    </div>
-                  </div>
-
-                  {/* Card Title */}
-                  <div className="card-title-row">
-                    <h3 className="card-title">{lvl.title}</h3>
-                  </div>
-
-                  {/* Card Objective Summary */}
-                  <div className="card-objective-row">
-                    <div className="obj-icon-wrap">
-                      {renderObjectiveIcon(lvl.type, lvl.accentColor || '#38bdf8')}
-                    </div>
-                    <span className="card-obj-text">
-                      {renderObjectiveSummary(lvl)}
-                    </span>
-                  </div>
-
-                  {/* Pattern tag if present */}
-                  {lvl.pattern && lvl.pattern !== 'clean' && (
-                    <div className="card-pattern-pill" title={`Tactical Pattern: ${lvl.pattern}`}>
-                      <span>◈ {lvl.pattern.replace('_', ' ')}</span>
+                  {/* Active Level Origami Pointer Marker */}
+                  {tile.isCurrent && (
+                    <div className="adventure-pointer-marker" aria-hidden="true">
+                      <svg viewBox="0 0 24 20" className="pointer-origami-svg">
+                        <polygon points="12,18 4,6 7,2 12,5" fill="#ca8a04" />
+                        <polygon points="12,18 12,5 17,2 20,6" fill="#fde047" />
+                        <polygon points="12,18 7,5 17,5" fill="#eab308" />
+                      </svg>
                     </div>
                   )}
 
-                  {/* Card Footer: Bonus & Action */}
-                  <div className="card-footer-row">
-                    <span className="card-bonus-tag">
-                      +{lvl.bonusPoints.toLocaleString()} PTS
-                    </span>
-
-                    <span className="card-action-cue">
-                      {isLocked ? 'LOCKED' : isCompleted ? 'REPLAY' : isCurrent ? 'PLAY NOW' : 'PLAY'}
-                    </span>
-                  </div>
+                  {/* Tile Visual Presentation */}
+                  {tile.isCompleted ? (
+                    /* 3D Glossy Cyan Puzzle Block (Matches Screenshot) */
+                    <div className="adv-completed-face" title={`Level ${tile.level} Completed`} />
+                  ) : tile.isCurrent ? (
+                    /* Bright Yellow Active Tile with Bold Number */
+                    <span className="adv-current-number">{tile.level}</span>
+                  ) : (
+                    /* Clean Dark Blue Slate Tile with Readable Number */
+                    <span className="adv-locked-number">{tile.level}</span>
+                  )}
                 </div>
               );
             })}
@@ -445,72 +284,23 @@ export const LevelMap = ({
         </div>
       </main>
 
-      {/* 4. Selected Level Details Dock (Clean bottom fixed panel, zero clipping) */}
-      <footer className="selected-level-dock">
-        <div className="dock-container">
-          {/* Level Info & Mission Overview */}
-          <div className="dock-details-left">
-            <div className="dock-meta-header">
-              <span
-                className="dock-level-badge"
-                style={{ background: selectedConfig.accentColor || '#38bdf8' }}
-              >
-                LVL {selectedConfig.level}
-              </span>
-              <span className="dock-chapter-tag">
-                CH {selectedConfig.chapter}: {selectedChapter?.name || 'Chapter'}
-              </span>
-              {selectedConfig.isBoss && (
-                <span className="dock-boss-tag">
-                  <Crown size={12} /> BOSS CHALLENGE
-                </span>
-              )}
-              <h2 className="dock-title">{selectedConfig.title}</h2>
-            </div>
-
-            <div className="dock-meta-details">
-              <div className="dock-objective-box">
-                {renderObjectiveIcon(selectedConfig.type, selectedConfig.accentColor || '#38bdf8')}
-                <span className="dock-objective-text">
-                  <strong>Objective:</strong> {selectedConfig.description}
-                </span>
-              </div>
-
-              {selectedConfig.pattern && selectedConfig.pattern !== 'clean' && (
-                <span className="dock-pattern-pill">
-                  ◈ Grid: {selectedConfig.pattern.replace('_', ' ')}
-                </span>
-              )}
-
-              <span className="dock-reward-pill">
-                <Zap size={12} className="dock-zap-icon" />
-                +{selectedConfig.bonusPoints.toLocaleString()} Bonus PTS
-              </span>
-            </div>
-          </div>
-
-          {/* Action Launch Button */}
-          <div className="dock-actions-right">
-            <button
-              type="button"
-              className="dock-launch-btn"
-              onClick={() => handleLaunchLevel(selectedConfig.level)}
-              autoFocus
-              aria-label={`Play Level ${selectedConfig.level}`}
-            >
-              <span>
-                {selectedConfig.level === 100 && completedLevels.has(100)
-                  ? 'REPLAY LEVEL 100 (CHAMPION)'
-                  : selectedConfig.level === unlockedLevel
-                  ? 'START LEVEL ' + selectedConfig.level
-                  : completedLevels.has(selectedConfig.level)
-                  ? 'REPLAY LEVEL ' + selectedConfig.level
-                  : 'PLAY LEVEL ' + selectedConfig.level}
-              </span>
-              <Play size={18} fill="currentColor" />
-            </button>
-          </div>
-        </div>
+      {/* 4. Streamlined Bottom Action Dock with Big Green Play Button */}
+      <footer
+        className="adventure-bottom-dock compact-action-dock selected-level-dock"
+        role="region"
+        aria-label="Play Level Action"
+      >
+        <button
+          type="button"
+          className={`adventure-play-btn dock-action-button dock-launch-btn ${
+            isSelectedLocked ? 'btn-locked' : 'btn-active'
+          } ${isSelectedCompleted ? 'btn-replay' : ''}`}
+          onClick={() => handleLaunchLevel(selectedLevelNum)}
+          disabled={isSelectedLocked}
+          aria-label={`Play Level ${selectedConfig.level}`}
+        >
+          <span>Level {selectedConfig.level}</span>
+        </button>
       </footer>
     </div>
   );
