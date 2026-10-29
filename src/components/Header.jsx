@@ -181,7 +181,7 @@ export const Header = ({
 
           <button
             type="button"
-            className="action-btn leaderboard-btn"
+            className="action-btn leaderboard-btn mobile-compact-tool"
             onClick={onOpenLeaderboard}
             title="Global Leaderboard"
             aria-label="Global Leaderboard"
@@ -225,7 +225,7 @@ export const Header = ({
 
             <button
               type="button"
-              className="action-btn help-btn"
+              className="action-btn help-btn desktop-only-tool"
               onClick={onOpenHelp}
               title="How to Play"
               aria-label="Help"

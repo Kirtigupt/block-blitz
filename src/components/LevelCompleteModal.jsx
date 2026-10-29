@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, CheckCircle2, Zap, Trophy, LockKeyholeOpen, Map, Crown } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Zap, Trophy, LockKeyholeOpen, Map, Crown, Star } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export const LevelCompleteModal = ({
@@ -72,6 +72,19 @@ export const LevelCompleteModal = ({
               <span className="ribbon-tail left" />
               <span className="ribbon-tail right" />
             </div>
+          </div>
+        </div>
+
+        {/* Celebratory 3-Star Rating Row */}
+        <div className="victory-stars-cluster" aria-label="3 Stars Rating Earned">
+          <div className="victory-star-slot star-slot-1">
+            <Star size={22} className="star-fill-svg star-pop-1" fill="#fbbf24" stroke="#f59e0b" />
+          </div>
+          <div className="victory-star-slot star-slot-2 hero-star">
+            <Star size={30} className="star-fill-svg star-pop-2" fill="#fbbf24" stroke="#f59e0b" />
+          </div>
+          <div className="victory-star-slot star-slot-3">
+            <Star size={22} className="star-fill-svg star-pop-3" fill="#fbbf24" stroke="#f59e0b" />
           </div>
         </div>
 

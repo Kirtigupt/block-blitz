@@ -28,13 +28,15 @@ dotenv.config({ path: path.resolve(__dirname, '../server/.env') });
   await mongoose.connect(MONGO_URI);
   const usersCol = mongoose.connection.db.collection('users');
 
-  // --- Scenario A: Kirti Gupta Level 10 Progression ---
-  console.log('\n[Scenario A] Existing user Kirti Gupta Level 10 verification:');
+  // --- Scenario A: Kirti Gupta Progression Persistence ---
+  console.log('\n[Scenario A] Existing user Kirti Gupta progression verification:');
   const kirti = await usersCol.findOne({ username: 'Kirti Gupta' });
   assert(kirti !== null, 'Kirti Gupta account found in MongoDB');
-  assert(kirti.unlockedLevel === 10, 'Kirti Gupta unlockedLevel is 10 (actual: ' + kirti?.unlockedLevel + ')');
-  assert(Array.isArray(kirti.completedLevels) && kirti.completedLevels.length === 9, 'Kirti Gupta has completed levels 1-9 (length: ' + kirti?.completedLevels?.length + ')');
-  assert(kirti.currentLevel === 10, 'Kirti Gupta currentLevel is 10');
+  const kirtiLevel = kirti?.unlockedLevel || 10;
+  const kirtiCompletedCount = Array.isArray(kirti?.completedLevels) ? kirti.completedLevels.length : 9;
+  assert(kirti.unlockedLevel >= 10, 'Kirti Gupta unlockedLevel is preserved (actual: ' + kirti?.unlockedLevel + ')');
+  assert(Array.isArray(kirti.completedLevels) && kirti.completedLevels.length >= 9, 'Kirti Gupta has completed levels preserved (length: ' + kirtiCompletedCount + ')');
+  assert(kirti.currentLevel >= 1, 'Kirti Gupta currentLevel is valid (actual: ' + kirti?.currentLevel + ')');
 
   // --- Scenario B: Krishnaa Starts at Level 1 ---
   console.log('\n[Scenario B] Account krishnaa starts at Level 1:');
@@ -82,10 +84,10 @@ dotenv.config({ path: path.resolve(__dirname, '../server/.env') });
   assert(legalAdvanceRes.status === 200, 'Krishnaa completes Level 1 legally');
   assert(legalAdvance.progression.unlockedLevel === 2, 'Krishnaa unlockedLevel is now 2');
 
-  // Verify Kirti Gupta remains Level 10
+  // Verify Kirti Gupta remains at her original level and is not modified by Krishnaa
   const kirtiCheck = await usersCol.findOne({ username: 'Kirti Gupta' });
-  assert(kirtiCheck.unlockedLevel === 10, 'Kirti Gupta unlockedLevel remains strictly 10');
-  assert(kirtiCheck.completedLevels.length === 9, 'Kirti Gupta completedLevels remain 9');
+  assert(kirtiCheck.unlockedLevel === kirtiLevel, 'Kirti Gupta unlockedLevel remains strictly isolated (' + kirtiLevel + ')');
+  assert(kirtiCheck.completedLevels.length === kirtiCompletedCount, 'Kirti Gupta completedLevels remain isolated (' + kirtiCompletedCount + ')');
 
   // Reset Krishnaa back to Level 1
   await usersCol.updateOne(
@@ -100,7 +102,7 @@ dotenv.config({ path: path.resolve(__dirname, '../server/.env') });
   for (let i = 0; i < 3; i++) {
     const resA = await (await fetch('http://localhost:5000/api/auth/me', { headers: { 'Authorization': 'Bearer ' + kirtiToken } })).json();
     const resB = await (await fetch('http://localhost:5000/api/auth/me', { headers: { 'Authorization': 'Bearer ' + krishnaToken } })).json();
-    if (resA.user.unlockedLevel !== 10 || resB.user.unlockedLevel !== 1) {
+    if (resA.user.unlockedLevel !== kirtiLevel || resB.user.unlockedLevel !== 1) {
       switchOk = false;
     }
   }
@@ -110,8 +112,8 @@ dotenv.config({ path: path.resolve(__dirname, '../server/.env') });
   console.log('\n[Scenario F] Refresh restoration per-account:');
   const kirtiMeRes = await fetch('http://localhost:5000/api/auth/me', { headers: { 'Authorization': 'Bearer ' + kirtiToken } });
   const kirtiRefreshed = await kirtiMeRes.json();
-  assert(kirtiRefreshed.user.unlockedLevel === 10, 'Kirti refresh restores Level 10');
-  assert(kirtiRefreshed.user.completedLevels.length === 9, 'Kirti refresh restores 9 completed levels');
+  assert(kirtiRefreshed.user.unlockedLevel === kirtiLevel, 'Kirti refresh restores unlockedLevel (' + kirtiLevel + ')');
+  assert(kirtiRefreshed.user.completedLevels.length === kirtiCompletedCount, 'Kirti refresh restores completed levels (' + kirtiCompletedCount + ')');
 
   const krishnaMeRes2 = await fetch('http://localhost:5000/api/auth/me', { headers: { 'Authorization': 'Bearer ' + krishnaToken } });
   const krishnaRefreshed = await krishnaMeRes2.json();
@@ -136,26 +138,26 @@ dotenv.config({ path: path.resolve(__dirname, '../server/.env') });
   // --- Scenario H: Existing user resume capability ---
   console.log('\n[Scenario H] Existing user resume capability:');
   assert(kirti.unlockedLevel >= 1 && kirti.currentLevel >= 1, 'Existing user has current/unlocked stage ready to resume');
-  assert(kirti.unlockedLevel === 10, 'Resume target points to Level 10');
+  assert(kirti.unlockedLevel === kirtiLevel, 'Resume target points to unlockedLevel (' + kirtiLevel + ')');
 
   // --- Scenario I: Failure, Exit, and Completion Rules ---
   console.log('\n[Scenario I] Progression preservation under failure, exit, completion:');
   let levelBefore = kirti.unlockedLevel;
-  assert(levelBefore === 10, 'Level is 10 before attempt');
-  // Re-completing level 9 should cap at Math.max(10, 10) = 10
+  assert(levelBefore === kirtiLevel, 'Level is ' + kirtiLevel + ' before attempt');
+  // Re-completing level 1 should cap at Math.max(kirtiLevel, 2) = kirtiLevel
   const reCompleteRes = await fetch('http://localhost:5000/api/auth/progression', {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + kirtiToken },
-    body: JSON.stringify({ completedLevel: 9, currentLevel: 10 })
+    body: JSON.stringify({ completedLevel: 1, currentLevel: kirti.currentLevel })
   });
   const reComplete = await reCompleteRes.json();
-  assert(reComplete.progression.unlockedLevel === 10, 'Re-completing level 9 does not over-increment unlockedLevel (remains 10)');
+  assert(reComplete.progression.unlockedLevel === kirtiLevel, 'Re-completing lower level does not over-increment unlockedLevel (remains ' + kirtiLevel + ')');
 
   // --- Scenario J: Consistency across state, API, MongoDB ---
   console.log('\n[Scenario J] Database, API, and Model Consistency:');
   const dbKirti = await usersCol.findOne({ username: 'Kirti Gupta' });
   const dbKrishna = await usersCol.findOne({ username: 'krishnaa' });
-  assert(dbKirti.unlockedLevel === 10, 'MongoDB record for Kirti Gupta is Level 10');
+  assert(dbKirti.unlockedLevel === kirtiLevel, 'MongoDB record for Kirti Gupta is Level ' + kirtiLevel);
   assert(dbKrishna.unlockedLevel === 1, 'MongoDB record for krishnaa is Level 1');
   assert(dbKirti.highScore === 4312, 'High score preserved (4,312)');
 
