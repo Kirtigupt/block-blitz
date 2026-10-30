@@ -2863,106 +2863,609 @@ body {
 }
 
 /* ==========================================================================
-   Level Intro Modal
+   Level Intro Modal (Arcade Mission Briefing Screen)
    ========================================================================== */
 
-.level-intro-card {
-  max-width: 420px;
-  width: 100%;
-  background: var(--bg-surface);
-  border: 1.5px solid var(--border-accent);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
-  padding: 24px 20px;
-  text-align: center;
+.level-intro-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  animation: modal-pop-in 0.22s ease-out;
-}
-
-.intro-badge-pill {
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 1.2px;
-  color: var(--accent-cyan-light);
-  background: var(--accent-cyan-tint);
-  border: 1px solid var(--border-accent);
-  padding: 2px 9px;
-  border-radius: var(--radius-full);
-}
-
-.intro-main-title {
-  font-size: 1.6rem;
-  font-weight: 900;
-  color: #fff;
-  letter-spacing: -0.5px;
-}
-
-.intro-subtitle-chapter {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.intro-mission-box {
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 12px 14px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  text-align: center;
-}
-
-.intro-mission-label {
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-}
-
-.intro-mission-task {
-  font-size: 0.92rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.intro-meta-strip {
-  display: flex;
   justify-content: center;
+  padding: 16px;
+  background: radial-gradient(circle at 50% 35%, rgba(6, 182, 212, 0.16) 0%, rgba(8, 15, 30, 0.90) 55%, rgba(4, 8, 18, 0.97) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  user-select: none;
+}
+
+.level-intro-card {
+  position: relative;
+  max-width: 440px;
+  width: min(94vw, 440px);
+  background: linear-gradient(180deg, #0e172e 0%, #090e1d 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.4);
+  border-radius: 20px;
+  box-shadow:
+    0 25px 60px -10px rgba(0, 0, 0, 0.9),
+    0 0 35px rgba(6, 182, 212, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  padding: 24px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  overflow: hidden;
+  animation: intro-card-appear 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Subtle Sci-Fi HUD Corner Brackets */
+.intro-corner {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: rgba(56, 189, 248, 0.7);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.intro-corner-tl {
+  top: 9px;
+  left: 9px;
+  border-top: 2px solid;
+  border-left: 2px solid;
+  border-top-left-radius: 4px;
+}
+
+.intro-corner-tr {
+  top: 9px;
+  right: 9px;
+  border-top: 2px solid;
+  border-right: 2px solid;
+  border-top-right-radius: 4px;
+}
+
+.intro-corner-bl {
+  bottom: 9px;
+  left: 9px;
+  border-bottom: 2px solid;
+  border-left: 2px solid;
+  border-bottom-left-radius: 4px;
+}
+
+.intro-corner-br {
+  bottom: 9px;
+  right: 9px;
+  border-bottom: 2px solid;
+  border-right: 2px solid;
+  border-bottom-right-radius: 4px;
+}
+
+/* Ambient Top Glow Halo */
+.intro-glow-aura {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  height: 140px;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(35px);
+  opacity: 0.55;
+  animation: intro-halo-pulse 4s ease-in-out infinite;
+  z-index: 1;
+}
+
+/* Top Laser Accent Strip */
+.intro-accent-laser {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 3;
+}
+
+/* 1. Top Badges: Chapter Badge & Level Number */
+.intro-header-badges {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+.intro-chapter-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #e2e8f0;
+  max-width: calc(100% - 95px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.intro-chapter-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.intro-chapter-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.intro-stage-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.intro-stage-prefix {
+  color: rgba(226, 232, 240, 0.75);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.intro-stage-num {
+  color: #38bdf8;
+  font-size: 0.82rem;
+}
+
+.intro-stage-boss {
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.7) !important;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.35);
+}
+
+.intro-boss-crown {
+  color: #fbbf24;
+}
+
+/* 2. Main Title Section */
+.intro-title-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.intro-title-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: rgba(148, 163, 184, 0.9);
+  text-transform: uppercase;
+}
+
+.intro-eyebrow-line {
+  width: 22px;
+  height: 1.5px;
+  border-radius: 1px;
+}
+
+.intro-title-text {
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0;
+  text-shadow:
+    0 0 24px rgba(56, 189, 248, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.intro-hazard-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  color: #fbbf24;
+  margin-top: 2px;
+}
+
+.intro-hazard-icon {
+  color: #f59e0b;
+}
+
+.intro-hazard-label {
+  color: rgba(251, 191, 36, 0.8);
+  font-size: 0.62rem;
+}
+
+.intro-hazard-name {
+  color: #ffffff;
+}
+
+/* 3. Highlighted Mission Objective Panel */
+.intro-objective-panel {
+  width: 100%;
+  border-radius: 14px;
+  padding: 13px 15px;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.09) 0%, rgba(30, 58, 138, 0.16) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  display: flex;
+  flex-direction: column;
   gap: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.intro-obj-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   width: 100%;
 }
 
-.intro-meta-item {
+.intro-obj-tag {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 0.75rem;
+  gap: 9px;
+}
+
+.intro-obj-icon-halo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid;
+  flex-shrink: 0;
+}
+
+.intro-obj-title-col {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.intro-obj-kicker {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: rgba(148, 163, 184, 0.85);
+  text-transform: uppercase;
+}
+
+.intro-obj-type-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.intro-target-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid;
+  flex-shrink: 0;
+}
+
+.intro-target-label {
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: rgba(148, 163, 184, 0.8);
+  text-transform: uppercase;
+}
+
+.intro-target-val {
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 0.04em;
+}
+
+.intro-obj-body {
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  background: rgba(8, 14, 28, 0.7);
+  border-left: 3px solid var(--accent-cyan);
+  border-radius: 0 8px 8px 0;
+}
+
+.intro-obj-description {
+  font-size: 0.95rem;
   font-weight: 700;
-  color: var(--text-secondary);
+  color: #f8fafc;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* 4. Premium Golden Reward Badge */
+.intro-reward-badge {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.16) 0%, rgba(180, 83, 9, 0.1) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  box-shadow:
+    0 4px 16px rgba(245, 158, 11, 0.14),
+    inset 0 1px 0 rgba(254, 240, 138, 0.25);
+  position: relative;
+  overflow: hidden;
+  z-index: 2;
+  animation: intro-reward-shimmer 3s ease-in-out infinite;
+}
+
+.intro-reward-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.intro-reward-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(245, 158, 11, 0.22);
+  border: 1px solid rgba(251, 191, 36, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fbbf24;
+  flex-shrink: 0;
+}
+
+.intro-gold-award {
+  color: #fbbf24;
+}
+
+.intro-reward-text-col {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.intro-reward-kicker {
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: #fde047;
+  text-transform: uppercase;
+}
+
+.intro-reward-sub {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: rgba(253, 224, 71, 0.85);
+}
+
+.intro-reward-right {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  color: #facc15;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.intro-reward-plus {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #fde047;
+}
+
+.intro-reward-amount {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  text-shadow: 0 0 14px rgba(250, 204, 21, 0.55);
+}
+
+.intro-reward-unit {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #fde047;
+  margin-left: 2px;
+}
+
+/* 5. Start Level Button & CTA Section */
+.intro-cta-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  z-index: 2;
 }
 
 .intro-start-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 10px;
   width: 100%;
-  height: 44px;
-  font-size: 0.9rem;
-  font-weight: 800;
-  border-radius: var(--radius-md);
-  color: #fff;
-  background: linear-gradient(135deg, var(--accent-cyan-hover), var(--accent-cyan));
-  border: none;
-  box-shadow: var(--shadow-primary);
+  height: 50px;
+  font-size: 0.98rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    0 8px 24px -4px rgba(6, 182, 212, 0.5),
+    0 0 16px rgba(37, 99, 235, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.intro-start-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 30px -4px rgba(6, 182, 212, 0.65),
+    0 0 22px rgba(37, 99, 235, 0.5);
+  filter: brightness(1.08);
+}
+
+.intro-start-btn:active {
+  transform: translateY(1px);
+  filter: brightness(0.96);
+}
+
+.intro-btn-label {
+  display: inline-block;
+}
+
+.intro-btn-icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.intro-desktop-hint {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: rgba(148, 163, 184, 0.75);
+  margin: 0;
+}
+
+.intro-desktop-hint strong {
+  color: #e2e8f0;
+  font-weight: 800;
+}
+
+/* Animations */
+@keyframes intro-card-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes intro-reward-shimmer {
+  0%, 100% {
+    border-color: rgba(251, 191, 36, 0.45);
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.14);
+  }
+  50% {
+    border-color: rgba(251, 191, 36, 0.75);
+    box-shadow: 0 4px 22px rgba(245, 158, 11, 0.32);
+  }
+}
+
+@keyframes intro-halo-pulse {
+  0%, 100% {
+    opacity: 0.45;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateX(-50%) scale(1.08);
+  }
+}
+
+/* Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  .level-intro-card,
+  .intro-reward-badge,
+  .intro-glow-aura,
+  .intro-start-btn {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 480px) {
+  .level-intro-card {
+    padding: 20px 16px;
+    gap: 12px;
+    border-radius: 18px;
+  }
+  .intro-title-text {
+    font-size: 1.55rem;
+  }
+  .intro-start-btn {
+    height: 48px;
+    font-size: 0.94rem;
+  }
+  .intro-desktop-hint {
+    display: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .level-intro-card {
+    padding: 16px 12px;
+    gap: 10px;
+    border-radius: 16px;
+  }
+  .intro-chapter-text {
+    font-size: 0.65rem;
+  }
+  .intro-title-text {
+    font-size: 1.35rem;
+  }
+  .intro-obj-description {
+    font-size: 0.86rem;
+  }
+  .intro-reward-badge {
+    padding: 8px 10px;
+  }
+  .intro-reward-amount {
+    font-size: 1.05rem;
+  }
+  .intro-start-btn {
+    height: 46px;
+    font-size: 0.9rem;
+  }
 }
 
 /* ==========================================================================
