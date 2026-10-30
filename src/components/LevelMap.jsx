@@ -34,13 +34,11 @@ export const LevelMap = ({
   // Selected level for the launch dock
   const defaultSelected = Math.max(1, Math.min(currentLevel, unlockedLevel));
   const [selectedLevelNum, setSelectedLevelNum] = useState(defaultSelected);
-  const [prevProps, setPrevProps] = useState({ currentLevel, unlockedLevel });
 
-  // Sync selected level if external currentLevel or unlockedLevel changes during render
-  if (prevProps.currentLevel !== currentLevel || prevProps.unlockedLevel !== unlockedLevel) {
-    setPrevProps({ currentLevel, unlockedLevel });
-    setSelectedLevelNum(defaultSelected);
-  }
+  // Sync selected level when external currentLevel or unlockedLevel changes
+  useEffect(() => {
+    setSelectedLevelNum(Math.max(1, Math.min(currentLevel, unlockedLevel)));
+  }, [currentLevel, unlockedLevel]);
 
   // Chapter filter: 0 = All Stages, 1..10 = specific chapter
   const [activeChapterFilter, setActiveChapterFilter] = useState(0);

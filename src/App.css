@@ -59,27 +59,6 @@
   --shadow-primary: 0 6px 20px rgba(14, 165, 233, 0.35);
 }
 
-@media (max-width: 600px) {
-  :root {
-    --cell-size: 42px;
-    --grid-gap: 4px;
-  }
-}
-
-@media (max-width: 420px) {
-  :root {
-    --cell-size: 38px;
-    --grid-gap: 3px;
-  }
-}
-
-@media (max-width: 360px) {
-  :root {
-    --cell-size: 34px;
-    --grid-gap: 3px;
-  }
-}
-
 /* Height-aware responsive rules for short displays (<= 850px height) */
 @media (max-height: 850px) {
   :root {
@@ -102,17 +81,32 @@
   }
 }
 
-@media (max-height: 700px) and (max-width: 450px) {
-  :root {
-    --cell-size: min(34px, 4.6vh);
-    --grid-gap: 3px;
-  }
-}
-
 @media (max-height: 640px) {
   :root {
     --cell-size: min(30px, 4.3vh);
     --grid-gap: 2px;
+  }
+}
+
+/* Width-aware responsive rules ensuring board fits mobile viewports */
+@media (max-width: 600px) {
+  :root {
+    --cell-size: min(42px, 5.4vh);
+    --grid-gap: 4px;
+  }
+}
+
+@media (max-width: 420px) {
+  :root {
+    --cell-size: min(38px, 4.8vh);
+    --grid-gap: 3px;
+  }
+}
+
+@media (max-width: 360px) {
+  :root {
+    --cell-size: min(33px, 4.4vh);
+    --grid-gap: 3px;
   }
 }
 
@@ -4670,54 +4664,100 @@ body {
     gap: 8px;
   }
 
+  /* Two Compact Rows on Mobile */
   .header-top {
     display: flex;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 4px;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 6px;
     width: 100%;
   }
 
+  /* Row 1: Brand Group (Logo on left, Level badge on right) */
   .header-brand-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
     order: 1;
-    gap: 5px;
   }
 
   .logo-badge {
-    font-size: 1.05rem;
+    font-size: 1.1rem;
+    gap: 3px;
+    flex-shrink: 0;
   }
 
   .level-badge-pill {
-    min-height: 38px;
-    padding: 0 9px;
+    min-height: 34px;
+    height: 34px;
+    padding: 0 10px;
     font-size: 0.74rem;
+    flex-shrink: 0;
+  }
+
+  /* Row 2: Header Actions (Account on left, Tools on right) */
+  .header-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 6px;
+    order: 2;
   }
 
   .header-group-account {
-    order: 2;
+    display: flex;
+    align-items: center;
     gap: 4px;
+    flex-shrink: 0;
   }
 
   .user-pill-btn {
-    max-width: 84px;
-    height: 38px;
+    max-width: 110px;
+    height: 35px;
+    min-height: 35px;
     padding: 0 8px;
     font-size: 0.74rem;
+    gap: 5px;
+    border-radius: var(--radius-sm);
+  }
+
+  .user-pill-name {
+    max-width: 75px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .auth-cta-btn {
-    height: 38px;
-    padding: 0 10px;
+    height: 35px;
+    min-height: 35px;
+    padding: 0 9px;
     font-size: 0.74rem;
+    gap: 5px;
+    border-radius: var(--radius-sm);
   }
 
   .header-tools-cluster {
-    order: 3;
-    width: auto;
+    display: flex;
+    align-items: center;
     justify-content: flex-end;
+    gap: 4px;
+    width: auto;
     padding-top: 0;
     border-top: none;
+    flex-shrink: 0;
+  }
+
+  .header-group-settings,
+  .header-group-stage {
+    display: flex;
+    align-items: center;
     gap: 4px;
   }
 
@@ -4730,14 +4770,15 @@ body {
   }
 
   .header-control-divider {
-    display: none;
+    display: none !important;
   }
 
   .action-btn {
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    min-height: 38px;
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    min-height: 35px;
+    border-radius: var(--radius-sm);
   }
 
   .score-board {
@@ -4776,9 +4817,55 @@ body {
   }
 }
 
-@media (max-width: 420px) {
-  .mobile-compact-tool {
-    display: none !important;
+@media (max-width: 360px) {
+  .logo-badge {
+    font-size: 1.0rem;
+  }
+
+  .level-badge-pill {
+    padding: 0 8px;
+    font-size: 0.70rem;
+    min-height: 32px;
+    height: 32px;
+  }
+
+  .header-actions {
+    gap: 4px;
+  }
+
+  .user-pill-btn {
+    max-width: 82px;
+    padding: 0 6px;
+    font-size: 0.70rem;
+    height: 32px;
+    min-height: 32px;
+  }
+
+  .user-pill-name {
+    max-width: 52px;
+  }
+
+  .auth-cta-btn {
+    padding: 0 7px;
+    font-size: 0.70rem;
+    height: 32px;
+    min-height: 32px;
+  }
+
+  .action-btn {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .header-tools-cluster {
+    gap: 3px;
+  }
+
+  .header-group-settings,
+  .header-group-stage {
+    gap: 3px;
   }
 }
 

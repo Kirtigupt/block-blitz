@@ -134,11 +134,18 @@ export const Header = ({
 
   return (
     <header className="game-header">
-      {/* 1. Header Navigation & Tools Bar */}
+      {/* 1. Header Navigation & Tools Bar (On mobile: 2 compact rows; On desktop: 1 streamlined row) */}
       <div className="header-top">
-        {/* Left: Brand Identity & Stage Map */}
+        {/* Row 1 on mobile / Left group on desktop: Brand Identity & Stage Map */}
         <div className="header-brand-group">
-          <div className="logo-badge" onClick={onOpenLevelMap} role="button" tabIndex={0} title="Open Level Map">
+          <div
+            className="logo-badge"
+            onClick={onOpenLevelMap}
+            role="button"
+            tabIndex={0}
+            title="Open Level Map"
+            aria-label="BLOCK BLITZ Logo - Open Level Map"
+          >
             <span className="logo-text-block">BLOCK</span>
             <span className="logo-text-blitz">BLITZ</span>
           </div>
@@ -155,109 +162,115 @@ export const Header = ({
           </button>
         </div>
 
-        {/* Right: Account & Community */}
-        <div className="header-group-account">
-          {user ? (
-            <button
-              type="button"
-              className="user-pill-btn"
-              onClick={onOpenProfile}
-              title={`Logged in as ${user.username} (Stats & History)`}
-            >
-              <User size={13} className="user-icon" />
-              <span className="user-pill-name">{user.username}</span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="auth-cta-btn"
-              onClick={onOpenAuth}
-              title="Sign in to save scores & compete"
-            >
-              <LogIn size={13} />
-              <span>Sign In</span>
-            </button>
-          )}
-
-          <button
-            type="button"
-            className="action-btn leaderboard-btn mobile-compact-tool"
-            onClick={onOpenLeaderboard}
-            title="Global Leaderboard"
-            aria-label="Global Leaderboard"
-          >
-            <Crown size={15} />
-          </button>
-        </div>
-
-        {/* Tools & Gameplay Controls Cluster */}
-        <div className="header-tools-cluster">
-          <div className="header-group-settings">
-            <button
-              type="button"
-              className={`action-btn sound-btn desktop-audio-toggle ${isMuted ? 'btn-muted' : ''}`}
-              onClick={onToggleMute}
-              title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
-              aria-label="Toggle Sound"
-            >
-              {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-            </button>
-
-            <button
-              type="button"
-              className={`action-btn voice-btn desktop-audio-toggle ${!isVoiceEnabled ? 'btn-muted' : ''}`}
-              onClick={onToggleVoice}
-              title={isVoiceEnabled ? 'Mute Voice Announcements' : 'Enable Voice Announcements'}
-              aria-label="Toggle Voice"
-            >
-              {isVoiceEnabled ? <Mic size={16} /> : <MicOff size={16} />}
-            </button>
-
-            <button
-              type="button"
-              className="action-btn settings-btn"
-              onClick={onOpenSettings}
-              title="Game Settings"
-              aria-label="Game Settings"
-            >
-              <Settings size={15} />
-            </button>
-
-            <button
-              type="button"
-              className="action-btn help-btn desktop-only-tool"
-              onClick={onOpenHelp}
-              title="How to Play"
-              aria-label="Help"
-            >
-              <HelpCircle size={15} />
-            </button>
-          </div>
-
-          <div className="header-control-divider" />
-
-          <div className="header-group-stage">
-            <button
-              type="button"
-              className="action-btn restart-btn"
-              onClick={onRestart}
-              title="Restart Level"
-              aria-label="Restart Level"
-            >
-              <RotateCcw size={15} />
-            </button>
-
-            {onOpenExitModal && (
+        {/* Row 2 on mobile / Right group on desktop: Account & Controls */}
+        <div className="header-actions">
+          {/* Account & Profile Control */}
+          <div className="header-group-account">
+            {user ? (
               <button
                 type="button"
-                className="action-btn exit-btn"
-                onClick={onOpenExitModal}
-                title="Exit to Level Map (Esc)"
-                aria-label="Exit Level"
+                className="user-pill-btn"
+                onClick={onOpenProfile}
+                title={`Logged in as ${user.username} (Stats & History)`}
+                aria-label={`User profile: ${user.username}`}
               >
-                <LogOut size={15} />
+                <User size={13} className="user-icon" />
+                <span className="user-pill-name">{user.username}</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="auth-cta-btn"
+                onClick={onOpenAuth}
+                title="Sign in to save scores & compete"
+                aria-label="Sign in to save scores & compete"
+              >
+                <LogIn size={13} />
+                <span>Sign In</span>
               </button>
             )}
+          </div>
+
+          {/* Tools & Gameplay Controls Cluster */}
+          <div className="header-tools-cluster">
+            {/* Global Leaderboard Button */}
+            <button
+              type="button"
+              className="action-btn leaderboard-btn"
+              onClick={onOpenLeaderboard}
+              title="Global Leaderboard"
+              aria-label="Global Leaderboard"
+            >
+              <Crown size={15} />
+            </button>
+
+            <div className="header-group-settings">
+              <button
+                type="button"
+                className={`action-btn sound-btn desktop-audio-toggle ${isMuted ? 'btn-muted' : ''}`}
+                onClick={onToggleMute}
+                title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
+                aria-label="Toggle Sound Effects"
+              >
+                {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+              </button>
+
+              <button
+                type="button"
+                className={`action-btn voice-btn desktop-audio-toggle ${!isVoiceEnabled ? 'btn-muted' : ''}`}
+                onClick={onToggleVoice}
+                title={isVoiceEnabled ? 'Mute Voice Announcements' : 'Enable Voice Announcements'}
+                aria-label="Toggle Voice Announcements"
+              >
+                {isVoiceEnabled ? <Mic size={16} /> : <MicOff size={16} />}
+              </button>
+
+              <button
+                type="button"
+                className="action-btn settings-btn"
+                onClick={onOpenSettings}
+                title="Game Settings"
+                aria-label="Game Settings"
+              >
+                <Settings size={15} />
+              </button>
+
+              <button
+                type="button"
+                className="action-btn help-btn desktop-only-tool"
+                onClick={onOpenHelp}
+                title="How to Play"
+                aria-label="How to Play"
+              >
+                <HelpCircle size={15} />
+              </button>
+            </div>
+
+            <div className="header-control-divider" />
+
+            <div className="header-group-stage">
+              <button
+                type="button"
+                className="action-btn restart-btn"
+                onClick={onRestart}
+                title="Restart Level"
+                aria-label="Restart Level"
+              >
+                <RotateCcw size={15} />
+              </button>
+
+              {onOpenExitModal && (
+                <button
+                  type="button"
+                  className="action-btn exit-btn"
+                  onClick={onOpenExitModal}
+                  title="Exit to Level Map (Esc)"
+                  aria-label="Exit to Level Map"
+                >
+                  <LogOut size={15} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -248,7 +248,8 @@ async function run() {
       check(gameMetrics.gridVisible, `${vp.name}: 8x8 Grid container renders properly`);
       check(gameMetrics.trayVisible, `${vp.name}: Block tray renders properly`);
       check(gameMetrics.scoreBoardVisible && gameMetrics.objectivePanelVisible, `${vp.name}: Scoreboard and Objective panel render properly`);
-      check(gameMetrics.headerTopHeight <= 48, `${vp.name}: Header controls stay sleek on a single row (<= 48px)`);
+      const maxHeaderHeight = vp.width <= 600 ? 80 : 48;
+      check(gameMetrics.headerTopHeight <= maxHeaderHeight, `${vp.name}: Header height within bounds (${gameMetrics.headerTopHeight}px <= ${maxHeaderHeight}px)`);
       check(gameMetrics.trayBottom <= gameMetrics.viewportHeight + 2, `${vp.name}: Board & Tray fit within viewport height without clipping`);
 
       // 4. Test Gameplay Mechanics on first viewport
