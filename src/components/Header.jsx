@@ -133,74 +133,84 @@ export const Header = ({
   };
 
   return (
-    <header className="game-header">
-      {/* 1. Header Navigation & Tools Bar (On mobile: 2 compact rows; On desktop: 1 streamlined row) */}
-      <div className="header-top">
-        {/* Row 1 on mobile / Left group on desktop: Brand Identity & Stage Map */}
-        <div className="header-brand-group">
+    <header className="game-header hud-gameplay-header">
+      {/* 1. Header Navigation & Tactical Command Bar */}
+      <div className="header-top hud-command-bar">
+        {/* Brand Plaque & Stage Crest (Left on Desktop, Row 1 on Mobile) */}
+        <div className="header-brand-group hud-brand-deck">
           <div
-            className="logo-badge"
+            className="logo-badge hud-brand-plaque"
             onClick={onOpenLevelMap}
             role="button"
             tabIndex={0}
             title="Open Level Map"
             aria-label="BLOCK BLITZ Logo - Open Level Map"
           >
-            <span className="logo-icon-wrap">
+            <div className="hud-logo-gem" aria-hidden="true">
               <Zap size={14} className="logo-spark-icon" fill="currentColor" />
-            </span>
-            <span className="logo-text-block">BLOCK</span>
-            <span className="logo-text-blitz">BLITZ</span>
+            </div>
+            <div className="hud-brand-titles">
+              <div className="hud-brand-logotype">
+                <span className="logo-text-block">BLOCK</span>
+                <span className="logo-text-blitz">BLITZ</span>
+              </div>
+              <span className="hud-brand-subtag">ARCADE</span>
+            </div>
           </div>
 
           <button
             type="button"
-            className="level-badge-pill"
+            className="level-badge-pill hud-stage-crest"
             onClick={onOpenLevelMap}
-            title={`Level ${currentLevel} • Open Level Map`}
+            title={`Stage ${currentLevel} • Open Level Map`}
             aria-label={`Current Level: ${currentLevel}. Open Level Map`}
           >
             <span className="lvl-beacon-dot" />
             <Map size={13} className="lvl-map-icon" />
-            <span className="lvl-num-text">LVL {currentLevel}</span>
+            <div className="hud-stage-text-wrap">
+              <span className="hud-stage-tiny-lbl">STAGE</span>
+              <span className="lvl-num-text">{currentLevel}</span>
+            </div>
           </button>
         </div>
 
-        {/* Row 2 on mobile / Right group on desktop: Account & Controls */}
-        <div className="header-actions">
-          {/* Account & Profile Control */}
-          <div className="header-group-account">
+        {/* Action Controls & Identity Hub (Right on Desktop, Row 2 on Mobile) */}
+        <div className="header-actions hud-actions-deck">
+          {/* Player Identity Capsule */}
+          <div className="header-group-account hud-account-slot">
             {user ? (
               <button
                 type="button"
-                className="user-pill-btn"
+                className="user-pill-btn hud-identity-pill user-active"
                 onClick={onOpenProfile}
                 title={`Logged in as ${user.username} (Stats & History)`}
                 aria-label={`User profile: ${user.username}`}
               >
-                <User size={13} className="user-icon" />
+                <div className="hud-avatar-dot">
+                  <User size={12} className="user-icon" />
+                </div>
                 <span className="user-pill-name">{user.username}</span>
               </button>
             ) : (
               <button
                 type="button"
-                className="auth-cta-btn"
+                className="auth-cta-btn hud-identity-pill auth-guest"
                 onClick={onOpenAuth}
                 title="Sign in to save scores & compete"
                 aria-label="Sign in to save scores & compete"
               >
-                <LogIn size={13} />
+                <LogIn size={12} className="hud-login-icon" />
                 <span>Sign In</span>
               </button>
             )}
           </div>
 
-          {/* Tools & Gameplay Controls Cluster */}
-          <div className="header-tools-cluster">
+          {/* Tactical Utility Hub */}
+          <div className="header-tools-cluster hud-tools-cluster">
             {/* Global Leaderboard Button */}
             <button
               type="button"
-              className="action-btn leaderboard-btn"
+              className="action-btn leaderboard-btn hud-icon-btn crown-glow"
               onClick={onOpenLeaderboard}
               title="Global Leaderboard"
               aria-label="Global Leaderboard"
@@ -208,30 +218,30 @@ export const Header = ({
               <Crown size={15} />
             </button>
 
-            <div className="header-group-settings">
+            <div className="header-group-settings hud-settings-group">
               <button
                 type="button"
-                className={`action-btn sound-btn desktop-audio-toggle ${isMuted ? 'btn-muted' : ''}`}
+                className={`action-btn sound-btn desktop-audio-toggle hud-icon-btn ${isMuted ? 'btn-muted' : ''}`}
                 onClick={onToggleMute}
                 title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
                 aria-label="Toggle Sound Effects"
               >
-                {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
               </button>
 
               <button
                 type="button"
-                className={`action-btn voice-btn desktop-audio-toggle ${!isVoiceEnabled ? 'btn-muted' : ''}`}
+                className={`action-btn voice-btn desktop-audio-toggle hud-icon-btn ${!isVoiceEnabled ? 'btn-muted' : ''}`}
                 onClick={onToggleVoice}
                 title={isVoiceEnabled ? 'Mute Voice Announcements' : 'Enable Voice Announcements'}
                 aria-label="Toggle Voice Announcements"
               >
-                {isVoiceEnabled ? <Mic size={16} /> : <MicOff size={16} />}
+                {isVoiceEnabled ? <Mic size={15} /> : <MicOff size={15} />}
               </button>
 
               <button
                 type="button"
-                className="action-btn settings-btn"
+                className="action-btn settings-btn hud-icon-btn"
                 onClick={onOpenSettings}
                 title="Game Settings"
                 aria-label="Game Settings"
@@ -241,7 +251,7 @@ export const Header = ({
 
               <button
                 type="button"
-                className="action-btn help-btn desktop-only-tool"
+                className="action-btn help-btn desktop-only-tool hud-icon-btn"
                 onClick={onOpenHelp}
                 title="How to Play"
                 aria-label="How to Play"
@@ -250,12 +260,12 @@ export const Header = ({
               </button>
             </div>
 
-            <div className="header-control-divider" />
+            <div className="header-control-divider hud-control-divider" />
 
-            <div className="header-group-stage">
+            <div className="header-group-stage hud-stage-group">
               <button
                 type="button"
-                className="action-btn restart-btn"
+                className="action-btn restart-btn hud-icon-btn restart-glow"
                 onClick={onRestart}
                 title="Restart Level"
                 aria-label="Restart Level"
@@ -266,7 +276,7 @@ export const Header = ({
               {onOpenExitModal && (
                 <button
                   type="button"
-                  className="action-btn exit-btn"
+                  className="action-btn exit-btn hud-icon-btn exit-glow"
                   onClick={onOpenExitModal}
                   title="Exit to Level Map (Esc)"
                   aria-label="Exit to Level Map"
@@ -279,79 +289,88 @@ export const Header = ({
         </div>
       </div>
 
-      {/* 2. Unified Cohesive Score Dashboard */}
-      <div className="score-board">
-        <div className="score-primary-section">
-          <span className="score-label">SCORE</span>
-          <span className={`score-value ${isScoreBumping ? 'score-bump' : ''}`}>
+      {/* 2. Cockpit Statistics Dashboard (3-Pod Integrated HUD) */}
+      <div className="score-board hud-stats-chassis">
+        {/* Bay 1: Primary Current Score Hero */}
+        <div className="score-primary-section hud-stat-bay bay-score">
+          <div className="hud-bay-label-wrap">
+            <span className="score-label hud-bay-label">SCORE</span>
+            <span className="hud-live-tag">LIVE</span>
+          </div>
+          <span className={`score-value hud-score-digits ${isScoreBumping ? 'score-bump' : ''}`}>
             {score.toLocaleString()}
           </span>
         </div>
 
-        <div className="score-deck-divider" />
+        <div className="score-deck-divider hud-deck-divider" />
 
-        <div className="score-secondary-section">
-          <div className="score-secondary-item best-score-box">
-            <div className="score-secondary-header">
-              <Trophy size={11} className="trophy-gold" />
-              <span className="secondary-label">BEST</span>
-            </div>
-            <span className="secondary-value best-val">{highScore.toLocaleString()}</span>
+        {/* Bay 2: Personal Best Record */}
+        <div className="score-secondary-item best-score-box hud-stat-bay bay-best">
+          <div className="score-secondary-header hud-bay-label-wrap">
+            <Trophy size={11} className="trophy-gold" />
+            <span className="secondary-label hud-bay-label">BEST</span>
           </div>
+          <span className="secondary-value best-val hud-best-digits">{highScore.toLocaleString()}</span>
+        </div>
 
-          <div className={`score-secondary-item streak-indicator ${streak > 1 ? (streak >= 4 ? 'streak-fire' : 'streak-active') : 'streak-idle'}`}>
-            <div className="score-secondary-header">
-              <Flame size={11} className={streak > 1 ? (streak >= 4 ? 'flame-fire' : 'flame-gold') : 'flame-idle'} />
-              <span className="secondary-label">STREAK</span>
-            </div>
-            <span className="secondary-value streak-val">
-              {streak > 1 ? `x${streak}` : '—'}
-            </span>
+        <div className="score-deck-divider hud-deck-divider" />
+
+        {/* Bay 3: Active Combo & Streak Engine */}
+        <div className={`score-secondary-item streak-indicator hud-stat-bay bay-streak ${streak > 1 ? (streak >= 4 ? 'streak-fire' : 'streak-active') : 'streak-idle'}`}>
+          <div className="score-secondary-header hud-bay-label-wrap">
+            <Flame size={11} className={streak > 1 ? (streak >= 4 ? 'flame-fire' : 'flame-gold') : 'flame-idle'} />
+            <span className="secondary-label hud-bay-label">STREAK</span>
           </div>
+          <span className="secondary-value streak-val hud-streak-digits">
+            {streak > 1 ? `x${streak}` : '—'}
+          </span>
         </div>
       </div>
 
-      {/* 3. Structured Progressive Level Objective Panel */}
+      {/* 3. Active Mission Tracker Bar (Level Objectives HUD) */}
       {levelConfig && (
-        <div className="level-objective-panel" title={levelConfig.description}>
-          {/* Identity & Pattern Row */}
-          <div className="objective-meta-row">
-            <div className="objective-title-group">
-              <span className="objective-level-name">LVL {currentLevel}: {levelConfig.title}</span>
+        <div className="level-objective-panel hud-mission-chassis" title={levelConfig.description}>
+          {/* Identity & Chapter Strip */}
+          <div className="objective-meta-row hud-mission-meta">
+            <div className="objective-title-group hud-mission-title-group">
+              <span className="hud-mission-badge">STAGE {currentLevel}</span>
+              <span className="objective-level-name hud-mission-name">{levelConfig.title}</span>
               {chapterName && (
-                <span className="objective-chapter-badge">CH {levelConfig.chapter}: {chapterName}</span>
+                <span className="objective-chapter-badge hud-chapter-badge">CH.{levelConfig.chapter}: {chapterName}</span>
               )}
             </div>
 
             {levelConfig.pattern && levelConfig.pattern !== 'clean' && (
-              <span className="objective-pattern-tag" title={`Board Pattern: ${levelConfig.pattern}`}>
-                ◈ {levelConfig.pattern.replace('_', ' ')}
+              <span className="objective-pattern-tag hud-pattern-badge" title={`Board Pattern: ${levelConfig.pattern}`}>
+                <span className="hud-pattern-gem">◈</span> {levelConfig.pattern.replace('_', ' ')}
               </span>
             )}
           </div>
 
-          {/* Mission Task & Live Counter Row */}
-          <div className="objective-task-row">
-            <div className="objective-desc-wrap">
-              {renderObjectiveIcon()}
-              <span className="objective-task-desc">{levelConfig.description}</span>
+          {/* Mission Directive & Target Readout */}
+          <div className="objective-task-row hud-mission-directive-row">
+            <div className="objective-desc-wrap hud-mission-instruction">
+              <div className="hud-mission-icon-socket" style={{ '--socket-accent': levelConfig.accentColor || '#38bdf8' }}>
+                {renderObjectiveIcon()}
+              </div>
+              <span className="objective-task-desc hud-instruction-text">{levelConfig.description}</span>
             </div>
 
-            <div className="objective-progress-numbers">
+            <div className="objective-progress-numbers hud-progress-digital-badge">
               {renderObjectiveCounter()}
             </div>
           </div>
 
-          {/* Precision Smooth Progress Track */}
-          <div className="objective-progress-track">
+          {/* Precision Energy Conduit (Smooth Progress Track) */}
+          <div className="objective-progress-track hud-energy-track">
             <div
-              className="objective-progress-fill"
+              className="objective-progress-fill hud-energy-fill"
               style={{
                 width: `${progressPercent}%`,
-                background: `linear-gradient(90deg, #0ea5e9, ${levelConfig.accentColor || '#38bdf8'})`
+                background: `linear-gradient(90deg, #0ea5e9, #22d3ee, ${levelConfig.accentColor || '#38bdf8'})`
               }}
             >
-              <div className="progress-fill-glow-head" />
+              <div className="progress-fill-glow-head hud-conduit-spark" />
             </div>
           </div>
         </div>
