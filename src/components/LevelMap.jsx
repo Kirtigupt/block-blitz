@@ -226,6 +226,42 @@ export const LevelMap = ({
     }
   };
 
+  // SVG Progression Journey Path coordinates (viewBox 0 0 1100 1500)
+  const { fullJourneyPathD, unlockedJourneyPathD } = useMemo(() => {
+    // Sort mosaic layout by level from 1 to 100
+    const sorted = [...ADVENTURE_MOSAIC_MAPPING].sort((a, b) => a.level - b.level);
+
+    // Convert (row, col) to SVG viewBox center coordinates
+    const points = sorted.map((entry) => ({
+      level: entry.level,
+      x: (entry.col - 0.5) * 100,
+      y: (entry.row - 0.5) * 100
+    }));
+
+    // Build smooth curved SVG path connecting each progressive stage
+    const buildPath = (pts) => {
+      if (pts.length < 2) return '';
+      let d = `M ${pts[0].x} ${pts[0].y}`;
+      for (let i = 1; i < pts.length; i++) {
+        const prev = pts[i - 1];
+        const curr = pts[i];
+        if (prev.y === curr.y) {
+          d += ` L ${curr.x} ${curr.y}`;
+        } else {
+          const midY = (prev.y + curr.y) / 2;
+          d += ` C ${prev.x} ${midY}, ${curr.x} ${midY}, ${curr.x} ${curr.y}`;
+        }
+      }
+      return d;
+    };
+
+    const fullJourneyPathD = buildPath(points);
+    const unlockedPoints = points.filter((p) => p.level <= unlockedLevel);
+    const unlockedJourneyPathD = buildPath(unlockedPoints);
+
+    return { fullJourneyPathD, unlockedJourneyPathD };
+  }, [unlockedLevel]);
+
   return (
     <div
       className="campaign-map-screen adventure-map-screen"
@@ -395,6 +431,56 @@ export const LevelMap = ({
               role="grid"
               aria-label="Adventure Trophy Stages 1 to 100"
             >
+              {/* SVG Progression Path Overlay connecting Level 1 to 100 */}
+              <svg
+                className="journey-path-svg-overlay"
+                viewBox="0 0 1100 1500"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient id="journeyGlowGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+                    <stop offset="0%" stopColor="#0ea5e9" stopOpacity="0.9" />
+                    <stop offset="45%" stopColor="#38bdf8" stopOpacity="0.95" />
+                    <stop offset="85%" stopColor="#f59e0b" stopOpacity="1" />
+                    <stop offset="100%" stopColor="#fbbf24" stopOpacity="1" />
+                  </linearGradient>
+                  <filter id="pathNeonGlow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3.5" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+
+                {/* Dormant Base Conduit Path */}
+                <path
+                  d={fullJourneyPathD}
+                  className="journey-path-dormant"
+                  stroke="rgba(56, 189, 248, 0.16)"
+                  strokeWidth="5"
+                  strokeDasharray="6 8"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+
+                {/* Active Unlocked / Conquered Journey Beam */}
+                {unlockedJourneyPathD && (
+                  <path
+                    d={unlockedJourneyPathD}
+                    className="journey-path-active"
+                    stroke="url(#journeyGlowGradient)"
+                    strokeWidth="6"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    filter="url(#pathNeonGlow)"
+                  />
+                )}
+              </svg>
+
               {mosaicTiles.map((tile) => {
                 return (
                   <div
@@ -409,7 +495,8 @@ export const LevelMap = ({
                     }`}
                     style={{
                       gridRow: tile.row,
-                      gridColumn: tile.col
+                      gridColumn: tile.col,
+                      '--node-accent': tile.config?.accentColor || '#38bdf8'
                     }}
                     onClick={() => handleTileClick(tile.level)}
                     onDoubleClick={() => handleTileDoubleClick(tile.level)}
@@ -419,6 +506,14 @@ export const LevelMap = ({
                       tile.isCompleted ? 'Completed' : tile.isLocked ? 'Locked' : 'Unlocked'
                     }`}
                   >
+                    {/* Active Level Radar Beacon Rings */}
+                    {tile.isCurrent && (
+                      <div className="adv-beacon-rings" aria-hidden="true">
+                        <span className="adv-radar-ring r1" />
+                        <span className="adv-radar-ring r2" />
+                      </div>
+                    )}
+
                     {/* Active Level Origami Pointer Marker */}
                     {tile.isCurrent && (
                       <div className="adventure-pointer-marker" aria-hidden="true">
@@ -430,25 +525,33 @@ export const LevelMap = ({
                       </div>
                     )}
 
-                    {/* Boss Stage Badge */}
+                    {/* Boss Stage Crown Badge */}
                     {tile.isBoss && (
                       <div className="adv-boss-crown-badge" title="Boss Challenge Stage">
-                        <Crown size={9} strokeWidth={2.5} />
+                        <Crown size={9} strokeWidth={2.8} />
                       </div>
                     )}
 
-                    {/* Tile Visual Presentation with Visible Numbers */}
-                    {tile.isCompleted ? (
-                      /* 3D Glossy Cyan Puzzle Block with Clearly Visible Number */
-                      <div className="adv-completed-face" title={`Level ${tile.level} Completed`}>
-                        <span className="adv-completed-number">{tile.level}</span>
+                    {/* 3D Gloss Highlight */}
+                    <div className="adv-node-gloss" />
+
+                    {/* Completed Check Badge */}
+                    {tile.isCompleted && (
+                      <div className="adv-completed-indicator" aria-hidden="true">
+                        <Check size={8} strokeWidth={3.5} />
                       </div>
-                    ) : tile.isCurrent ? (
-                      /* Bright Yellow Active Tile with Bold Number */
-                      <span className="adv-current-number">{tile.level}</span>
-                    ) : (
-                      /* Clean Dark Blue Slate Tile with Readable Number */
-                      <span className="adv-locked-number">{tile.level}</span>
+                    )}
+
+                    {/* Tile Number Display */}
+                    <span className={`adv-node-number ${tile.isCompleted ? 'completed-num' : tile.isCurrent ? 'current-num' : tile.isLocked ? 'locked-num' : 'unlocked-num'}`}>
+                      {tile.level}
+                    </span>
+
+                    {/* Micro Lock Glyph for Locked Nodes */}
+                    {tile.isLocked && (
+                      <div className="adv-node-micro-lock" aria-hidden="true">
+                        <Lock size={7} strokeWidth={2.4} />
+                      </div>
                     )}
                   </div>
                 );

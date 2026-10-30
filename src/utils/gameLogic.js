@@ -23,6 +23,97 @@ export const getShapeAnchor = (shape) => {
 };
 
 /**
+ * Accurately calculate the target board grid cell (row, col) from pointer screen coordinates.
+ * - Uses the actual board grid bounding rectangle and subpixel cell measurements.
+ * - Perfectly accounts for cell sizes, grid gaps, padding, borders, and CSS scaling.
+ * - For touch events, applies an ergonomic lift offset (calibrated to cell height) so user's finger does not obscure the target cell.
+ * - Snaps cleanly to the nearest cell across gap areas, preventing dead zones or preview flickering.
+ * - Validates boundary limits with a sensible snap threshold, returning null when dragged genuinely outside the board.
+ * 
+ * @param {number} clientX - Screen pointer X coordinate
+ * @param {number} clientY - Screen pointer Y coordinate
+ * @param {HTMLElement} gridElement - The .game-grid DOM element
+ * @param {Object} shape - Active shape being placed
+ * @param {boolean} isTouch - Whether this is a touch event requiring finger lift offset
+ * @returns {{ row: number, col: number, effectiveX: number, effectiveY: number } | null}
+ */
+export const getGridCellFromPointer = (clientX, clientY, gridElement, shape = null, isTouch = false) => {
+  if (!gridElement) return null;
+
+  const rect = gridElement.getBoundingClientRect();
+  if (!rect || rect.width === 0 || rect.height === 0) return null;
+
+  // Measure actual rendered cells if available for exact subpixel cell size and gap pitch
+  const cells = gridElement.querySelectorAll('.grid-cell');
+  let cellWidth = rect.width / GRID_SIZE;
+  let cellHeight = rect.height / GRID_SIZE;
+  let pitchX = rect.width / GRID_SIZE;
+  let pitchY = rect.height / GRID_SIZE;
+  let originX = rect.left;
+  let originY = rect.top;
+
+  if (cells && cells.length >= 9) {
+    const c0 = cells[0].getBoundingClientRect();
+    const c1 = cells[1].getBoundingClientRect();
+    const c8 = cells[8].getBoundingClientRect();
+    if (c0.width > 0 && c0.height > 0) {
+      cellWidth = c0.width;
+      cellHeight = c0.height;
+      originX = c0.left;
+      originY = c0.top;
+      pitchX = (c1.left - c0.left) || cellWidth;
+      pitchY = (c8.top - c0.top) || cellHeight;
+    }
+  }
+
+  // Ergonomic vertical lift for mobile touch drag so the thumb doesn't hide the preview
+  // Calibrated dynamically to cell height (approximately 1.15x cell height + 8px)
+  const touchLiftY = isTouch ? Math.round(cellHeight * 1.15 + 8) : 0;
+  const effectiveX = clientX;
+  const effectiveY = clientY - touchLiftY;
+
+  // Boundary check with generous snap tolerance margin (1 cell width around perimeter)
+  const snapMarginX = Math.max(cellWidth * 0.9, 36);
+  const snapMarginY = Math.max(cellHeight * 0.9, 36);
+
+  const totalGridWidth = (GRID_SIZE - 1) * pitchX + cellWidth;
+  const totalGridHeight = (GRID_SIZE - 1) * pitchY + cellHeight;
+
+  if (
+    effectiveX < originX - snapMarginX ||
+    effectiveX > originX + totalGridWidth + snapMarginX ||
+    effectiveY < originY - snapMarginY ||
+    effectiveY > originY + totalGridHeight + snapMarginY
+  ) {
+    return null;
+  }
+
+  // Symmetrical nearest-cell calculation that cleanly divides gaps between cells
+  const dx = effectiveX - originX;
+  const dy = effectiveY - originY;
+
+  const rawCol = Math.round((dx - cellWidth / 2) / pitchX);
+  const rawRow = Math.round((dy - cellHeight / 2) / pitchY);
+
+  const col = Math.max(0, Math.min(GRID_SIZE - 1, rawCol));
+  const row = Math.max(0, Math.min(GRID_SIZE - 1, rawRow));
+
+  return {
+    row,
+    col,
+    effectiveX,
+    effectiveY,
+    cellWidth,
+    cellHeight,
+    pitchX,
+    pitchY,
+    originX,
+    originY,
+    touchLiftY
+  };
+};
+
+/**
  * Generate a balanced set of 3 random shapes for the bottom tray.
  * Ensures:
  * 1. At least one small piece per set (maintains board maneuverability).

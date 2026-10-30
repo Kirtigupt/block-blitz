@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Trophy, RotateCcw, Volume2, VolumeX, HelpCircle, Flame, User, LogIn, Crown, Mic, MicOff, Target, Map, Layers, Gem, Sparkles, LogOut, Settings } from 'lucide-react';
+import { Trophy, RotateCcw, Volume2, VolumeX, HelpCircle, Flame, User, LogIn, Crown, Mic, MicOff, Target, Map, Layers, Gem, Sparkles, LogOut, Settings, Zap } from 'lucide-react';
 import { calculateLevelProgressPercent, CHAPTER_CONFIGS } from '../constants/levels';
 
 export const Header = ({
@@ -146,6 +146,9 @@ export const Header = ({
             title="Open Level Map"
             aria-label="BLOCK BLITZ Logo - Open Level Map"
           >
+            <span className="logo-icon-wrap">
+              <Zap size={14} className="logo-spark-icon" fill="currentColor" />
+            </span>
             <span className="logo-text-block">BLOCK</span>
             <span className="logo-text-blitz">BLITZ</span>
           </div>
@@ -157,8 +160,9 @@ export const Header = ({
             title={`Level ${currentLevel} • Open Level Map`}
             aria-label={`Current Level: ${currentLevel}. Open Level Map`}
           >
-            <Map size={14} className="lvl-map-icon" />
-            <span>LVL {currentLevel}</span>
+            <span className="lvl-beacon-dot" />
+            <Map size={13} className="lvl-map-icon" />
+            <span className="lvl-num-text">LVL {currentLevel}</span>
           </button>
         </div>
 
@@ -284,6 +288,8 @@ export const Header = ({
           </span>
         </div>
 
+        <div className="score-deck-divider" />
+
         <div className="score-secondary-section">
           <div className="score-secondary-item best-score-box">
             <div className="score-secondary-header">
@@ -344,7 +350,9 @@ export const Header = ({
                 width: `${progressPercent}%`,
                 background: `linear-gradient(90deg, #0ea5e9, ${levelConfig.accentColor || '#38bdf8'})`
               }}
-            />
+            >
+              <div className="progress-fill-glow-head" />
+            </div>
           </div>
         </div>
       )}

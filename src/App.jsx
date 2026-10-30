@@ -28,7 +28,9 @@ import {
   clearLinesFromGrid,
   getBlockTileCount,
   calculateScore,
-  isGameOver
+  isGameOver,
+  getShapeAnchor,
+  getGridCellFromPointer
 } from './utils/gameLogic';
 import { BLOCK_PALETTE } from './constants/blocks';
 import { getLevelConfig } from './constants/levels';
@@ -164,6 +166,13 @@ export function App() {
     const handleWindowDragOver = (e) => {
       e.preventDefault();
       setDesktopDragCoord({ x: e.clientX, y: e.clientY });
+      const gridEl = document.querySelector('.game-grid');
+      const hit = getGridCellFromPointer(e.clientX, e.clientY, gridEl, desktopDragShape, false);
+      if (hit) {
+        setHoverPos({ row: hit.row, col: hit.col });
+      } else {
+        setHoverPos(null);
+      }
     };
 
     const handleWindowDragEnd = () => {
@@ -979,17 +988,12 @@ export function App() {
       setTouchCoord({ x: clientX, y: clientY });
       sounds.playPickup();
 
-      // Look for initial target cell beneath touch point
-      const el =
-        document.elementFromPoint(clientX, clientY - 35) ||
-        document.elementFromPoint(clientX, clientY);
-      const cell = el?.closest('.grid-cell');
-      if (cell) {
-        const row = parseInt(cell.getAttribute('data-row'), 10);
-        const col = parseInt(cell.getAttribute('data-col'), 10);
-        if (!isNaN(row) && !isNaN(col)) {
-          setHoverPos({ row, col });
-        }
+      const gridEl = document.querySelector('.game-grid');
+      const hit = getGridCellFromPointer(clientX, clientY, gridEl, shape, true);
+      if (hit) {
+        setHoverPos({ row: hit.row, col: hit.col });
+      } else {
+        setHoverPos(null);
       }
     },
     [isInputBlocked, grid, handleUnplaceableAttempt]
@@ -999,20 +1003,13 @@ export function App() {
     if (isInputBlocked) return;
     setTouchCoord({ x: clientX, y: clientY });
 
-    // Offset touch test point slightly upwards so the user's thumb does not hide the targeted cell
-    const el =
-      document.elementFromPoint(clientX, clientY - 35) ||
-      document.elementFromPoint(clientX, clientY);
-    const cell = el?.closest('.grid-cell');
-    if (cell) {
-      const row = parseInt(cell.getAttribute('data-row'), 10);
-      const col = parseInt(cell.getAttribute('data-col'), 10);
-      if (!isNaN(row) && !isNaN(col)) {
-        setHoverPos({ row, col });
-        return;
-      }
+    const gridEl = document.querySelector('.game-grid');
+    const hit = getGridCellFromPointer(clientX, clientY, gridEl, shape, true);
+    if (hit) {
+      setHoverPos({ row: hit.row, col: hit.col });
+    } else {
+      setHoverPos(null);
     }
-    setHoverPos(null);
   }, [isInputBlocked]);
 
   const handleTouchDragEnd = useCallback(
@@ -1024,8 +1021,12 @@ export function App() {
         return;
       }
 
-      if (!isCancelled && hoverPos) {
-        executePlacement(shape, hoverPos.row, hoverPos.col);
+      if (!isCancelled) {
+        const gridEl = document.querySelector('.game-grid');
+        const finalHit = hoverPos || getGridCellFromPointer(clientX, clientY, gridEl, shape, true);
+        if (finalHit) {
+          executePlacement(shape, finalHit.row, finalHit.col);
+        }
       }
 
       setTouchDragShape(null);
@@ -1493,8 +1494,19 @@ export function App() {
   ]);
 
   const activeDragShape = touchDragShape || desktopDragShape;
+  const touchLiftY = useMemo(() => {
+    if (typeof document !== 'undefined') {
+      const cell = document.querySelector('.game-grid .grid-cell');
+      if (cell) {
+        const h = cell.getBoundingClientRect().height;
+        if (h > 0) return Math.round(h * 1.15 + 8);
+      }
+    }
+    return 52;
+  }, []);
+
   const activeDragCoord = touchCoord
-    ? { x: touchCoord.x, y: touchCoord.y - 45 }
+    ? { x: touchCoord.x, y: touchCoord.y - touchLiftY }
     : desktopDragCoord;
 
   return (
@@ -1556,61 +1568,68 @@ export function App() {
         </main>
       </div>
 
-      {/* Floating Active Drag Avatar with soft neon glow, particle sparks, and animated trail */}
-      {activeDragShape && activeDragCoord && (
-        <div
-          className="active-drag-avatar"
-          style={{
-            left: `${activeDragCoord.x}px`,
-            top: `${activeDragCoord.y}px`
-          }}
-        >
-          {/* Soft neon glow aura */}
+      {/* Floating Active Drag Avatar with exact cell sizing, natural anchor alignment, and neon glow */}
+      {activeDragShape && activeDragCoord && (() => {
+        const anchor = getShapeAnchor(activeDragShape);
+        return (
           <div
-            className="drag-neon-aura"
+            className="active-drag-avatar"
             style={{
-              boxShadow: `0 0 24px ${BLOCK_PALETTE[activeDragShape.colorKey]?.glow || '#06b6d4'}, 0 0 45px ${BLOCK_PALETTE[activeDragShape.colorKey]?.glow || '#06b6d4'}`
-            }}
-          />
-
-          {/* Animated trail echo */}
-          <div className="drag-trail-echo" />
-
-          {/* Small colorful glowing particle sparks attached to moving block */}
-          <div className="drag-spark-cluster">
-            <span className="drag-spark ds-1">✦</span>
-            <span className="drag-spark ds-2">•</span>
-            <span className="drag-spark ds-3">★</span>
-            <span className="drag-spark ds-4">•</span>
-          </div>
-
-          <div
-            className="block-matrix"
-            style={{
-              gridTemplateRows: `repeat(${activeDragShape.matrix.length}, 1fr)`,
-              gridTemplateColumns: `repeat(${activeDragShape.matrix[0].length}, 1fr)`
+              left: `${activeDragCoord.x}px`,
+              top: `${activeDragCoord.y}px`
             }}
           >
-            {activeDragShape.matrix.map((row, r) =>
-              row.map((val, c) => (
-                <div
-                  key={`${r}-${c}`}
-                  className={`mini-cell ${val === 1 ? 'filled' : 'empty'}`}
-                  style={
-                    val === 1
-                      ? {
-                          background: BLOCK_PALETTE[activeDragShape.colorKey]?.gradient || '#06b6d4',
-                          borderColor: BLOCK_PALETTE[activeDragShape.colorKey]?.border || '#fff',
-                          boxShadow: `0 0 10px ${BLOCK_PALETTE[activeDragShape.colorKey]?.glow || '#06b6d4'}`
-                        }
-                      : {}
-                  }
-                />
-              ))
-            )}
+            {/* Soft neon glow aura */}
+            <div
+              className="drag-neon-aura"
+              style={{
+                boxShadow: `0 0 24px ${BLOCK_PALETTE[activeDragShape.colorKey]?.glow || '#06b6d4'}, 0 0 45px ${BLOCK_PALETTE[activeDragShape.colorKey]?.glow || '#06b6d4'}`
+              }}
+            />
+
+            {/* Animated trail echo */}
+            <div className="drag-trail-echo" />
+
+            {/* Small colorful glowing particle sparks attached to moving block */}
+            <div className="drag-spark-cluster">
+              <span className="drag-spark ds-1">✦</span>
+              <span className="drag-spark ds-2">•</span>
+              <span className="drag-spark ds-3">★</span>
+              <span className="drag-spark ds-4">•</span>
+            </div>
+
+            <div
+              className="drag-piece-matrix"
+              style={{
+                gridTemplateRows: `repeat(${activeDragShape.matrix.length}, var(--cell-size))`,
+                gridTemplateColumns: `repeat(${activeDragShape.matrix[0].length}, var(--cell-size))`,
+                gap: 'var(--grid-gap)',
+                transform: `translate(calc(-1 * (${anchor.col} * (var(--cell-size) + var(--grid-gap)) + var(--cell-size) / 2)), calc(-1 * (${anchor.row} * (var(--cell-size) + var(--grid-gap)) + var(--cell-size) / 2)))`
+              }}
+            >
+              {activeDragShape.matrix.map((row, r) =>
+                row.map((val, c) => (
+                  <div
+                    key={`${r}-${c}`}
+                    className={`drag-piece-cell ${val === 1 ? 'filled' : 'empty'}`}
+                    style={
+                      val === 1
+                        ? {
+                            background: BLOCK_PALETTE[activeDragShape.colorKey]?.gradient || '#06b6d4',
+                            borderColor: BLOCK_PALETTE[activeDragShape.colorKey]?.border || '#fff',
+                            boxShadow: `0 0 12px ${BLOCK_PALETTE[activeDragShape.colorKey]?.glow || '#06b6d4'}, inset 0 1px 2px rgba(255, 255, 255, 0.4)`
+                          }
+                        : {}
+                    }
+                  >
+                    {val === 1 && <div className="cell-gloss" />}
+                  </div>
+                ))
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Game Over Modal */}
       {gameOver && (

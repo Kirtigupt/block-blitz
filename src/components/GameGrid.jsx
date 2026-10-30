@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { GridCell } from './GridCell';
 import { GRID_SIZE } from '../constants/blocks';
-import { canPlaceShape, getShapeCoordinates } from '../utils/gameLogic';
+import { canPlaceShape, getShapeCoordinates, getGridCellFromPointer } from '../utils/gameLogic';
 
 export const GameGrid = ({
   grid,
@@ -59,6 +59,53 @@ export const GameGrid = ({
     }
   };
 
+  const handleContainerDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+    const gridEl = e.currentTarget.classList.contains('game-grid')
+      ? e.currentTarget
+      : e.currentTarget.querySelector('.game-grid');
+    const hit = getGridCellFromPointer(e.clientX, e.clientY, gridEl, selectedShape, false);
+    if (hit) {
+      onCellHover(hit.row, hit.col);
+    }
+  };
+
+  const handleContainerDrop = (e) => {
+    e.preventDefault();
+    if (e.target.closest('.grid-cell')) return;
+    const gridEl = e.currentTarget.classList.contains('game-grid')
+      ? e.currentTarget
+      : e.currentTarget.querySelector('.game-grid');
+    const hit = getGridCellFromPointer(e.clientX, e.clientY, gridEl, selectedShape, false);
+    if (!hit) return;
+    try {
+      const dataStr = e.dataTransfer.getData('application/json');
+      if (dataStr) {
+        const droppedShape = JSON.parse(dataStr);
+        onDropShape(droppedShape, hit.row, hit.col);
+        return;
+      }
+    } catch {
+      // Fallback
+    }
+    if (selectedShape) {
+      onCellClick(hit.row, hit.col);
+    }
+  };
+
+  const handleGridClick = (e) => {
+    if (!selectedShape) return;
+    if (e.target.closest('.grid-cell')) return;
+    const gridEl = e.currentTarget.classList.contains('game-grid')
+      ? e.currentTarget
+      : e.currentTarget.querySelector('.game-grid');
+    const hit = getGridCellFromPointer(e.clientX, e.clientY, gridEl, selectedShape, false);
+    if (hit) {
+      onCellClick(hit.row, hit.col);
+    }
+  };
+
   let containerClassName = 'grid-container';
   if (screenShake === 'intense') containerClassName += ' screen-shake-intense';
   else if (screenShake === 'subtle') containerClassName += ' screen-shake-subtle';
@@ -67,7 +114,13 @@ export const GameGrid = ({
   const colsCleared = clearingLines?.cols || [];
 
   return (
-    <div className={containerClassName} onMouseLeave={onGridLeave}>
+    <div
+      className={containerClassName}
+      onMouseLeave={onGridLeave}
+      onDragOver={handleContainerDragOver}
+      onDrop={handleContainerDrop}
+      onClick={handleGridClick}
+    >
       {/* Expanding energy wave illumination across cleared rows */}
       {rowsCleared.map((r) => (
         <div
