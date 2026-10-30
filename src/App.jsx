@@ -623,6 +623,33 @@ export function App() {
               .catch((err) => {
                 console.warn('Failed to sync progression to server:', err.message);
               });
+
+            if (!hasSubmittedCurrentGameRef.current) {
+              hasSubmittedCurrentGameRef.current = true;
+              apiSaveGame(
+                projectedScore + bonusToAward,
+                linesClearedTotal,
+                maxStreak,
+                currentGameSessionIdRef.current
+              )
+                .then((res) => {
+                  setScoreSaved(true);
+                  if (res?.stats?.highScore) {
+                    setHighScore(res.stats.highScore);
+                    try {
+                      localStorage.setItem(
+                        getStorageKey(HIGH_SCORE_KEY, user._id || user.id),
+                        res.stats.highScore.toString()
+                      );
+                    } catch {
+                      // Ignore
+                    }
+                  }
+                })
+                .catch((err) => {
+                  console.warn('Failed to save completed level score to backend:', err.message);
+                });
+            }
           }
 
           updateScoreAndHigh(totalPointsGained + bonusToAward);
@@ -807,6 +834,33 @@ export function App() {
               .catch((err) => {
                 console.warn('Failed to sync progression to server:', err.message);
               });
+
+            if (!hasSubmittedCurrentGameRef.current) {
+              hasSubmittedCurrentGameRef.current = true;
+              apiSaveGame(
+                projectedScore + bonusToAward,
+                linesClearedTotal,
+                maxStreak,
+                currentGameSessionIdRef.current
+              )
+                .then((res) => {
+                  setScoreSaved(true);
+                  if (res?.stats?.highScore) {
+                    setHighScore(res.stats.highScore);
+                    try {
+                      localStorage.setItem(
+                        getStorageKey(HIGH_SCORE_KEY, user._id || user.id),
+                        res.stats.highScore.toString()
+                      );
+                    } catch {
+                      // Ignore
+                    }
+                  }
+                })
+                .catch((err) => {
+                  console.warn('Failed to save completed level score to backend:', err.message);
+                });
+            }
           }
 
           updateScoreAndHigh(tilePoints + bonusToAward);
@@ -1027,6 +1081,34 @@ export function App() {
     voiceAnnouncer.announceGameStart();
     triggerCelebration(getStartGameCelebration());
   }, [triggerCelebration]);
+
+  // Test helper for automated verification of 3-step completion experience
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.__triggerLevelCompleteForTest = (lvl = 1) => {
+        const cfg = getLevelConfig(lvl);
+        const nextCfg = lvl >= 100 ? null : getLevelConfig(lvl + 1);
+        const nextLevelNum = Math.min(100, lvl + 1);
+        setUnlockedLevel((prev) => Math.max(prev, nextLevelNum));
+        setCompletedLevels((prev) => new Set(prev).add(lvl));
+        setCurrentLevel(nextLevelNum);
+        try {
+          localStorage.setItem(getStorageKey(UNLOCKED_LEVEL_KEY, user?._id || user?.id), nextLevelNum.toString());
+          localStorage.setItem(getStorageKey(CURRENT_LEVEL_KEY, user?._id || user?.id), nextLevelNum.toString());
+        } catch {
+          // Ignore
+        }
+        setCompletedLevelData({
+          levelConfig: cfg,
+          nextLevelConfig: nextCfg,
+          bonusPoints: cfg.bonusPoints,
+          totalScore: (score || 1200) + cfg.bonusPoints,
+          isCampaignComplete: lvl >= 100
+        });
+        setShowLevelCompleteModal(true);
+      };
+    }
+  }, [score, user]);
 
   const handleOpenLevelMap = useCallback(() => {
     voiceAnnouncer.cancel();
@@ -1577,6 +1659,7 @@ export function App() {
           nextLevelConfig={completedLevelData.nextLevelConfig}
           bonusPoints={completedLevelData.bonusPoints}
           totalScore={completedLevelData.totalScore}
+          currentUser={user}
           onContinue={() => handleContinueToLevelMap(completedLevelData.nextLevelConfig?.level)}
           onOpenLevelMap={() => handleContinueToLevelMap(completedLevelData.nextLevelConfig?.level)}
         />
