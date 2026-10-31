@@ -7867,3 +7867,458 @@ body {
     display: none;
   }
 }
+
+
+
+/* ==========================================================================
+   Desktop & Laptop HUD Layout Optimization (>= 601px)
+   Spacious, balanced arcade command deck utilizing horizontal screen width
+   ========================================================================== */
+
+@media (min-width: 601px) {
+  /* 1. Container Width Expansion */
+  .game-wrapper {
+    max-width: min(750px, 96vw);
+    transition: max-width 0.25s ease;
+  }
+
+  .game-container {
+    width: 100%;
+    gap: 12px;
+  }
+
+  /* 2. Desktop Tactical Command Bar */
+  .header-top,
+  .hud-command-bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 5px 14px;
+    min-height: 46px;
+    max-height: 48px;
+    box-sizing: border-box;
+    gap: 8px;
+  }
+
+  /* Unflatten .header-actions so account & tools are direct flex items of .header-top */
+  .header-actions,
+  .hud-actions-deck {
+    display: contents;
+  }
+
+  /* Left Section: Brand Group (Logo + Stage Badge) */
+  .header-brand-group,
+  .hud-brand-deck {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    order: 1;
+    flex-shrink: 0;
+  }
+
+  .logo-badge,
+  .hud-brand-plaque {
+    height: 36px;
+    padding: 3px 8px 3px 5px;
+    gap: 6px;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .hud-logo-gem {
+    width: 24px;
+    height: 24px;
+  }
+
+  .level-badge-pill,
+  .hud-stage-crest {
+    height: 36px;
+    min-height: 36px;
+    padding: 0 10px;
+    gap: 6px;
+    font-size: 0.76rem;
+    flex-shrink: 0;
+  }
+
+  /* Left Section Continued: Player Identity Capsule (Sign In / User Profile) */
+  .header-group-account,
+  .hud-account-slot {
+    order: 2;
+    display: flex;
+    align-items: center;
+    margin-right: auto; /* Pushes tools cluster to the far right! */
+    flex-shrink: 0;
+  }
+
+  .user-pill-btn,
+  .auth-cta-btn,
+  .hud-identity-pill {
+    height: 36px;
+    min-height: 36px;
+    padding: 0 10px;
+    font-size: 0.75rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .user-pill-btn {
+    max-width: 125px;
+    gap: 5px;
+  }
+
+  .user-pill-name {
+    max-width: 75px;
+  }
+
+  .auth-cta-btn {
+    gap: 5px;
+  }
+
+  /* Right Section: Tactical Utility Hub */
+  .header-tools-cluster,
+  .hud-tools-cluster {
+    order: 3;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .header-group-settings,
+  .hud-settings-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .header-group-stage,
+  .hud-stage-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .action-btn,
+  .hud-icon-btn {
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    min-height: 35px;
+    border-radius: var(--radius-sm);
+    box-sizing: border-box;
+  }
+
+  .hud-control-divider {
+    display: block !important;
+    width: 1px;
+    height: 20px;
+    margin: 0 3px;
+    background: linear-gradient(180deg, transparent 0%, rgba(56, 189, 248, 0.35) 50%, transparent 100%);
+    flex-shrink: 0;
+  }
+
+  /* 3. Balanced 3-Pod Cockpit Scoreboard */
+  .score-board,
+  .hud-stats-chassis {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 20px;
+    gap: 16px;
+    box-sizing: border-box;
+  }
+
+  .bay-score {
+    flex: 1.35;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .bay-score .hud-bay-label-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .bay-score .score-value,
+  .bay-score .hud-score-digits {
+    font-size: 2.2rem;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.5px;
+  }
+
+  .hud-deck-divider {
+    height: 38px;
+    width: 1px;
+    background: linear-gradient(180deg, transparent 0%, rgba(56, 189, 248, 0.28) 50%, transparent 100%);
+    flex-shrink: 0;
+  }
+
+  .bay-best {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .bay-best .score-secondary-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .bay-best .secondary-value,
+  .bay-best .hud-best-digits {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fbbf24;
+    line-height: 1.1;
+  }
+
+  .bay-streak {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 85px;
+    padding: 4px 12px;
+  }
+
+  .bay-streak .secondary-value,
+  .bay-streak .hud-streak-digits {
+    font-size: 1.12rem;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  /* 4. Professional Mission Dashboard Panel */
+  .level-objective-panel,
+  .hud-mission-chassis {
+    padding: 10px 18px 12px 18px;
+    gap: 8px;
+    box-sizing: border-box;
+  }
+
+  .objective-meta-row,
+  .hud-mission-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .objective-title-group,
+  .hud-mission-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+
+  .hud-mission-badge {
+    font-size: 0.65rem;
+    font-weight: 900;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.8px;
+    flex-shrink: 0;
+  }
+
+  .objective-level-name,
+  .hud-mission-name {
+    font-size: 0.88rem;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .objective-chapter-badge,
+  .hud-chapter-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .objective-pattern-tag,
+  .hud-pattern-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .objective-task-row,
+  .hud-mission-directive-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .objective-desc-wrap,
+  .hud-mission-instruction {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .hud-mission-icon-socket {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .objective-task-desc,
+  .hud-instruction-text {
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .objective-progress-numbers,
+  .hud-progress-digital-badge {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    padding: 3px 10px;
+    font-size: 0.86rem;
+    border-radius: 5px;
+    flex-shrink: 0;
+  }
+
+  .objective-progress-track,
+  .hud-energy-track {
+    width: 100%;
+    height: 7px;
+    border-radius: var(--radius-full);
+    margin-top: 2px;
+  }
+
+  /* 5. Center Playfield & Constrain Block Tray */
+  .game-playfield {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .block-tray-container {
+    width: 100%;
+    max-width: min(100%, 480px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+/* Laptops & Standard Desktops (>= 1024px) */
+@media (min-width: 1024px) {
+  .game-wrapper {
+    max-width: min(860px, 88vw);
+  }
+
+  .header-top,
+  .hud-command-bar {
+    padding: 5px 18px;
+    gap: 14px;
+  }
+
+  .header-brand-group,
+  .hud-brand-deck {
+    gap: 12px;
+  }
+
+  .logo-badge,
+  .hud-brand-plaque {
+    padding: 4px 10px 4px 6px;
+    gap: 8px;
+    font-size: 1.15rem;
+  }
+
+  .hud-logo-gem {
+    width: 26px;
+    height: 26px;
+  }
+
+  .level-badge-pill,
+  .hud-stage-crest {
+    padding: 0 12px;
+    gap: 7px;
+    font-size: 0.78rem;
+  }
+
+  .user-pill-btn,
+  .auth-cta-btn,
+  .hud-identity-pill {
+    padding: 0 12px;
+    font-size: 0.76rem;
+  }
+
+  .header-tools-cluster,
+  .hud-tools-cluster {
+    gap: 8px;
+  }
+
+  .header-group-settings,
+  .hud-settings-group,
+  .header-group-stage,
+  .hud-stage-group {
+    gap: 6px;
+  }
+
+  .action-btn,
+  .hud-icon-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .score-board,
+  .hud-stats-chassis {
+    padding: 10px 24px;
+    gap: 24px;
+  }
+
+  .level-objective-panel,
+  .hud-mission-chassis {
+    padding: 12px 22px 14px 22px;
+    gap: 9px;
+  }
+}
+
+/* Wide Laptops & High-Resolution Displays (>= 1440px) */
+@media (min-width: 1440px) {
+  .game-wrapper {
+    max-width: min(880px, 85vw);
+  }
+}
