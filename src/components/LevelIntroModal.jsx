@@ -44,19 +44,19 @@ const getChapterIcon = (iconName) => {
 const getObjectiveIcon = (type, color) => {
   switch (type) {
     case 'lines':
-      return <Target size={17} style={{ color }} />;
+      return <Layers size={22} style={{ color }} />;
     case 'score':
-      return <Trophy size={17} style={{ color }} />;
+      return <Trophy size={22} style={{ color }} />;
     case 'streak':
-      return <Zap size={17} style={{ color }} />;
+      return <Zap size={22} style={{ color }} />;
     case 'placed':
-      return <Layers size={17} style={{ color }} />;
+      return <Target size={22} style={{ color }} />;
     case 'multilines':
-      return <Sparkles size={17} style={{ color }} />;
+      return <Sparkles size={22} style={{ color }} />;
     case 'clear_pattern':
-      return <Gem size={17} style={{ color }} />;
+      return <Gem size={22} style={{ color }} />;
     default:
-      return <Target size={17} style={{ color }} />;
+      return <Target size={22} style={{ color }} />;
   }
 };
 
@@ -109,7 +109,6 @@ export const LevelIntroModal = ({ levelConfig, onIntroComplete }) => {
   const [hasStarted, setHasStarted] = useState(false);
 
   useEffect(() => {
-    // Play subtle cyber fanfare on mounting
     sounds.playLevelStart();
 
     const handleKeyDown = (e) => {
@@ -165,23 +164,23 @@ export const LevelIntroModal = ({ levelConfig, onIntroComplete }) => {
       aria-labelledby="level-intro-title"
     >
       <div
-        className="level-intro-card"
+        className={`level-intro-card ${isBoss ? 'intro-card-boss' : ''}`}
         style={{
-          boxShadow: `0 25px 60px -10px rgba(0, 0, 0, 0.9), 0 0 35px ${accentColor}33, inset 0 1px 0 rgba(255, 255, 255, 0.15)`,
-          borderColor: `${accentColor}55`
+          boxShadow: `0 25px 65px -10px rgba(0, 0, 0, 0.95), 0 0 45px ${accentColor}30, inset 0 1px 0 rgba(255, 255, 255, 0.16)`,
+          borderColor: isBoss ? 'rgba(251, 191, 36, 0.7)' : `${accentColor}55`
         }}
       >
-        {/* Subtle Decorative Sci-Fi HUD Corner Brackets */}
-        <span className="intro-corner intro-corner-tl" aria-hidden="true" style={{ borderColor: `${accentColor}80` }} />
-        <span className="intro-corner intro-corner-tr" aria-hidden="true" style={{ borderColor: `${accentColor}80` }} />
-        <span className="intro-corner intro-corner-bl" aria-hidden="true" style={{ borderColor: `${accentColor}80` }} />
-        <span className="intro-corner intro-corner-br" aria-hidden="true" style={{ borderColor: `${accentColor}80` }} />
+        {/* Sci-Fi HUD Corner Brackets */}
+        <span className="intro-corner intro-corner-tl" aria-hidden="true" style={{ borderColor: `${accentColor}90` }} />
+        <span className="intro-corner intro-corner-tr" aria-hidden="true" style={{ borderColor: `${accentColor}90` }} />
+        <span className="intro-corner intro-corner-bl" aria-hidden="true" style={{ borderColor: `${accentColor}90` }} />
+        <span className="intro-corner intro-corner-br" aria-hidden="true" style={{ borderColor: `${accentColor}90` }} />
 
         {/* Ambient Top Glow Halo */}
         <div
           className="intro-glow-aura"
           style={{
-            background: `radial-gradient(circle, ${accentColor}40 0%, transparent 70%)`
+            background: `radial-gradient(circle, ${isBoss ? '#f59e0b' : accentColor}45 0%, transparent 70%)`
           }}
         />
 
@@ -189,18 +188,19 @@ export const LevelIntroModal = ({ levelConfig, onIntroComplete }) => {
         <div
           className="intro-accent-laser"
           style={{
-            background: `linear-gradient(90deg, transparent, ${accentColor}, #3b82f6, transparent)`
+            background: isBoss
+              ? 'linear-gradient(90deg, transparent, #fbbf24, #f59e0b, transparent)'
+              : `linear-gradient(90deg, transparent, ${accentColor}, #3b82f6, transparent)`
           }}
         />
 
-        {/* Top Badges Row: Chapter Badge & Level Number */}
-        <div className="intro-header-badges">
-          {/* Chapter Badge */}
+        {/* 1. TOP TELEMETRY STRIP: Chapter Badge & Stage Classifier */}
+        <div className="intro-telemetry-bar">
           <div
             className="intro-chapter-badge"
             style={{
-              borderColor: `${chapterData.color}50`,
-              background: `linear-gradient(135deg, ${chapterData.color}20, rgba(10, 18, 36, 0.85))`
+              borderColor: `${chapterData.color}55`,
+              background: `linear-gradient(135deg, ${chapterData.color}22, rgba(10, 18, 36, 0.9))`
             }}
           >
             <span className="intro-chapter-icon" style={{ color: chapterData.color }}>
@@ -211,14 +211,13 @@ export const LevelIntroModal = ({ levelConfig, onIntroComplete }) => {
             </span>
           </div>
 
-          {/* Level / Stage Number */}
           <div
             className={`intro-stage-pill ${isBoss ? 'intro-stage-boss' : ''}`}
             style={{
-              borderColor: isBoss ? 'rgba(251, 191, 36, 0.7)' : `${accentColor}60`,
+              borderColor: isBoss ? 'rgba(251, 191, 36, 0.8)' : `${accentColor}60`,
               background: isBoss
-                ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.28), rgba(15, 23, 42, 0.9))'
-                : `linear-gradient(135deg, ${accentColor}25, rgba(15, 23, 42, 0.9))`
+                ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.32), rgba(15, 23, 42, 0.95))'
+                : `linear-gradient(135deg, ${accentColor}25, rgba(15, 23, 42, 0.95))`
             }}
           >
             {isBoss ? (
@@ -235,42 +234,56 @@ export const LevelIntroModal = ({ levelConfig, onIntroComplete }) => {
           </div>
         </div>
 
-        {/* Level Title Section */}
-        <div className="intro-title-section">
-          <div className="intro-title-eyebrow">
-            <span className="intro-eyebrow-line" style={{ background: accentColor }} />
-            <span className="intro-eyebrow-text">MISSION BRIEFING</span>
-            <span className="intro-eyebrow-line" style={{ background: accentColor }} />
+        {/* 2. HERO MISSION BANNER: Stage Crest & Bold Title (Primary Visual Focus) */}
+        <div className="intro-hero-showcase">
+          <div
+            className={`intro-stage-sigil ${isBoss ? 'sigil-boss' : ''}`}
+            style={{ borderColor: isBoss ? '#fbbf24' : accentColor }}
+          >
+            {isBoss ? (
+              <Crown size={28} className="sigil-icon-crown" />
+            ) : (
+              <span className="sigil-num-display">{String(levelNum).padStart(2, '0')}</span>
+            )}
+            <div className="sigil-glow-pulse" style={{ background: isBoss ? '#fbbf24' : accentColor }} />
           </div>
 
-          <h2 id="level-intro-title" className="intro-title-text">
-            {levelTitle}
-          </h2>
-
-          {hasPattern && (
-            <div className="intro-hazard-pill">
-              <Grid3X3 size={13} className="intro-hazard-icon" />
-              <span className="intro-hazard-label">GRID HAZARD:</span>
-              <span className="intro-hazard-name">{patternDisplay}</span>
+          <div className="intro-title-block">
+            <div className="intro-title-eyebrow">
+              <span className="intro-eyebrow-line" style={{ background: accentColor }} />
+              <span className="intro-eyebrow-text">
+                {isBoss ? 'APEX GUARDIAN ENCOUNTER' : 'MISSION BRIEFING'}
+              </span>
+              <span className="intro-eyebrow-line" style={{ background: accentColor }} />
             </div>
-          )}
+
+            <h2 id="level-intro-title" className="intro-title-text">
+              {levelTitle}
+            </h2>
+
+            <div className="intro-protocol-tag">
+              <span className="protocol-dot" style={{ background: accentColor }} />
+              <span className="protocol-text">TACTICAL DIRECTIVE ACTIVE</span>
+            </div>
+          </div>
         </div>
 
-        {/* Mission Objective Panel */}
+        {/* 3. VISUALLY ENGAGING MISSION OBJECTIVE CARD */}
         <div
           className="intro-objective-panel"
           style={{
-            borderColor: `${accentColor}40`,
-            boxShadow: `0 8px 24px -6px rgba(0, 0, 0, 0.6), inset 0 0 25px ${accentColor}12`
+            borderColor: `${accentColor}45`,
+            boxShadow: `0 8px 24px -6px rgba(0, 0, 0, 0.7), inset 0 0 25px ${accentColor}12`
           }}
         >
+          {/* Card Top: Icon Pod, Type & Target Counter */}
           <div className="intro-obj-header">
             <div className="intro-obj-tag">
               <div
                 className="intro-obj-icon-halo"
                 style={{
                   background: `${accentColor}25`,
-                  borderColor: `${accentColor}60`
+                  borderColor: `${accentColor}65`
                 }}
               >
                 {getObjectiveIcon(objectiveType, accentColor)}
@@ -287,7 +300,7 @@ export const LevelIntroModal = ({ levelConfig, onIntroComplete }) => {
               <div
                 className="intro-target-badge"
                 style={{
-                  borderColor: `${accentColor}50`
+                  borderColor: isBoss ? 'rgba(251, 191, 36, 0.65)' : `${accentColor}60`
                 }}
               >
                 <span className="intro-target-label">TARGET</span>
@@ -296,19 +309,31 @@ export const LevelIntroModal = ({ levelConfig, onIntroComplete }) => {
             )}
           </div>
 
+          {/* Card Middle: Instruction Description */}
           <div className="intro-obj-body">
-            <p className="intro-obj-description">
-              "{description}"
-            </p>
+            <div className="intro-directive-callout">
+              <p className="intro-obj-description">
+                "{description}"
+              </p>
+            </div>
           </div>
+
+          {/* Card Bottom: Tactical Grid Hazard Warning if present */}
+          {hasPattern && (
+            <div className="intro-hazard-pill">
+              <Grid3X3 size={13} className="intro-hazard-icon" />
+              <span className="intro-hazard-label">GRID HAZARD:</span>
+              <span className="intro-hazard-name">{patternDisplay}</span>
+            </div>
+          )}
         </div>
 
-        {/* Premium Golden Reward Badge */}
+        {/* 4. DEDICATED PREMIUM COMPLETION REWARD VAULT */}
         <div className="intro-reward-badge">
           <div className="intro-reward-glow-layer" />
           <div className="intro-reward-left">
             <div className="intro-reward-icon-box">
-              <Award size={18} className="intro-gold-award" />
+              <Award size={20} className="intro-gold-award" />
             </div>
             <div className="intro-reward-text-col">
               <span className="intro-reward-kicker">COMPLETION REWARD</span>
@@ -322,7 +347,7 @@ export const LevelIntroModal = ({ levelConfig, onIntroComplete }) => {
           </div>
         </div>
 
-        {/* Start Level CTA Button */}
+        {/* 5. DISTINCTIVE 3D ARCADE LAUNCH BUTTON */}
         <div className="intro-cta-wrapper">
           <button
             type="button"
@@ -331,19 +356,24 @@ export const LevelIntroModal = ({ levelConfig, onIntroComplete }) => {
             disabled={hasStarted}
             autoFocus
             style={{
-              background: 'linear-gradient(135deg, #06b6d4 0%, #0284c7 45%, #2563eb 100%)'
+              background: isBoss
+                ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 45%, #b45309 100%)'
+                : 'linear-gradient(135deg, #06b6d4 0%, #0284c7 45%, #2563eb 100%)'
             }}
           >
-            <span className="intro-btn-label">START LEVEL</span>
-            <span className="intro-btn-icon-wrapper">
-              <Play size={18} fill="currentColor" />
+            <span className="intro-btn-bezel">
+              <Play size={18} fill="currentColor" className="intro-btn-play-icon" />
             </span>
+            <span className="intro-btn-label">START LEVEL</span>
+            <span className="intro-btn-key-badge">ENTER ↵</span>
           </button>
           <p className="intro-desktop-hint">
-            <span>Press <strong>Enter</strong> or <strong>Space</strong> to launch</span>
+            <span>Press <strong>Enter</strong> or <strong>Space</strong> to launch mission</span>
           </p>
         </div>
       </div>
     </div>
   );
 };
+
+export default LevelIntroModal;
