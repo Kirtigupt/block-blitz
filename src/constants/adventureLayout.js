@@ -1,12 +1,13 @@
 /**
- * Adventure Mode Winding Journey Trail Coordinate System for BLOCK BLITZ
+ * Adventure Mode Upward Journey Trail Coordinate System for BLOCK BLITZ
  * Maps all 100 progressive levels across 10 Thematic Chapter Realms
- * into a sequential TOP-to-BOTTOM winding adventure progression road.
+ * into a sequential BOTTOM-to-TOP upward adventure climb.
  *
  * Requirements:
- * - Level 1 starts at the TOP of the map.
- * - Levels progress sequentially from TOP to BOTTOM (y strictly increases).
- * - Level 100 is at the BOTTOM.
+ * - Level 1 is positioned at the BOTTOM.
+ * - Levels 2, 3, 4, 5 and subsequent levels progress UPWARD.
+ * - Level 100 is positioned at the TOP (Citadel Summit).
+ * - Player climbs from the bottom towards the top to complete the adventure.
  * - Alternating organic S-curves between odd and even chapters.
  * - Smooth SVG bezier path overlay.
  */
@@ -15,32 +16,34 @@
 export const CHAPTER_ZONE_HEIGHT = 820;
 export const CHAPTER_ZONE_WIDTH = 400;
 
-// Odd chapters (1, 3, 5, 7, 9): Curves right -> loops left -> centers at Boss
+// Odd chapters (1, 3, 5, 7, 9): Ascends from bottom to top
+// Index 0 = Level 1 (bottom left-center) -> Index 9 = Level 10 (Boss Summit)
 export const PATTERN_ODD = [
-  { x: 26, y: 60 },   // Level 1: Left
-  { x: 48, y: 135 },  // Level 2: Center-left
-  { x: 72, y: 210 },  // Level 3: Center-right
-  { x: 82, y: 285 },  // Level 4: Right peak
-  { x: 68, y: 360 },  // Level 5: Right-center
-  { x: 46, y: 435 },  // Level 6: Center
-  { x: 24, y: 510 },  // Level 7: Left
-  { x: 18, y: 585 },  // Level 8: Left peak
-  { x: 32, y: 660 },  // Level 9: Center-left
-  { x: 50, y: 745 }   // Level 10 (Boss): Centered Apex Summit
+  { x: 30, y: 745 },  // Level 1: Bottom left-center
+  { x: 52, y: 670 },  // Level 2: Center
+  { x: 74, y: 595 },  // Level 3: Center-right
+  { x: 84, y: 520 },  // Level 4: Right peak
+  { x: 70, y: 445 },  // Level 5 (Milestone): Weaving left
+  { x: 48, y: 370 },  // Level 6: Center
+  { x: 26, y: 295 },  // Level 7: Center-left
+  { x: 18, y: 220 },  // Level 8: Left peak
+  { x: 32, y: 145 },  // Level 9: Weaving center
+  { x: 50, y: 70 }    // Level 10 (Boss): Apex Summit
 ];
 
-// Even chapters (2, 4, 6, 8, 10): Curves left -> loops right -> centers at Boss
+// Even chapters (2, 4, 6, 8, 10): Alternating weave ascending from bottom to top
+// Index 0 = Level 11 (bottom right-center) -> Index 9 = Level 20 (Boss Summit)
 export const PATTERN_EVEN = [
-  { x: 68, y: 60 },   // Level 1 (e.g. 11, 31): Right
-  { x: 48, y: 135 },  // Level 2: Center
-  { x: 26, y: 210 },  // Level 3: Center-left
-  { x: 18, y: 285 },  // Level 4: Left peak
-  { x: 32, y: 360 },  // Level 5: Center-left
-  { x: 54, y: 435 },  // Level 6: Center
-  { x: 76, y: 510 },  // Level 7: Right
-  { x: 82, y: 585 },  // Level 8: Right peak
-  { x: 68, y: 660 },  // Level 9: Center-right
-  { x: 50, y: 745 }   // Level 10 (Boss): Centered Apex Summit
+  { x: 70, y: 745 },  // Level 11: Bottom right-center
+  { x: 48, y: 670 },  // Level 12: Center
+  { x: 26, y: 595 },  // Level 13: Center-left
+  { x: 16, y: 520 },  // Level 14: Left peak
+  { x: 30, y: 445 },  // Level 15 (Milestone): Weaving right
+  { x: 52, y: 370 },  // Level 16: Center
+  { x: 74, y: 295 },  // Level 17: Center-right
+  { x: 84, y: 220 },  // Level 18: Right peak
+  { x: 68, y: 145 },  // Level 19: Weaving center
+  { x: 50, y: 70 }    // Level 20 (Boss): Apex Summit
 ];
 
 // Export default pattern for backwards compatibility
@@ -51,14 +54,17 @@ export const getChapterWindingPattern = (chapterNumber) => {
   return chapterNumber % 2 === 0 ? PATTERN_EVEN : PATTERN_ODD;
 };
 
-// Build SVG path curve string for points in a chapter
+// Build SVG path curve string for points in a chapter (upward trajectory)
 export const buildChapterPathD = (points, hasLeadIn = false, hasLeadOut = false) => {
   if (!points || points.length === 0) return '';
   let d = '';
 
   const first = points[0];
+  const centerX = CHAPTER_ZONE_WIDTH / 2;
+
   if (hasLeadIn) {
-    d = `M 50 0 C 50 25, ${first.x} 30, ${first.x} ${first.y}`;
+    // Coming upward from chapter below (enters at bottom center: x: 200, y: 820)
+    d = `M ${centerX} ${CHAPTER_ZONE_HEIGHT} C ${centerX} ${CHAPTER_ZONE_HEIGHT - 30}, ${first.x} ${first.y + 35}, ${first.x} ${first.y}`;
   } else {
     d = `M ${first.x} ${first.y}`;
   }
@@ -71,14 +77,15 @@ export const buildChapterPathD = (points, hasLeadIn = false, hasLeadOut = false)
   }
 
   if (hasLeadOut && points.length >= 10) {
+    // Exiting upward to chapter above (exits at top center: x: 200, y: 0)
     const last = points[points.length - 1];
-    d += ` C ${last.x} ${last.y + 35}, 50 ${CHAPTER_ZONE_HEIGHT - 20}, 50 ${CHAPTER_ZONE_HEIGHT}`;
+    d += ` C ${last.x} ${last.y - 35}, ${centerX} 30, ${centerX} 0`;
   }
 
   return d;
 };
 
-// Generates the 100-level winding node mapping
+// Generates the 100-level winding node mapping for upward progression
 export const ADVENTURE_MOSAIC_MAPPING = Array.from({ length: 100 }, (_, idx) => {
   const level = idx + 1;
   const chapter = Math.ceil(level / 10);

@@ -5457,7 +5457,7 @@ body {
 }
 
 /* ==========================================================================
-   ADVENTURE CAMPAIGN LEVEL MAP (WINDING JOURNEY PROGRESSION THROUGH 10 REALMS)
+   ADVENTURE CAMPAIGN LEVEL MAP (UPWARD ASCENT TO THE CITADEL: LEVEL 1 TO 100)
    ========================================================================== */
 
 .campaign-map-screen,
@@ -5465,15 +5465,22 @@ body {
 .level-map-screen {
   position: fixed;
   inset: 0;
-  background-color: #070c18;
+  background-color: #050813;
   background-image:
-    radial-gradient(ellipse 90% 55% at 50% -10%, rgba(6, 182, 212, 0.16) 0%, transparent 70%),
-    radial-gradient(circle at 10% 40%, rgba(147, 51, 234, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 90% 60%, rgba(245, 158, 11, 0.07) 0%, transparent 50%),
-    linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px, 32px 32px;
-  background-position: center top, center center, center center, center center;
+    /* Summit: Golden Aurora of the Sovereign Zenith Citadel */
+    radial-gradient(ellipse 100% 45% at 50% 0%, rgba(234, 179, 8, 0.18) 0%, transparent 70%),
+    /* High Stratosphere: Plasma violet and cosmic cyan */
+    radial-gradient(circle at 85% 22%, rgba(168, 85, 247, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 15% 42%, rgba(56, 189, 248, 0.10) 0%, transparent 50%),
+    /* Mid Realms: Emerald matrix nebula */
+    radial-gradient(circle at 80% 68%, rgba(16, 185, 129, 0.08) 0%, transparent 45%),
+    /* Ground Zero: Deep cyber runway launchpad */
+    radial-gradient(ellipse 90% 28% at 50% 100%, rgba(6, 182, 212, 0.15) 0%, transparent 60%),
+    /* Tech Grid coordinate lines */
+    linear-gradient(rgba(56, 189, 248, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.035) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+  background-position: center top, center center, center center, center center, center bottom, center center, center center;
   z-index: 1000;
   display: flex;
   flex-direction: column;
@@ -5691,21 +5698,119 @@ body {
   max-width: 520px;
 }
 
-/* Adventure Departure Terminal Banner (Top of Map - Level 1 Starts Here) */
-.adventure-departure-banner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
+/* Grand Finale Sovereign Zenith Citadel Banner (Summit Destination at Top of Map) */
+.adventure-trophy-banner.zenith-citadel-banner {
+  margin-top: 14px;
+  margin-bottom: 26px;
+  padding: 26px 22px;
+  background: radial-gradient(circle at 50% 20%, rgba(250, 204, 21, 0.14) 0%, rgba(15, 23, 42, 0.95) 75%);
+  border: 1.5px solid rgba(250, 204, 21, 0.45);
+  border-radius: 24px;
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.7),
+    0 0 35px rgba(250, 204, 21, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
   max-width: 440px;
-  padding: 16px 18px;
-  margin-bottom: 22px;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.92) 0%, rgba(8, 14, 26, 0.98) 100%);
-  border: 1.5px solid rgba(56, 189, 248, 0.3);
-  border-radius: 20px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  text-align: center;
+  width: 100%;
   box-sizing: border-box;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.citadel-pedestal {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.citadel-aurora-glow {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(250, 204, 21, 0.45) 0%, transparent 70%);
+  filter: blur(18px);
+  pointer-events: none;
+  animation: citadel-aurora-pulse 3s infinite alternate ease-in-out;
+}
+
+@keyframes citadel-aurora-pulse {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  100% { transform: scale(1.2); opacity: 1; }
+}
+
+.citadel-spire-svg {
+  width: 78px;
+  height: 78px;
+  color: #facc15;
+  filter: drop-shadow(0 0 18px rgba(250, 204, 21, 0.65));
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.citadel-spire-svg.trophy-champion {
+  filter: drop-shadow(0 0 25px rgba(250, 204, 21, 0.95));
+}
+
+.zenith-apex-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 4px 12px;
+  background: rgba(250, 204, 21, 0.18);
+  border: 1px solid rgba(250, 204, 21, 0.55);
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #fef08a;
+  text-shadow: 0 0 8px rgba(250, 204, 21, 0.6);
+}
+
+.zenith-headline {
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  color: #ffffff;
+  margin: 10px 0 4px 0;
+  text-shadow: 0 0 18px rgba(250, 204, 21, 0.5);
+}
+
+.zenith-subtitle {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  margin: 0;
+  max-width: 340px;
+  line-height: 1.4;
+}
+
+/* Expedition Basecamp Banner (Ground Zero - Level 1 Launch Terminal at Bottom of Map) */
+.adventure-departure-banner.expedition-basecamp-banner {
+  margin-top: 24px;
+  margin-bottom: 70px;
+  padding: 18px 20px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.94) 0%, rgba(8, 14, 26, 0.98) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.35);
+  border-radius: 20px;
+  box-shadow: 0 4px 28px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  max-width: 440px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.basecamp-badge {
+  background: rgba(6, 182, 212, 0.15) !important;
+  border-color: rgba(6, 182, 212, 0.45) !important;
+  color: #38bdf8 !important;
+}
+
+.basecamp-icon {
+  color: #38bdf8;
 }
 
 .departure-badge {
@@ -5809,65 +5914,6 @@ body {
   box-shadow: 0 0 6px #facc15;
 }
 
-/* Trophy Challenge Banner / Grand Finale Monument (Bottom of Map) */
-.adventure-trophy-banner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 24px;
-  text-align: center;
-  width: 100%;
-}
-
-.adventure-trophy-pedestal {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.trophy-ambient-glow {
-  position: absolute;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(250, 204, 21, 0.4) 0%, transparent 70%);
-  filter: blur(14px);
-  pointer-events: none;
-}
-
-.adventure-trophy-svg {
-  width: 68px;
-  height: 68px;
-  color: #475569;
-  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5));
-  transition: all 0.3s ease;
-  z-index: 1;
-}
-
-.adventure-trophy-svg.trophy-champion {
-  color: #facc15;
-  filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.8));
-}
-
-.adventure-trophy-headline {
-  font-size: 1.15rem;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  color: #ffffff;
-  margin: 8px 0 2px 0;
-  text-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
-}
-
-.adventure-trophy-subtitle {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #94a3b8;
-  margin: 0;
-  max-width: 320px;
-  line-height: 1.4;
-}
-
 .campaign-overall-progress-track {
   width: 100%;
   max-width: 240px;
@@ -5920,7 +5966,7 @@ body {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 24px;
   position: relative;
   z-index: 2;
 }
@@ -5933,16 +5979,18 @@ body {
   align-items: center;
 }
 
-/* Realm Gateway Archway */
-.realm-gateway-arch {
+/* Realm Gateway Waypoint Arch (Entrance Threshold at base of realm) */
+.realm-gateway-arch,
+.realm-waypoint-gate {
   width: 100%;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 12px 16px;
+  margin-top: 14px;
   margin-bottom: 16px;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.85) 0%, rgba(10, 16, 28, 0.6) 100%);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, rgba(10, 16, 28, 0.7) 100%);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
@@ -5981,6 +6029,16 @@ body {
   color: #ffffff;
 }
 
+.realm-altitude-tag {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #facc15;
+  background: rgba(250, 204, 21, 0.15);
+  padding: 1px 6px;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+}
+
 .realm-gateway-title {
   font-size: 1.2rem;
   font-weight: 900;
@@ -6008,7 +6066,7 @@ body {
   font-weight: 800;
 }
 
-/* Winding Trail Canvas for 10 nodes */
+/* Winding Trail Canvas for 10 nodes (Upward Ascent: Height 820px) */
 .realm-trail-canvas {
   position: relative;
   width: 100%;
@@ -6043,15 +6101,15 @@ body {
   100% { opacity: 1; filter: drop-shadow(0 0 10px #38bdf8) drop-shadow(0 0 18px rgba(245, 158, 11, 0.5)); }
 }
 
-/* 5. 3D Adventure Nodes (Orbs / Jewels) */
+/* 5. 3D Adventure Nodes (Standard, Milestone, Boss, Apex Sovereign) */
 .adventure-block,
 .level-tile-stone,
 .level-card-item,
 .adv-trail-node {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 52px;
-  height: 52px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -6073,6 +6131,7 @@ body {
   height: 100%;
   border-radius: 50%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
@@ -6098,6 +6157,141 @@ body {
   line-height: 1;
   z-index: 3;
   letter-spacing: -0.02em;
+}
+
+/* Objective Micro Icon on Standard Nodes */
+.adv-micro-obj-badge {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0.75;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* Milestone Checkpoint Nodes (Levels 5, 15, 25... 95) */
+.adv-trail-node.milestone-stone {
+  width: 58px;
+  height: 58px;
+  border-radius: 36%;
+  border: 2px solid #38bdf8;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.4), 0 4px 14px rgba(0, 0, 0, 0.55);
+}
+
+.adv-milestone-gem-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%);
+  color: #ffffff;
+  padding: 2px 5px;
+  border-radius: 6px;
+  border: 1px solid #7dd3fc;
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.6);
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Boss Milestone Stage (Levels 10, 20, 30... 90) */
+.adventure-block.boss-stone,
+.level-tile-stone.boss-stone,
+.adv-trail-node.boss-stone {
+  width: 66px;
+  height: 66px;
+  border-radius: 20px;
+  border: 2.5px solid #facc15 !important;
+  box-shadow:
+    0 0 24px rgba(250, 204, 21, 0.65),
+    0 6px 20px rgba(0, 0, 0, 0.65) !important;
+}
+
+.adv-boss-crown-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #facc15 0%, #d97706 100%);
+  color: #451a03;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid #fef08a;
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.8);
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Level 100 Ultimate Sovereign Apex Node */
+.adventure-block.apex-sovereign-node,
+.level-tile-stone.apex-sovereign-node,
+.adv-trail-node.apex-sovereign-node {
+  width: 76px !important;
+  height: 76px !important;
+  border-radius: 50% !important;
+  border: 3px solid #fef08a !important;
+  background: radial-gradient(circle at 35% 35%, #fef08a 0%, #eab308 50%, #854d0e 100%) !important;
+  box-shadow:
+    0 0 35px rgba(250, 204, 21, 0.95),
+    0 0 65px rgba(234, 179, 8, 0.6),
+    0 8px 24px rgba(0, 0, 0, 0.8) !important;
+  animation: apex-node-shimmer 2.2s infinite alternate ease-in-out;
+  z-index: 9;
+}
+
+@keyframes apex-node-shimmer {
+  0% { transform: translate(-50%, -50%) scale(1); filter: brightness(1); }
+  100% { transform: translate(-50%, -50%) scale(1.06); filter: brightness(1.2) drop-shadow(0 0 25px rgba(250, 204, 21, 1)); }
+}
+
+.adv-apex-corona {
+  position: absolute;
+  inset: -14px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.apex-corona-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px dashed rgba(250, 204, 21, 0.8);
+  animation: apex-ring-spin 12s infinite linear;
+}
+
+.apex-corona-ring.ring-2 {
+  inset: -6px;
+  border-style: dotted;
+  border-width: 1.5px;
+  animation-duration: 8s;
+  animation-direction: reverse;
+}
+
+@keyframes apex-ring-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.adv-apex-badge {
+  background: linear-gradient(135deg, #fef08a 0%, #eab308 100%) !important;
+  color: #451a03 !important;
+  border: 1px solid #ffffff !important;
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.9) !important;
+  padding: 2px 7px !important;
+  gap: 3px;
+}
+
+.apex-badge-label {
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
 }
 
 /* Completed Jewel State */
@@ -6137,60 +6331,35 @@ body {
   margin-bottom: 2px;
 }
 
-/* Grand Finale Trophy Monument (Level 100 Apex at Bottom of Map) */
-.adventure-trophy-banner.grand-finale-banner {
-  margin-top: 36px;
-  margin-bottom: 70px;
-  padding: 24px 20px;
-  background: radial-gradient(circle at 50% 30%, rgba(250, 204, 21, 0.08) 0%, rgba(15, 23, 42, 0.95) 70%);
-  border: 1.5px solid rgba(250, 204, 21, 0.35);
-  border-radius: 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 24px rgba(250, 204, 21, 0.25);
-  max-width: 420px;
-  box-sizing: border-box;
-}
-
-.trophy-finale-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 10px;
-  padding: 3px 10px;
-  background: rgba(250, 204, 21, 0.15);
-  border: 1px solid rgba(250, 204, 21, 0.4);
-  border-radius: 9999px;
-  font-size: 0.68rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  color: #fde047;
-}
-
-.finale-crown-icon {
-  color: #facc15;
-}
-
-/* Inter-Realm Conduit Stream (Connects Chapter N to Chapter N+1) */
+/* Inter-Realm Conduit Stream (Connects Chapter N-1 up to Chapter N) */
 .realm-connector-conduit {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 28px;
-  margin: -14px 0;
+  height: 36px;
+  margin: -6px 0;
   position: relative;
   z-index: 2;
   pointer-events: none;
 }
 
 .conduit-vertical-stream {
-  width: 5px;
+  width: 6px;
   height: 100%;
   border-radius: 3px;
+  transition: all 0.3s ease;
 }
 
 .conduit-vertical-stream.stream-active {
-  background: linear-gradient(180deg, var(--stream-start), var(--stream-end));
-  box-shadow: 0 0 8px #38bdf8, 0 0 14px rgba(56, 189, 248, 0.5);
+  background: linear-gradient(0deg, var(--stream-start), var(--stream-end));
+  box-shadow: 0 0 10px #38bdf8, 0 0 18px rgba(56, 189, 248, 0.6);
+  animation: conduit-stream-pulse 2s infinite alternate ease-in-out;
+}
+
+@keyframes conduit-stream-pulse {
+  0% { filter: brightness(1) drop-shadow(0 0 4px #38bdf8); }
+  100% { filter: brightness(1.25) drop-shadow(0 0 10px #38bdf8); }
 }
 
 .conduit-vertical-stream.stream-dormant {
@@ -6330,36 +6499,6 @@ body {
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-top: 5px solid #eab308;
-}
-
-/* Boss Milestone Stage (Levels 10, 20, 30... 100) */
-.adventure-block.boss-stone,
-.level-tile-stone.boss-stone,
-.adv-trail-node.boss-stone {
-  width: 66px;
-  height: 66px;
-  border-radius: 18px;
-  border: 2.5px solid #facc15 !important;
-  box-shadow:
-    0 0 22px rgba(250, 204, 21, 0.6),
-    0 6px 20px rgba(0, 0, 0, 0.65) !important;
-}
-
-.adv-boss-crown-badge {
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, #facc15 0%, #d97706 100%);
-  color: #451a03;
-  padding: 2px 6px;
-  border-radius: 6px;
-  border: 1px solid #fef08a;
-  box-shadow: 0 0 10px rgba(250, 204, 21, 0.8);
-  z-index: 7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* Locked Node */

@@ -113,9 +113,15 @@ export const LevelMap = ({
       }
 
       if (targetStage === 1) {
-        // Level 1 starts right at the top of the adventure map
-        if (scrollContainerRef.current) {
-          scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        // Level 1 starts right at the bottom of the adventure map!
+        const node1 = scrollContainerRef.current?.querySelector('.adv-trail-node[data-level="1"]');
+        if (node1) {
+          node1.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTo({
+            top: scrollContainerRef.current.scrollHeight,
+            behavior: 'smooth'
+          });
         }
       } else {
         const targetNode = scrollContainerRef.current?.querySelector(`.adv-trail-node[data-level="${targetStage}"]`);
@@ -144,15 +150,14 @@ export const LevelMap = ({
     setActiveChapterFilter(0);
 
     setTimeout(() => {
-      if (targetStage === 1) {
-        if (scrollContainerRef.current) {
-          scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      } else {
-        const targetNode = scrollContainerRef.current?.querySelector(`.adv-trail-node[data-level="${targetStage}"]`);
-        if (targetNode) {
-          targetNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+      const targetNode = scrollContainerRef.current?.querySelector(`.adv-trail-node[data-level="${targetStage}"]`);
+      if (targetNode) {
+        targetNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (targetStage === 1 && scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTo({
+          top: scrollContainerRef.current.scrollHeight,
+          behavior: 'smooth'
+        });
       }
     }, 120);
   }, [currentLevel, unlockedLevel]);
@@ -223,22 +228,21 @@ export const LevelMap = ({
       // Scroll to current player level
       const targetStage = Math.max(1, Math.min(currentLevel, unlockedLevel));
       setTimeout(() => {
-        if (targetStage === 1) {
-          if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-        } else {
-          const targetNode = scrollContainerRef.current?.querySelector(`.adv-trail-node[data-level="${targetStage}"]`);
-          if (targetNode) {
-            targetNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
+        const targetNode = scrollContainerRef.current?.querySelector(`.adv-trail-node[data-level="${targetStage}"]`);
+        if (targetNode) {
+          targetNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (targetStage === 1 && scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTo({
+            top: scrollContainerRef.current.scrollHeight,
+            behavior: 'smooth'
+          });
         }
       }, 100);
     } else {
       // Scroll to that chapter section
       const sectionEl = chapterSectionRefs.current[chapterNum];
       if (sectionEl) {
-        sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        sectionEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
       const ch = CHAPTER_CONFIGS.find((c) => c.chapter === chapterNum);
       if (ch && (selectedLevelNum < ch.start || selectedLevelNum > ch.end)) {
@@ -272,7 +276,7 @@ export const LevelMap = ({
     return map;
   }, [completedLevels, unlockedLevel]);
 
-  // Pre-calculate paths for each chapter
+  // Pre-calculate paths for each chapter (Upward progression: Level 1 at bottom, Level 100 at top)
   const chapterPaths = useMemo(() => {
     const map = {};
     CHAPTER_CONFIGS.forEach((ch) => {
@@ -283,13 +287,20 @@ export const LevelMap = ({
         level: ch.start + idx
       }));
 
+      // In upward journey:
+      // ch.chapter > 1 has lead-in coming up from chapter below
+      // All chapters lead-out upward (ch 10 leads straight into Zenith Citadel!)
       const hasLeadIn = ch.chapter > 1;
-      const hasLeadOut = ch.chapter < 10;
+      const hasLeadOut = true;
 
       const fullPath = buildChapterPathD(pts, hasLeadIn, hasLeadOut);
       const unlockedPts = pts.filter((p) => p.level <= unlockedLevel);
       const unlockedPath = unlockedPts.length > 0
-        ? buildChapterPathD(unlockedPts, hasLeadIn && unlockedLevel >= ch.start, false)
+        ? buildChapterPathD(
+            unlockedPts,
+            hasLeadIn && unlockedLevel >= ch.start,
+            unlockedLevel > ch.end
+          )
         : '';
 
       map[ch.chapter] = {
@@ -307,10 +318,10 @@ export const LevelMap = ({
     return CHAPTER_CONFIGS.find((c) => c.chapter === activeChapterFilter) || null;
   }, [activeChapterFilter]);
 
-  // Levels for specific chapter view (10 stages)
+  // Levels for specific chapter view (10 stages ascending from bottom to top)
   const chapterViewLevels = useMemo(() => {
     if (activeChapterFilter === 0) return [];
-    return LEVEL_CONFIGS.filter((lvl) => lvl.chapter === activeChapterFilter).map((lvl) => {
+    return LEVEL_CONFIGS.filter((lvl) => lvl.chapter === activeChapterFilter).reverse().map((lvl) => {
       const isCompleted = completedLevels.has(lvl.level);
       const isCurrent = lvl.level === unlockedLevel;
       const isLocked = lvl.level > unlockedLevel;
@@ -327,6 +338,9 @@ export const LevelMap = ({
       };
     });
   }, [activeChapterFilter, completedLevels, unlockedLevel, selectedLevelNum]);
+
+  // Ascent chapters list: Chapter 10 at top, down to Chapter 1 at bottom
+  const ascentChapters = useMemo(() => [...CHAPTER_CONFIGS].reverse(), []);
 
   return (
     <div
@@ -437,47 +451,9 @@ export const LevelMap = ({
         })}
       </nav>
 
-      {/* 3. Main Scrollable Adventure Trail Canvas (Top-to-Bottom Sequential Road) */}
+      {/* 3. Main Scrollable Adventure Trail Canvas (Upward Sequential Journey: Level 1 Bottom -> Level 100 Top) */}
       <main className="campaign-grid-container adventure-scroll-container" ref={scrollContainerRef}>
         <div className={`adventure-content-wrapper ${activeChapterFilter !== 0 ? 'chapter-mode' : ''}`}>
-
-          {/* TOP DEPARTURE TERMINAL BANNER (Level 1 Starts Here) */}
-          <div className="adventure-departure-banner" role="region" aria-label="Campaign Departure Waypoint">
-            <div className="departure-badge">
-              <Sparkles size={12} />
-              <span>ADVENTURE EXPEDITION</span>
-              <span className="departure-stages-pill">100 STAGES</span>
-            </div>
-            <h2 className="departure-headline">ASCEND TO THE CITADEL</h2>
-            <p className="departure-subtext">
-              Level 1 starts at the summit. Clear stages sequentially downwards through all 10 Cyber Realms to conquer the Sovereign Trophy.
-            </p>
-            <div className="departure-quick-actions">
-              <div className="campaign-overall-progress-track" title={`${progressPercent}% Campaign Conquered`}>
-                <div
-                  className="campaign-overall-progress-fill"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-              <div className="departure-stats-strip">
-                <span className="departure-stat-item">
-                  <Trophy size={12} className="dep-icon-trophy" />
-                  <strong>{completedCount}</strong> / {TOTAL_LEVELS} Cleared
-                </span>
-                {unlockedLevel > 1 && (
-                  <button
-                    type="button"
-                    className="departure-locate-btn"
-                    onClick={handleLocateCurrentLevel}
-                    title="Jump view to your current unlocked stage"
-                  >
-                    <span className="dep-locate-dot" />
-                    <span>LOCATE STAGE {unlockedLevel}</span>
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
 
           {/* Locked Stage Feedback Toast */}
           {lockedFeedback && (
@@ -487,10 +463,90 @@ export const LevelMap = ({
             </div>
           )}
 
-          {/* VIEW A: ALL STAGES (WINDING JOURNEY PATH: LEVEL 1 TOP TO LEVEL 100 BOTTOM) */}
+          {/* VIEW A: ALL STAGES (UPWARD JOURNEY PATH: LEVEL 1 BOTTOM TO LEVEL 100 TOP) */}
           {activeChapterFilter === 0 ? (
             <div className="adventure-mosaic-grid campaign-tiles-grid adventure-trail-journey">
-              {CHAPTER_CONFIGS.map((chapter) => {
+
+              {/* GRAND FINALE: SOVEREIGN ZENITH CITADEL AT THE VERY TOP (LEVEL 100 APEX DESTINATION) */}
+              <div
+                className="adventure-trophy-banner grand-finale-banner zenith-citadel-banner"
+                role="region"
+                aria-label="Sovereign Zenith Citadel Apex Destination"
+              >
+                <div className="adventure-trophy-pedestal citadel-pedestal">
+                  <div className="trophy-ambient-glow citadel-aurora-glow" />
+                  <svg
+                    viewBox="0 0 120 120"
+                    className={`adventure-trophy-svg citadel-spire-svg ${completedCount >= TOTAL_LEVELS ? 'trophy-champion' : ''}`}
+                    aria-hidden="true"
+                  >
+                    <defs>
+                      <linearGradient id="citadelGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#fef08a" />
+                        <stop offset="50%" stopColor="#facc15" />
+                        <stop offset="100%" stopColor="#d97706" />
+                      </linearGradient>
+                    </defs>
+                    {/* Citadel Spire & Trophy Vector */}
+                    <path
+                      d="M 28 32 C 14 32 10 50 24 62 C 30 68 38 68 42 65"
+                      fill="none"
+                      stroke="url(#citadelGoldGrad)"
+                      strokeWidth="6"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M 92 32 C 106 32 110 50 96 62 C 90 68 82 68 78 65"
+                      fill="none"
+                      stroke="url(#citadelGoldGrad)"
+                      strokeWidth="6"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M 32 22 L 88 22 C 88 22 88 58 60 68 C 32 58 32 22 32 22 Z"
+                      fill="url(#citadelGoldGrad)"
+                    />
+                    <rect x="30" y="20" width="60" height="5" rx="2.5" fill="rgba(255, 255, 255, 0.35)" />
+                    {/* Central Sovereign Crown on Citadel */}
+                    <path
+                      d="M 60 34 L 63 42 L 72 42 L 65 47 L 68 55 L 60 50 L 52 55 L 55 47 L 48 42 L 57 42 Z"
+                      fill="#ffffff"
+                    />
+                    <path d="M 54 68 L 66 68 L 64 82 L 56 82 Z" fill="url(#citadelGoldGrad)" />
+                    <rect x="42" y="82" width="36" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+                    <rect x="34" y="90" width="52" height="10" rx="3" fill="url(#citadelGoldGrad)" />
+                    {/* Citadel spires flanking */}
+                    <polygon points="20,95 24,55 28,95" fill="rgba(250, 204, 21, 0.45)" />
+                    <polygon points="92,95 96,55 100,95" fill="rgba(250, 204, 21, 0.45)" />
+                  </svg>
+                </div>
+
+                <div className="trophy-finale-badge zenith-apex-badge">
+                  <Crown size={14} className="finale-crown-icon" />
+                  <span>SUMMIT CITADEL • ALTITUDE 10,000M</span>
+                </div>
+
+                <h2 className="adventure-trophy-headline zenith-headline">
+                  {completedCount >= TOTAL_LEVELS
+                    ? 'SOVEREIGN CHAMPION OF BLOCK BLITZ'
+                    : 'THE SOVEREIGN ZENITH CITADEL'}
+                </h2>
+                <p className="adventure-trophy-subtitle zenith-subtitle">
+                  {completedCount >= TOTAL_LEVELS
+                    ? 'All 100 realms conquered! You reign supreme as the Sovereign Arcade Champion.'
+                    : `The ultimate destination. Ascend through all 10 Cyber Realms and defeat Stage 100 to claim the Sovereign Throne. (${TOTAL_LEVELS - completedCount} stages remaining)`}
+                </p>
+
+                <div className="campaign-overall-progress-track" title={`${progressPercent}% Campaign Conquered`}>
+                  <div
+                    className="campaign-overall-progress-fill"
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* THE 10 ASCENT CHAPTER REALMS (RENDERED CHAPTER 10 DOWN TO CHAPTER 1) */}
+              {ascentChapters.map((chapter) => {
                 const prog = chapterProgressMap[chapter.chapter];
                 const pathData = chapterPaths[chapter.chapter];
                 const chapterLevels = LEVEL_CONFIGS.filter((l) => l.chapter === chapter.chapter);
@@ -503,32 +559,7 @@ export const LevelMap = ({
                     style={{ '--realm-theme-color': chapter.color }}
                     aria-label={`Chapter ${chapter.chapter}: ${chapter.name}`}
                   >
-                    {/* CHAPTER GATEWAY ARCHWAY */}
-                    <div className="realm-gateway-arch">
-                      <div
-                        className="realm-gateway-top-line"
-                        style={{ background: `linear-gradient(90deg, transparent, ${chapter.color}, transparent)` }}
-                      />
-                      <div className="realm-gateway-content">
-                        <div
-                          className="realm-gateway-badge"
-                          style={{ borderColor: `${chapter.color}70`, background: `${chapter.color}18` }}
-                        >
-                          {getChapterIcon(chapter.icon, chapter.color, 16)}
-                          <span className="realm-badge-tag">CHAPTER {chapter.chapter}</span>
-                        </div>
-                        <h3 className="realm-gateway-title">{chapter.name}</h3>
-                        <div className="realm-gateway-meta">
-                          <span className="realm-stages-tag">Stages {chapter.start}–{chapter.end}</span>
-                          <span className="realm-bullet">•</span>
-                          <span className="realm-cleared-tag">
-                            {prog?.isCompleted ? 'REALM CONQUERED' : `${prog?.completed || 0}/10 CLEARED`}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* WINDING PATHWAY FOR THIS REALM (10 SEQUENTIAL STAGES TOP TO BOTTOM) */}
+                    {/* WINDING PATHWAY FOR THIS REALM (10 SEQUENTIAL STAGES BOTTOM TO TOP) */}
                     <div className="realm-trail-canvas">
                       {/* SVG Serpentine Road Track Overlay */}
                       <svg
@@ -538,7 +569,7 @@ export const LevelMap = ({
                         aria-hidden="true"
                       >
                         <defs>
-                          <linearGradient id={`realmGrad-${chapter.chapter}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                          <linearGradient id={`realmGrad-${chapter.chapter}`} x1="0%" y1="100%" x2="0%" y2="0%">
                             <stop offset="0%" stopColor={chapter.color} stopOpacity="0.85" />
                             <stop offset="70%" stopColor="#38bdf8" stopOpacity="0.95" />
                             <stop offset="100%" stopColor="#f59e0b" stopOpacity="1" />
@@ -596,7 +627,9 @@ export const LevelMap = ({
                         const isCurrent = lvl.level === unlockedLevel;
                         const isLocked = lvl.level > unlockedLevel;
                         const isSelected = lvl.level === selectedLevelNum;
+                        const isApex = lvl.level === 100;
                         const isBoss = Boolean(lvl.isBoss || lvl.level % 10 === 0);
+                        const isMilestone = !isBoss && !isApex && lvl.level % 5 === 0;
 
                         return (
                           <div
@@ -608,7 +641,7 @@ export const LevelMap = ({
                             } ${isCurrent ? 'current-unlocked' : ''} ${
                               isLocked ? 'locked-stone' : 'unlocked-stone'
                             } ${isSelected ? 'selected-stone' : ''} ${
-                              isBoss ? 'boss-stone' : ''
+                              isApex ? 'apex-sovereign-node boss-stone' : isBoss ? 'boss-stone' : isMilestone ? 'milestone-stone' : 'standard-stone'
                             }`}
                             style={{
                               left: `${pos.x}%`,
@@ -623,6 +656,14 @@ export const LevelMap = ({
                               isCompleted ? 'Completed' : isLocked ? 'Locked' : 'Unlocked'
                             }`}
                           >
+                            {/* Apex Sovereign Shimmering Corona Rings (Level 100) */}
+                            {isApex && (
+                              <div className="adv-apex-corona" aria-hidden="true">
+                                <span className="apex-corona-ring ring-1" />
+                                <span className="apex-corona-ring ring-2" />
+                              </div>
+                            )}
+
                             {/* Active Radar Beacon Waves */}
                             {isCurrent && (
                               <div className="adv-beacon-rings" aria-hidden="true">
@@ -650,21 +691,36 @@ export const LevelMap = ({
                               </div>
                             )}
 
-                            {/* Boss Fortress Crown Crest */}
-                            {isBoss && (
+                            {/* Boss & Milestone Badges */}
+                            {isApex ? (
+                              <div className="adv-boss-crown-badge adv-apex-badge" title="Ultimate Sovereign Apex Stage 100">
+                                <Crown size={14} strokeWidth={2.8} />
+                                <span className="apex-badge-label">APEX</span>
+                              </div>
+                            ) : isBoss ? (
                               <div
                                 className="adv-boss-crown-badge"
-                                title={lvl.level === 100 ? 'Final Sovereign Boss Stage' : 'Boss Milestone Stage'}
+                                title="Boss Milestone Stage"
                               >
-                                <Crown size={lvl.level === 100 ? 14 : 12} strokeWidth={2.8} />
+                                <Crown size={12} strokeWidth={2.8} />
                               </div>
-                            )}
+                            ) : isMilestone ? (
+                              <div className="adv-milestone-gem-badge" title="Chapter Checkpoint">
+                                <Gem size={10} strokeWidth={2.6} />
+                              </div>
+                            ) : null}
 
                             {/* 3D Gloss Highlight */}
                             <div className="adv-node-gloss" />
 
                             {/* 3D Node Core Sphere */}
                             <div className="adv-orb-core">
+                              {/* Objective Micro Icon on Standard Nodes for visual variety */}
+                              {!isBoss && !isMilestone && !isApex && (
+                                <span className="adv-micro-obj-badge" aria-hidden="true">
+                                  {getObjectiveIcon(lvl.type, isCompleted ? '#bae6fd' : isCurrent ? '#713f12' : isLocked ? '#475569' : chapter.color)}
+                                </span>
+                              )}
                               <span
                                 className={`adv-node-number ${
                                   isCompleted
@@ -698,16 +754,42 @@ export const LevelMap = ({
                       })}
                     </div>
 
+                    {/* CHAPTER WAYPOINT GATEWAY ARCHWAY (Threshold at base of Realm) */}
+                    <div className="realm-gateway-arch realm-waypoint-gate">
+                      <div
+                        className="realm-gateway-top-line"
+                        style={{ background: `linear-gradient(90deg, transparent, ${chapter.color}, transparent)` }}
+                      />
+                      <div className="realm-gateway-content">
+                        <div
+                          className="realm-gateway-badge"
+                          style={{ borderColor: `${chapter.color}70`, background: `${chapter.color}18` }}
+                        >
+                          {getChapterIcon(chapter.icon, chapter.color, 15)}
+                          <span className="realm-badge-tag">CHAPTER {chapter.chapter}</span>
+                          <span className="realm-altitude-tag">ALT: {(chapter.chapter * 1000).toLocaleString()}M</span>
+                        </div>
+                        <h3 className="realm-gateway-title">{chapter.name}</h3>
+                        <div className="realm-gateway-meta">
+                          <span className="realm-stages-tag">Stages {chapter.start}–{chapter.end}</span>
+                          <span className="realm-bullet">•</span>
+                          <span className="realm-cleared-tag">
+                            {prog?.isCompleted ? 'REALM CONQUERED' : `${prog?.completed || 0}/10 CLEARED`}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Transitional Connector Conduit between Consecutive Realms */}
-                    {chapter.chapter < 10 && (
+                    {chapter.chapter > 1 && (
                       <div className="realm-connector-conduit" aria-hidden="true">
                         <div
                           className={`conduit-vertical-stream ${
-                            unlockedLevel > chapter.end ? 'stream-active' : 'stream-dormant'
+                            unlockedLevel >= chapter.start ? 'stream-active' : 'stream-dormant'
                           }`}
                           style={{
-                            '--stream-start': chapter.color,
-                            '--stream-end': CHAPTER_CONFIGS[chapter.chapter]?.color || '#38bdf8'
+                            '--stream-start': CHAPTER_CONFIGS[chapter.chapter - 2]?.color || '#38bdf8',
+                            '--stream-end': chapter.color
                           }}
                         />
                       </div>
@@ -716,71 +798,46 @@ export const LevelMap = ({
                 );
               })}
 
-              {/* GRAND FINALE: SOVEREIGN CHAMPION TROPHY MONUMENT AT THE VERY BOTTOM */}
+              {/* EXPEDITION BASECAMP BANNER (GROUND ZERO - LEVEL 1 LAUNCH TERMINAL AT VERY BOTTOM) */}
               <div
-                className="adventure-trophy-banner grand-finale-banner"
+                className="adventure-departure-banner expedition-basecamp-banner"
                 role="region"
-                aria-label="Sovereign Champion Monument"
+                aria-label="Expedition Basecamp Launch Pad"
               >
-                <div className="adventure-trophy-pedestal">
-                  <div className="trophy-ambient-glow" />
-                  <svg
-                    viewBox="0 0 120 120"
-                    className={`adventure-trophy-svg ${completedCount >= TOTAL_LEVELS ? 'trophy-champion' : ''}`}
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M 28 28 C 14 28 10 48 24 60 C 30 66 38 66 42 63"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="7"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M 92 28 C 106 28 110 48 96 60 C 90 66 82 66 78 63"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="7"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M 32 20 L 88 20 C 88 20 88 56 60 66 C 32 56 32 20 32 20 Z"
-                      fill="currentColor"
-                    />
-                    <rect x="30" y="18" width="60" height="5" rx="2.5" fill="rgba(255, 255, 255, 0.15)" />
-                    <path
-                      d="M 60 32 L 63 40 L 72 40 L 65 45 L 68 53 L 60 48 L 52 53 L 55 45 L 48 40 L 57 40 Z"
-                      fill="rgba(255, 255, 255, 0.28)"
-                    />
-                    <path d="M 54 66 L 66 66 L 64 80 L 56 80 Z" fill="currentColor" />
-                    <rect x="42" y="80" width="36" height="8" rx="2" fill="rgba(255, 255, 255, 0.08)" />
-                    <rect x="34" y="88" width="52" height="10" rx="3" fill="currentColor" />
-                  </svg>
+                <div className="departure-badge basecamp-badge">
+                  <Compass size={13} className="basecamp-icon" />
+                  <span>EXPEDITION BASECAMP</span>
+                  <span className="departure-stages-pill">GROUND ZERO • 0M</span>
                 </div>
-
-                <div className="trophy-finale-badge">
-                  <Crown size={13} className="finale-crown-icon" />
-                  <span>LEVEL 100 APEX MILESTONE</span>
-                </div>
-
-                <h2 className="adventure-trophy-headline">
-                  {completedCount >= TOTAL_LEVELS
-                    ? 'SOVEREIGN CHAMPION OF BLOCK BLITZ'
-                    : 'SOVEREIGN CHAMPION TROPHY'}
-                </h2>
-                <p className="adventure-trophy-subtitle">
-                  {completedCount >= TOTAL_LEVELS
-                    ? 'All 100 stages conquered! You reign supreme as the Sovereign Arcade Champion.'
-                    : `Conquer Stage 100 to claim the Sovereign Champion Trophy. ${TOTAL_LEVELS - completedCount} stages remaining.`}
+                <h2 className="departure-headline">ASCENT TO THE CITADEL</h2>
+                <p className="departure-subtext">
+                  Level 1 starts right here at the launch pad. Battle upwards sequentially through all 10 Cyber Realms to reach the Zenith Citadel at Stage 100.
                 </p>
-
-                <div className="campaign-overall-progress-track" title={`${progressPercent}% Campaign Conquered`}>
-                  <div
-                    className="campaign-overall-progress-fill"
-                    style={{ width: `${progressPercent}%` }}
-                  />
+                <div className="departure-quick-actions">
+                  <div className="campaign-overall-progress-track" title={`${progressPercent}% Campaign Conquered`}>
+                    <div
+                      className="campaign-overall-progress-fill"
+                      style={{ width: `${progressPercent}%` }}
+                    />
+                  </div>
+                  <div className="departure-stats-strip">
+                    <span className="departure-stat-item">
+                      <Trophy size={12} className="dep-icon-trophy" />
+                      <strong>{completedCount}</strong> / {TOTAL_LEVELS} Cleared
+                    </span>
+                    <button
+                      type="button"
+                      className="departure-locate-btn"
+                      onClick={handleLocateCurrentLevel}
+                      title="Jump view to your current unlocked stage"
+                    >
+                      <span className="dep-locate-dot" />
+                      <span>LOCATE STAGE {unlockedLevel}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
+
             </div>
           ) : (
             /* VIEW B: SPECIFIC CHAPTER VIEW (10 Stages with Chapter Mission Header) */
@@ -789,11 +846,11 @@ export const LevelMap = ({
                 <div className="chapter-header-strip">
                   <div className="header-strip-meta">
                     <span className="header-strip-chapter-tag">
-                      CHAPTER {activeChapterData.chapter}
+                      CHAPTER {activeChapterData.chapter} • ALT: {(activeChapterData.chapter * 1000).toLocaleString()}M
                     </span>
                     <h2 className="header-strip-name">{activeChapterData.name}</h2>
                     <span className="header-strip-range">
-                      Stages {activeChapterData.start} – {activeChapterData.end}
+                      Stages {activeChapterData.start} – {activeChapterData.end} • ASCENT ASCENDING
                     </span>
                   </div>
 
