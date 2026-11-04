@@ -146,38 +146,14 @@ export const SettingsModal = ({
               </button>
             </div>
 
-            {/* 3. Voice Announcements */}
-            <div className={`setting-row ${isAudioDisabled ? 'setting-disabled' : ''}`}>
-              <div className="setting-info">
-                <div className="setting-label-row">
-                  <span className="setting-label">Voice Announcements</span>
-                  {isAudioDisabled && <span className="disabled-badge">Master Audio OFF</span>}
-                </div>
-                <span className="setting-desc">Spoken commentary for combos, multi-clears, and stage results</span>
-              </div>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={settings.voiceAnnouncements && !isAudioDisabled}
-                disabled={isAudioDisabled}
-                className={`switch-toggle ${
-                  settings.voiceAnnouncements && !isAudioDisabled ? 'switch-on' : 'switch-off'
-                }`}
-                onClick={() => handleToggle('voiceAnnouncements')}
-                aria-label="Toggle Voice Announcements"
-              >
-                <span className="switch-thumb" />
-              </button>
-            </div>
-
-            {/* 4. Volume Slider */}
+            {/* 3. Volume Slider */}
             <div className={`setting-row volume-row ${isAudioDisabled ? 'setting-disabled' : ''}`}>
               <div className="setting-info">
                 <div className="setting-label-row">
                   <span className="setting-label">Master Volume</span>
                   <span className="volume-percent-badge">{settings.volume}%</span>
                 </div>
-                <span className="setting-desc">Applies consistently to sound effects and speech synthesizer</span>
+                <span className="setting-desc">Adjust audio output level for in-game sound effects</span>
               </div>
               <div className="volume-slider-group">
                 <div className="slider-track-container">
@@ -308,7 +284,7 @@ export const SettingsModal = ({
             <Info size={14} className="notice-icon" />
             <div className="notice-content">
               <span>
-                <strong>Audio System Note:</strong> Master Sound independently controls overall audio. Sound effects and voice announcements can be muted independently. Settings persist across sessions. Background music is omitted as none exists in the sound engine.
+                <strong>Audio System Note:</strong> Master Sound independently controls overall audio. Sound effects, volume, and haptic feedback can be adjusted or muted independently. Settings persist across sessions.
               </span>
             </div>
           </div>

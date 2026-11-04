@@ -311,12 +311,7 @@ export function App() {
     handleUpdateSettings({ soundEffects: !settings.soundEffects });
   }, [settings.soundEffects, handleUpdateSettings]);
 
-  // Quick voice toggle handler for header button / keyboard (toggles Voice independently)
-  const handleToggleVoice = useCallback(() => {
-    handleUpdateSettings({ voiceAnnouncements: !settings.voiceAnnouncements });
-  }, [settings.voiceAnnouncements, handleUpdateSettings]);
-
-  // Trigger celebration badge and spoken announcement
+  // Trigger celebration badge and visual feedback
   const triggerCelebration = useCallback((celeb) => {
     if (!celeb) return;
     if (notificationTimeoutRef.current) {
@@ -334,10 +329,6 @@ export function App() {
     if (celeb.screenShake && !settings.reduceAnimations) {
       setScreenShake(celeb.screenShake);
       setTimeout(() => setScreenShake(null), 380);
-    }
-
-    if (celeb.spoken) {
-      voiceAnnouncer.speak(celeb.spoken);
     }
 
     if (celeb.triggerConfetti && !settings.reduceAnimations) {
@@ -663,11 +654,6 @@ export function App() {
 
           updateScoreAndHigh(totalPointsGained + bonusToAward);
           sounds.playLevelComplete();
-          if (currentLevel >= 100) {
-            voiceAnnouncer.announceCampaignComplete();
-          } else {
-            voiceAnnouncer.announceLevelComplete();
-          }
           triggerHaptic('level_complete');
           triggerCelebration(getLevelCompleteCelebration(levelConfig, bonusToAward));
         } else {
@@ -738,7 +724,6 @@ export function App() {
           } else if (isGameOver(clearedGrid, updatedShapes)) {
             setGameOver(true);
             sounds.playGameOver();
-            voiceAnnouncer.announceGameOver();
             triggerHaptic('game_over');
             // Never let Game Over overwrite an active High Score celebration
             if (!isHighScoreCelebrationActiveRef.current) {
@@ -878,11 +863,6 @@ export function App() {
           setSelectedShape(null);
           setHoverPos(null);
           sounds.playLevelComplete();
-          if (currentLevel >= 100) {
-            voiceAnnouncer.announceCampaignComplete();
-          } else {
-            voiceAnnouncer.announceLevelComplete();
-          }
           triggerHaptic('level_complete');
           triggerCelebration(getLevelCompleteCelebration(levelConfig, bonusToAward));
           setTimeout(() => {
@@ -914,13 +894,12 @@ export function App() {
             }, 1800);
             triggerCelebration(getHighScoreCelebration(projectedScore));
           } else if (!isGameOver(newGrid, updatedShapes)) {
-            voiceAnnouncer.announceGoodMove();
+            // Good move
           }
 
           if (isGameOver(newGrid, updatedShapes)) {
             setGameOver(true);
             sounds.playGameOver();
-            voiceAnnouncer.announceGameOver();
             triggerHaptic('game_over');
             if (!isHighScoreCelebrationActiveRef.current) {
               triggerCelebration(getGameOverCelebration(projectedScore));
@@ -1079,7 +1058,6 @@ export function App() {
     setShowLevelMap(false);
     setHasStartedGame(true);
     sounds.playLevelStart();
-    voiceAnnouncer.announceGameStart();
     triggerCelebration(getStartGameCelebration());
   }, [triggerCelebration]);
 
@@ -1469,8 +1447,6 @@ export function App() {
         handleRestart();
       } else if (e.key === 'm' || e.key === 'M') {
         handleToggleMute();
-      } else if (e.key === 'v' || e.key === 'V') {
-        handleToggleVoice();
       }
     };
 
@@ -1489,8 +1465,7 @@ export function App() {
     selectedShape,
     handleSelectShape,
     handleRestart,
-    handleToggleMute,
-    handleToggleVoice
+    handleToggleMute
   ]);
 
   const activeDragShape = touchDragShape || desktopDragShape;
@@ -1521,8 +1496,6 @@ export function App() {
           levelProgress={levelProgress}
           isMuted={!settings.masterSound || !settings.soundEffects}
           onToggleMute={handleToggleMute}
-          isVoiceEnabled={settings.masterSound && settings.voiceAnnouncements}
-          onToggleVoice={handleToggleVoice}
           onRestart={handleRestart}
           onOpenExitModal={handleOpenExitModal}
           onOpenHelp={() => setShowHelp(true)}

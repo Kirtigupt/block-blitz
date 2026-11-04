@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Trophy, RotateCcw, Volume2, VolumeX, HelpCircle, Flame, User, LogIn, Crown, Mic, MicOff, Target, Map, Layers, Gem, Sparkles, LogOut, Settings, Zap } from 'lucide-react';
+import { Trophy, RotateCcw, Volume2, VolumeX, HelpCircle, Flame, User, LogIn, Crown, Target, Map, Layers, Gem, Sparkles, LogOut, Settings, Zap } from 'lucide-react';
 import { calculateLevelProgressPercent, CHAPTER_CONFIGS } from '../constants/levels';
 
 export const Header = ({
@@ -11,8 +11,6 @@ export const Header = ({
   levelProgress = 0,
   isMuted,
   onToggleMute,
-  isVoiceEnabled,
-  onToggleVoice,
   onRestart,
   onOpenExitModal,
   onOpenHelp,
@@ -227,16 +225,6 @@ export const Header = ({
                 aria-label="Toggle Sound Effects"
               >
                 {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
-              </button>
-
-              <button
-                type="button"
-                className={`action-btn voice-btn desktop-audio-toggle hud-icon-btn ${!isVoiceEnabled ? 'btn-muted' : ''}`}
-                onClick={onToggleVoice}
-                title={isVoiceEnabled ? 'Mute Voice Announcements' : 'Enable Voice Announcements'}
-                aria-label="Toggle Voice Announcements"
-              >
-                {isVoiceEnabled ? <Mic size={15} /> : <MicOff size={15} />}
               </button>
 
               <button

@@ -119,67 +119,12 @@ class VoiceAnnouncer {
 
   /**
    * Speak a concise announcement
-   * @param {string} text - text to speak
-   * @param {number} pitch - optional custom pitch
-   * @param {number} rate - optional speech rate
+   * Voice narration has been removed per user requirements.
+   * Method preserved as a safe no-op for backward compatibility.
    */
-  speak(text, pitch = 1.12, rate = 1.08) {
-    if (!this.canSpeak() || !text) return;
-
-    this.unlock();
-
-    try {
-      // Clean punctuation and emoji for speech synthesis
-      const cleanText = text.replace(/[!\u2022]|[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '').trim();
-      if (!cleanText) return;
-
-      const now = Date.now();
-      // Deduplication & cooldown: avoid repeating identical phrases within 750ms
-      if (this.lastSpokenText.toLowerCase() === cleanText.toLowerCase() && (now - this.lastSpokenTime) < 750) {
-        return;
-      }
-      this.lastSpokenText = cleanText;
-      this.lastSpokenTime = now;
-
-      // Cancel previous speech to flush queue and avoid audio lag
-      this.cancel();
-
-      // Ensure voices are initialized if not already
-      if (!this.voice) {
-        this.initVoices();
-      }
-
-      const utterance = new SpeechSynthesisUtterance(cleanText);
-      if (this.voice) {
-        utterance.voice = this.voice;
-      }
-      utterance.lang = 'en-US';
-      utterance.pitch = pitch;
-      utterance.rate = rate;
-      utterance.volume = this.volume;
-
-      utterance.onerror = (e) => {
-        if (e.error !== 'canceled' && e.error !== 'interrupted') {
-          console.debug('Speech announcement skipped:', e.error);
-        }
-      };
-
-      // In Chromium engines, cancel() followed by immediate speak() in the same tick
-      // can cause the audio thread to drop the utterance. A 15ms micro-flush resolves this.
-      this.pendingTimeout = setTimeout(() => {
-        if (!this.canSpeak()) return;
-        try {
-          if (window.speechSynthesis.paused) {
-            window.speechSynthesis.resume();
-          }
-          window.speechSynthesis.speak(utterance);
-        } catch {
-          // Safe fallback
-        }
-      }, 15);
-    } catch (err) {
-      console.warn('Voice announcement error:', err);
-    }
+  speak(_text, _pitch, _rate) {
+    // Voice narration intentionally deactivated
+    return;
   }
 
   // --- Specialized Announcement Helpers (Phase 2) ---
