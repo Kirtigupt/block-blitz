@@ -35,7 +35,9 @@ export const Header = ({
     prevScoreRef.current = score;
   }, [score]);
 
-  const progressPercent = levelConfig ? calculateLevelProgressPercent(levelProgress, levelConfig.target) : 0;
+  const safeProgress = Number.isFinite(levelProgress) ? levelProgress : 0;
+  const safeTarget = Number.isFinite(levelConfig?.target) ? levelConfig.target : 1;
+  const progressPercent = levelConfig ? calculateLevelProgressPercent(safeProgress, safeTarget) : 0;
   const chapterName = levelConfig?.chapter
     ? CHAPTER_CONFIGS.find((c) => c.chapter === levelConfig.chapter)?.name
     : null;
@@ -66,46 +68,46 @@ export const Header = ({
         return (
           <>
             <span className="objective-type-prefix">Lines:</span>
-            <span className="current-progress-val">{levelProgress}</span>
+            <span className="current-progress-val">{safeProgress}</span>
             <span className="progress-divider">/</span>
-            <span className="target-progress-val">{levelConfig.target}</span>
+            <span className="target-progress-val">{safeTarget}</span>
           </>
         );
       case 'score':
         return (
           <>
             <span className="objective-type-prefix">Score:</span>
-            <span className="current-progress-val">{levelProgress.toLocaleString()}</span>
+            <span className="current-progress-val">{safeProgress.toLocaleString()}</span>
             <span className="progress-divider">/</span>
-            <span className="target-progress-val">{levelConfig.target.toLocaleString()}</span>
+            <span className="target-progress-val">{safeTarget.toLocaleString()}</span>
           </>
         );
       case 'streak':
         return (
           <>
             <span className="objective-type-prefix">Streak:</span>
-            <span className="current-progress-val">{levelProgress}x</span>
+            <span className="current-progress-val">{safeProgress}x</span>
             <span className="progress-divider">/</span>
-            <span className="target-progress-val">{levelConfig.target}x</span>
+            <span className="target-progress-val">{safeTarget}x</span>
           </>
         );
       case 'multilines':
         return (
           <>
             <span className="objective-type-prefix">Combos:</span>
-            <span className="current-progress-val">{levelProgress}</span>
+            <span className="current-progress-val">{safeProgress}</span>
             <span className="progress-divider">/</span>
-            <span className="target-progress-val">{levelConfig.target}</span>
+            <span className="target-progress-val">{safeTarget}</span>
           </>
         );
       case 'clear_pattern': {
-        const remaining = Math.max(0, levelConfig.target - levelProgress);
+        const remaining = Math.max(0, safeTarget - safeProgress);
         return (
           <>
             <span className="objective-type-prefix">Gems:</span>
-            <span className="current-progress-val">{levelProgress}</span>
+            <span className="current-progress-val">{safeProgress}</span>
             <span className="progress-divider">/</span>
-            <span className="target-progress-val">{levelConfig.target}</span>
+            <span className="target-progress-val">{safeTarget}</span>
             <span className="progress-remaining-tag">({remaining} left)</span>
           </>
         );
@@ -114,17 +116,17 @@ export const Header = ({
         return (
           <>
             <span className="objective-type-prefix">Placed:</span>
-            <span className="current-progress-val">{levelProgress}</span>
+            <span className="current-progress-val">{safeProgress}</span>
             <span className="progress-divider">/</span>
-            <span className="target-progress-val">{levelConfig.target}</span>
+            <span className="target-progress-val">{safeTarget}</span>
           </>
         );
       default:
         return (
           <>
-            <span className="current-progress-val">{levelProgress}</span>
+            <span className="current-progress-val">{safeProgress}</span>
             <span className="progress-divider">/</span>
-            <span className="target-progress-val">{levelConfig.target}</span>
+            <span className="target-progress-val">{safeTarget}</span>
           </>
         );
     }
@@ -286,7 +288,7 @@ export const Header = ({
             <span className="hud-live-tag">LIVE</span>
           </div>
           <span className={`score-value hud-score-digits ${isScoreBumping ? 'score-bump' : ''}`}>
-            {score.toLocaleString()}
+            {Number.isFinite(score) ? score.toLocaleString() : '0'}
           </span>
         </div>
 
@@ -298,7 +300,7 @@ export const Header = ({
             <Trophy size={11} className="trophy-gold" />
             <span className="secondary-label hud-bay-label">BEST</span>
           </div>
-          <span className="secondary-value best-val hud-best-digits">{highScore.toLocaleString()}</span>
+          <span className="secondary-value best-val hud-best-digits">{Number.isFinite(highScore) ? highScore.toLocaleString() : '0'}</span>
         </div>
 
         <div className="score-deck-divider hud-deck-divider" />

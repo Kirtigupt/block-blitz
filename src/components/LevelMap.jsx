@@ -695,14 +695,14 @@ export const LevelMap = ({
             } ${isSelectedCompleted ? 'btn-replay' : ''}`}
             onClick={() => handleLaunchLevel(selectedLevelNum)}
             disabled={isSelectedLocked}
-            aria-label={`Play Level ${selectedConfig.level}`}
+            aria-label={`Play Level ${selectedConfig?.level || selectedLevelNum}`}
           >
             {isSelectedLocked ? (
               <span className="dock-btn-main">LOCKED</span>
             ) : activeChapterFilter === 0 ? (
-              <span className="dock-btn-main">Level {selectedConfig.level}</span>
+              <span className="dock-btn-main">Level {selectedConfig?.level || selectedLevelNum}</span>
             ) : (
-              <span className="dock-btn-main">START LEVEL {selectedConfig.level}</span>
+              <span className="dock-btn-main">START LEVEL {selectedConfig?.level || selectedLevelNum}</span>
             )}
           </button>
         </div>
