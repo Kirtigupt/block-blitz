@@ -166,9 +166,13 @@ export const Header = ({
             aria-label={`Current Level: ${currentLevel}. Open Level Map`}
           >
             <span className="lvl-beacon-dot" />
-            <Map size={13} className="lvl-map-icon" />
+            {levelConfig?.isBoss || currentLevel % 10 === 0 ? (
+              <Crown size={13} className="lvl-map-icon lvl-boss-icon" />
+            ) : (
+              <Map size={13} className="lvl-map-icon" />
+            )}
             <div className="hud-stage-text-wrap">
-              <span className="hud-stage-tiny-lbl">STAGE</span>
+              <span className="hud-stage-tiny-lbl">{levelConfig?.isBoss || currentLevel % 10 === 0 ? 'BOSS' : 'STAGE'}</span>
               <span className="lvl-num-text">{currentLevel}</span>
             </div>
           </button>
@@ -323,7 +327,9 @@ export const Header = ({
           {/* Identity & Chapter Strip */}
           <div className="objective-meta-row hud-mission-meta">
             <div className="objective-title-group hud-mission-title-group">
-              <span className="hud-mission-badge">STAGE {currentLevel}</span>
+              <span className={`hud-mission-badge ${levelConfig.isBoss || currentLevel % 10 === 0 ? 'badge-boss' : ''}`}>
+                {levelConfig.isBoss || currentLevel % 10 === 0 ? 'BOSS STAGE' : `STAGE ${currentLevel}`}
+              </span>
               <span className="objective-level-name hud-mission-name">{levelConfig.title}</span>
               {chapterName && (
                 <span className="objective-chapter-badge hud-chapter-badge">CH.{levelConfig.chapter}: {chapterName}</span>

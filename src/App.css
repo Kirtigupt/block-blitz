@@ -168,7 +168,7 @@ body {
 }
 
 /* ==========================================================================
-   1. Header Navigation & Controls (Arcade Tactical HUD)
+   1. Header Navigation & Controls (Arcade Tactical HUD - Redesigned)
    ========================================================================== */
 
 .game-header,
@@ -189,10 +189,10 @@ body {
   align-items: center;
   width: 100%;
   gap: 10px;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.88) 0%, rgba(8, 14, 28, 0.95) 100%);
-  border: 1px solid rgba(56, 189, 248, 0.22);
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(14px);
+  background: linear-gradient(180deg, rgba(14, 22, 38, 0.94) 0%, rgba(8, 14, 26, 0.98) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.26);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
   border-radius: var(--radius-lg);
   padding: 4px 12px;
   box-sizing: border-box;
@@ -217,18 +217,18 @@ body {
   cursor: pointer;
   padding: 4px 10px 4px 6px;
   border-radius: var(--radius-md);
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
-  border: 1px solid rgba(56, 189, 248, 0.25);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.3);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
 }
 
 .logo-badge:hover,
 .hud-brand-plaque:hover {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(14, 165, 233, 0.2) 100%);
-  border-color: rgba(56, 189, 248, 0.5);
-  box-shadow: 0 0 14px rgba(56, 189, 248, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(14, 165, 233, 0.25) 100%);
+  border-color: rgba(56, 189, 248, 0.6);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
   transform: translateY(-1px);
 }
 
@@ -239,16 +239,16 @@ body {
   justify-content: center;
   width: 26px;
   height: 26px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.35) 0%, rgba(14, 165, 233, 0.15) 100%);
-  border: 1px solid rgba(56, 189, 248, 0.45);
-  box-shadow: 0 0 10px rgba(6, 182, 212, 0.45);
+  border-radius: 7px;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  border: 1px solid #7dd3fc;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
   flex-shrink: 0;
 }
 
 .logo-spark-icon {
-  color: #38bdf8;
-  filter: drop-shadow(0 0 4px #38bdf8);
+  color: #ffffff;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
 }
 
 .hud-brand-titles {
@@ -300,25 +300,25 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: linear-gradient(135deg, rgba(14, 165, 233, 0.18) 0%, rgba(15, 23, 42, 0.9) 100%);
-  border: 1px solid rgba(56, 189, 248, 0.38);
-  box-shadow: 0 0 12px rgba(14, 165, 233, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.22) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.45);
+  box-shadow: 0 0 12px rgba(14, 165, 233, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   color: #38bdf8;
   padding: 0 12px;
   min-height: 36px;
   height: 36px;
   border-radius: var(--radius-full);
   cursor: pointer;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
   user-select: none;
 }
 
 .level-badge-pill:hover,
 .hud-stage-crest:hover {
-  background: linear-gradient(135deg, rgba(14, 165, 233, 0.32) 0%, rgba(15, 23, 42, 0.98) 100%);
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.35) 0%, rgba(15, 23, 42, 0.98) 100%);
   border-color: #38bdf8;
-  box-shadow: 0 0 18px rgba(56, 189, 248, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
   transform: translateY(-1px);
 }
 
@@ -340,6 +340,10 @@ body {
 .lvl-map-icon {
   color: #38bdf8;
   flex-shrink: 0;
+}
+
+.lvl-boss-icon {
+  color: #fbbf24 !important;
 }
 
 .hud-stage-text-wrap {
@@ -404,9 +408,9 @@ body {
 .hud-identity-pill {
   display: inline-flex;
   align-items: center;
-  height: 34px;
-  min-height: 34px;
-  padding: 0 10px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0 12px;
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -415,30 +419,30 @@ body {
 }
 
 .user-pill-btn {
-  gap: 6px;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%);
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  gap: 7px;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.3);
   color: var(--text-secondary);
-  font-size: 0.75rem;
+  font-size: 0.76rem;
   font-weight: 700;
-  max-width: 125px;
+  max-width: 130px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .user-pill-btn:hover {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(14, 165, 233, 0.2) 100%);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(14, 165, 233, 0.25) 100%);
   color: #ffffff;
-  border-color: rgba(56, 189, 248, 0.45);
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+  border-color: rgba(56, 189, 248, 0.55);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
 }
 
 .hud-avatar-dot {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: rgba(56, 189, 248, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.4);
+  background: rgba(56, 189, 248, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -453,20 +457,20 @@ body {
 }
 
 .auth-cta-btn {
-  gap: 5px;
-  background: linear-gradient(135deg, rgba(14, 165, 233, 0.2) 0%, rgba(6, 182, 212, 0.12) 100%);
-  border: 1px solid rgba(56, 189, 248, 0.4);
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.22) 0%, rgba(6, 182, 212, 0.14) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.45);
   color: #38bdf8;
-  font-size: 0.75rem;
+  font-size: 0.76rem;
   font-weight: 800;
-  box-shadow: 0 0 10px rgba(14, 165, 233, 0.15);
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.18);
 }
 
 .auth-cta-btn:hover {
-  background: linear-gradient(135deg, rgba(14, 165, 233, 0.35) 0%, rgba(6, 182, 212, 0.25) 100%);
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.38) 0%, rgba(6, 182, 212, 0.28) 100%);
   border-color: #38bdf8;
   color: #ffffff;
-  box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
   transform: translateY(-1px);
 }
 
@@ -478,8 +482,8 @@ body {
 /* Tactical Icon Buttons */
 .action-btn,
 .hud-icon-btn {
-  background: linear-gradient(180deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.88) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.22);
   color: var(--text-secondary);
   width: 36px;
   height: 36px;
@@ -492,15 +496,15 @@ body {
   cursor: pointer;
   transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .action-btn:hover,
 .hud-icon-btn:hover {
-  background: linear-gradient(180deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
   color: #ffffff;
-  border-color: rgba(56, 189, 248, 0.4);
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.18);
   transform: translateY(-1px);
 }
 
@@ -512,33 +516,33 @@ body {
 /* Leaderboard Crown Button */
 .action-btn.leaderboard-btn,
 .crown-glow {
-  border-color: rgba(251, 191, 36, 0.3);
+  border-color: rgba(251, 191, 36, 0.35);
   color: #fbbf24;
 }
 
 .action-btn.leaderboard-btn:hover,
 .crown-glow:hover {
-  background: linear-gradient(180deg, rgba(251, 191, 36, 0.2) 0%, rgba(15, 23, 42, 0.9) 100%);
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.25) 0%, rgba(15, 23, 42, 0.95) 100%);
   color: #fde047;
   border-color: #fbbf24;
-  box-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.45);
 }
 
 /* Restart Button */
 .action-btn.restart-btn,
 .restart-glow:hover {
   color: #38bdf8;
-  border-color: rgba(56, 189, 248, 0.4);
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
 }
 
 /* Exit Button */
 .action-btn.exit-btn,
 .exit-glow:hover {
   color: #f43f5e;
-  border-color: rgba(244, 63, 94, 0.45);
-  background: rgba(244, 63, 94, 0.15);
-  box-shadow: 0 0 12px rgba(244, 63, 94, 0.35);
+  border-color: rgba(244, 63, 94, 0.5);
+  background: rgba(244, 63, 94, 0.18);
+  box-shadow: 0 0 14px rgba(244, 63, 94, 0.4);
 }
 
 /* Muted Audio States */
@@ -549,7 +553,7 @@ body {
 
 .action-btn.btn-muted:hover {
   color: var(--accent-rose);
-  border-color: rgba(244, 63, 94, 0.35);
+  border-color: rgba(244, 63, 94, 0.4);
   opacity: 1;
 }
 
@@ -564,22 +568,22 @@ body {
 }
 
 /* ==========================================================================
-   2. Cockpit Statistics Dashboard (3-Pod Integrated HUD)
+   2. Cockpit Statistics Dashboard (Engaging Gaming Scoreboard Console)
    ========================================================================== */
 
 .score-board,
 .hud-stats-chassis {
   width: 100%;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.88) 0%, rgba(8, 14, 28, 0.95) 100%);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  backdrop-filter: blur(14px);
+  background: linear-gradient(180deg, rgba(14, 22, 38, 0.92) 0%, rgba(8, 13, 25, 0.97) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  backdrop-filter: blur(16px);
   border-radius: var(--radius-lg);
-  padding: 8px 16px;
+  padding: 8px 18px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   box-sizing: border-box;
 }
 
@@ -609,33 +613,33 @@ body {
   font-size: 0.64rem;
   font-weight: 800;
   letter-spacing: 1.2px;
-  color: var(--text-muted);
+  color: rgba(148, 163, 184, 0.9);
   text-transform: uppercase;
 }
 
 .hud-live-tag {
   font-size: 0.52rem;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 0.8px;
   color: #4ade80;
-  background: rgba(34, 197, 94, 0.15);
-  border: 1px solid rgba(34, 197, 94, 0.35);
-  border-radius: 3px;
+  background: rgba(34, 197, 94, 0.16);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  border-radius: 4px;
   padding: 0 4px;
   line-height: 1.2;
 }
 
 .score-value,
 .hud-score-digits {
-  font-size: 2.15rem;
+  font-size: 2.2rem;
   font-weight: 900;
   color: #ffffff;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.02em;
   display: inline-block;
   transition: transform 0.15s ease;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+  text-shadow: 0 0 18px rgba(56, 189, 248, 0.4), 0 2px 6px rgba(0, 0, 0, 0.8);
 }
 
 .score-value.score-bump {
@@ -644,7 +648,7 @@ body {
 
 @keyframes score-micro-bump {
   0% { transform: scale(1); }
-  50% { transform: scale(1.08); color: #38bdf8; text-shadow: 0 0 12px rgba(56, 189, 248, 0.8); }
+  50% { transform: scale(1.08); color: #38bdf8; text-shadow: 0 0 16px rgba(56, 189, 248, 0.9); }
   100% { transform: scale(1); }
 }
 
@@ -652,8 +656,8 @@ body {
 .score-deck-divider,
 .hud-deck-divider {
   width: 1px;
-  height: 34px;
-  background: linear-gradient(180deg, transparent 0%, rgba(56, 189, 248, 0.32) 50%, transparent 100%);
+  height: 36px;
+  background: linear-gradient(180deg, transparent 0%, rgba(56, 189, 248, 0.35) 50%, transparent 100%);
   flex-shrink: 0;
 }
 
@@ -669,30 +673,30 @@ body {
 .score-secondary-header {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
 }
 
 .secondary-label {
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.8px;
-  color: var(--text-muted);
+  color: rgba(148, 163, 184, 0.85);
   text-transform: uppercase;
 }
 
 .secondary-value,
 .hud-best-digits {
-  font-size: 1.15rem;
-  font-weight: 800;
+  font-size: 1.25rem;
+  font-weight: 900;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
   color: #fbbf24;
-  text-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.35);
 }
 
 .trophy-gold {
   color: #fbbf24;
-  filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.4));
+  filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.5));
 }
 
 /* Bay 3: Dynamic Streak Engine */
@@ -702,15 +706,15 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: 3px 10px;
+  padding: 3px 12px;
   border-radius: var(--radius-sm);
   transition: all 0.22s ease;
-  min-width: 60px;
+  min-width: 64px;
 }
 
 .streak-indicator.streak-idle {
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(148, 163, 184, 0.15);
+  border: 1px solid rgba(148, 163, 184, 0.16);
 }
 
 .streak-indicator.streak-idle .secondary-label,
@@ -720,41 +724,41 @@ body {
 }
 
 .streak-indicator.streak-active {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(15, 23, 42, 0.8) 100%);
-  border: 1px solid rgba(245, 158, 11, 0.4);
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(15, 23, 42, 0.85) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
 }
 
 .streak-indicator.streak-active .secondary-label,
 .streak-indicator.streak-active .streak-val,
 .streak-indicator.streak-active .hud-streak-digits {
   color: #fbbf24;
-  text-shadow: 0 0 6px rgba(251, 191, 36, 0.4);
+  text-shadow: 0 0 6px rgba(251, 191, 36, 0.5);
 }
 
 .streak-indicator.streak-fire {
-  background: linear-gradient(135deg, rgba(244, 63, 94, 0.22) 0%, rgba(15, 23, 42, 0.8) 100%);
-  border: 1px solid rgba(244, 63, 94, 0.5);
-  box-shadow: 0 0 14px rgba(244, 63, 94, 0.35);
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.25) 0%, rgba(15, 23, 42, 0.85) 100%);
+  border: 1px solid rgba(244, 63, 94, 0.55);
+  box-shadow: 0 0 16px rgba(244, 63, 94, 0.4);
   animation: fire-pulse 1.6s infinite alternate ease-in-out;
 }
 
 @keyframes fire-pulse {
   0% { box-shadow: 0 0 8px rgba(244, 63, 94, 0.25); }
-  100% { box-shadow: 0 0 16px rgba(244, 63, 94, 0.55); }
+  100% { box-shadow: 0 0 18px rgba(244, 63, 94, 0.6); }
 }
 
 .streak-indicator.streak-fire .secondary-label,
 .streak-indicator.streak-fire .streak-val,
 .streak-indicator.streak-fire .hud-streak-digits {
   color: #f43f5e;
-  text-shadow: 0 0 8px rgba(244, 63, 94, 0.5);
+  text-shadow: 0 0 8px rgba(244, 63, 94, 0.6);
 }
 
 .streak-val,
 .hud-streak-digits {
-  font-size: 0.98rem;
-  font-weight: 800;
+  font-size: 1.05rem;
+  font-weight: 900;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
 }
@@ -774,21 +778,21 @@ body {
 }
 
 /* ==========================================================================
-   3. Active Mission Tracker Bar (Level Objectives HUD)
+   3. Active Mission Tracker Bar (Level Objectives Tactical HUD)
    ========================================================================== */
 
 .level-objective-panel,
 .hud-mission-chassis {
   width: 100%;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.88) 0%, rgba(8, 14, 28, 0.95) 100%);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  backdrop-filter: blur(14px);
+  background: linear-gradient(180deg, rgba(14, 22, 38, 0.92) 0%, rgba(8, 13, 25, 0.97) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  backdrop-filter: blur(16px);
   border-radius: var(--radius-lg);
-  padding: 8px 14px 10px 14px;
+  padding: 10px 16px 12px 16px;
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  gap: 8px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   box-sizing: border-box;
 }
 
@@ -806,26 +810,33 @@ body {
 .hud-mission-title-group {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
   overflow: hidden;
 }
 
 .hud-mission-badge {
-  font-size: 0.62rem;
+  font-size: 0.64rem;
   font-weight: 900;
   color: #38bdf8;
-  background: rgba(14, 165, 233, 0.18);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  border-radius: 3px;
-  padding: 1px 5px;
+  background: rgba(14, 165, 233, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  border-radius: 4px;
+  padding: 1.5px 6px;
   white-space: nowrap;
   letter-spacing: 0.5px;
 }
 
+.hud-mission-badge.badge-boss {
+  background: rgba(245, 158, 11, 0.25) !important;
+  border-color: #facc15 !important;
+  color: #fde047 !important;
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.4) !important;
+}
+
 .objective-level-name,
 .hud-mission-name {
-  font-size: 0.80rem;
+  font-size: 0.88rem;
   font-weight: 800;
   color: #ffffff;
   white-space: nowrap;
@@ -834,13 +845,13 @@ body {
 
 .objective-chapter-badge,
 .hud-chapter-badge {
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  color: var(--text-secondary);
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: rgba(226, 232, 240, 0.8);
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.25);
   border-radius: var(--radius-sm);
-  padding: 1px 6px;
+  padding: 1.5px 7px;
   white-space: nowrap;
 }
 
@@ -848,21 +859,21 @@ body {
 .hud-pattern-badge {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  font-size: 0.65rem;
+  gap: 4px;
+  font-size: 0.68rem;
   font-weight: 800;
-  color: #38bdf8;
-  background: rgba(14, 165, 233, 0.14);
-  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.45);
   border-radius: var(--radius-sm);
-  padding: 1px 6px;
+  padding: 1.5px 7px;
   white-space: nowrap;
   text-transform: capitalize;
 }
 
 .hud-pattern-gem {
-  color: #38bdf8;
-  font-size: 0.7rem;
+  color: #fbbf24;
+  font-size: 0.72rem;
 }
 
 /* Row 2: Mission Task & Target Counter */
@@ -871,7 +882,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
 }
 
@@ -879,18 +890,18 @@ body {
 .hud-mission-instruction {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   min-width: 0;
   flex: 1;
 }
 
 .hud-mission-icon-socket {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid var(--socket-accent, #38bdf8);
-  box-shadow: 0 0 8px rgba(56, 189, 248, 0.25);
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1.5px solid var(--socket-accent, #38bdf8);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -903,12 +914,13 @@ body {
 
 .objective-task-desc,
 .hud-instruction-text {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #e2e8f0;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #f1f5f9;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  letter-spacing: 0.01em;
 }
 
 /* Target Counter */
@@ -916,21 +928,22 @@ body {
 .hud-progress-digital-badge {
   display: flex;
   align-items: baseline;
-  gap: 2px;
+  gap: 3px;
   flex-shrink: 0;
   font-variant-numeric: tabular-nums;
-  font-size: 0.82rem;
-  font-weight: 800;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  border-radius: 4px;
-  padding: 2px 7px;
+  font-size: 0.88rem;
+  font-weight: 900;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1.5px solid rgba(56, 189, 248, 0.3);
+  border-radius: 6px;
+  padding: 3px 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
 .objective-type-prefix {
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: rgba(148, 163, 184, 0.9);
   text-transform: uppercase;
   margin-right: 4px;
 }
@@ -938,27 +951,29 @@ body {
 .current-progress-val {
   color: #38bdf8;
   font-weight: 900;
+  font-size: 0.92rem;
 }
 
 .progress-divider {
-  color: var(--text-dim);
+  color: rgba(148, 163, 184, 0.6);
   margin: 0 1px;
 }
 
 .target-progress-val {
   color: #ffffff;
-  font-weight: 800;
+  font-weight: 900;
+  font-size: 0.92rem;
 }
 
 .progress-remaining-tag {
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: #38bdf8;
-  background: rgba(14, 165, 233, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  border-radius: 3px;
-  padding: 1px 5px;
-  margin-left: 5px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.16);
+  border: 1px solid rgba(245, 158, 11, 0.38);
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin-left: 6px;
   white-space: nowrap;
 }
 
@@ -967,8 +982,8 @@ body {
 .hud-energy-track {
   width: 100%;
   height: 6px;
-  background: rgba(8, 14, 28, 0.85);
-  border: 1px solid rgba(56, 189, 248, 0.22);
+  background: rgba(8, 14, 28, 0.9);
+  border: 1px solid rgba(56, 189, 248, 0.25);
   border-radius: var(--radius-full);
   overflow: hidden;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
@@ -980,7 +995,7 @@ body {
   height: 100%;
   border-radius: var(--radius-full);
   transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
   position: relative;
 }
 
@@ -995,6 +1010,7 @@ body {
   background: #ffffff;
   box-shadow: 0 0 6px #ffffff, 0 0 10px #38bdf8;
 }
+
 
 /* ==========================================================================
    4. Game Board (8x8 Grid)
