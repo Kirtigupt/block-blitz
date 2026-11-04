@@ -1086,6 +1086,18 @@ export function App() {
         });
         setShowLevelCompleteModal(true);
       };
+
+      window.__triggerGameOverForTest = (lvl = 1, isNewRecord = false) => {
+        const cfg = getLevelConfig(lvl);
+        setCurrentLevel(lvl);
+        setIntroLevelConfig(cfg);
+        setLevelProgress(Math.floor(cfg.target * 0.6));
+        setScore(1450);
+        setIsNewHigh(isNewRecord);
+        setLinesClearedTotal(4);
+        setMaxStreak(3);
+        setGameOver(true);
+      };
     }
   }, [score, user]);
 
