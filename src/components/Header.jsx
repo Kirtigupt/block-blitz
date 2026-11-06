@@ -201,7 +201,7 @@ export const Header = ({
             {user ? (
               <button
                 type="button"
-                className="hud-profile-pill user-logged-in"
+                className="hud-profile-pill user-logged-in user-pill-btn"
                 onClick={onOpenProfile}
                 title={`Profile: ${user.username} (View Stats)`}
                 aria-label={`User profile: ${user.username}`}
@@ -214,7 +214,7 @@ export const Header = ({
             ) : (
               <button
                 type="button"
-                className="hud-signin-pill guest-auth-cta"
+                className="hud-signin-pill guest-auth-cta auth-cta-btn"
                 onClick={onOpenAuth}
                 title="Sign in to save scores to leaderboard"
                 aria-label="Sign in to save scores"
@@ -226,10 +226,10 @@ export const Header = ({
           </div>
 
           {/* Group 1: Meta Controls (Leaderboard, Sound, Settings, Help) */}
-          <div className="hud-control-pod meta-pod">
+          <div className="hud-control-pod meta-pod header-tools-cluster">
             <button
               type="button"
-              className="hud-tactile-btn hud-btn-leaderboard"
+              className="hud-tactile-btn hud-btn-leaderboard action-btn leaderboard-btn"
               onClick={onOpenLeaderboard}
               title="Global Leaderboard"
               aria-label="Global Leaderboard"
@@ -239,7 +239,7 @@ export const Header = ({
 
             <button
               type="button"
-              className={`hud-tactile-btn hud-btn-audio ${isMuted ? 'is-muted' : ''}`}
+              className={`hud-tactile-btn hud-btn-audio action-btn audio-btn ${isMuted ? 'is-muted btn-muted' : ''}`}
               onClick={onToggleMute}
               title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
               aria-label="Toggle Sound Effects"
@@ -249,7 +249,7 @@ export const Header = ({
 
             <button
               type="button"
-              className="hud-tactile-btn hud-btn-settings"
+              className="hud-tactile-btn hud-btn-settings action-btn settings-btn"
               onClick={onOpenSettings}
               title="Game Settings"
               aria-label="Game Settings"
@@ -259,7 +259,7 @@ export const Header = ({
 
             <button
               type="button"
-              className="hud-tactile-btn hud-btn-help"
+              className="hud-tactile-btn hud-btn-help action-btn help-btn"
               onClick={onOpenHelp}
               title="How to Play"
               aria-label="How to Play"
@@ -275,7 +275,7 @@ export const Header = ({
           <div className="hud-control-pod match-pod">
             <button
               type="button"
-              className="hud-tactile-btn hud-btn-restart"
+              className="hud-tactile-btn hud-btn-restart action-btn restart-btn"
               onClick={onRestart}
               title="Restart Level (R)"
               aria-label="Restart Level"
@@ -286,7 +286,7 @@ export const Header = ({
             {onOpenExitModal && (
               <button
                 type="button"
-                className="hud-tactile-btn hud-btn-exit"
+                className="hud-tactile-btn hud-btn-exit action-btn exit-btn"
                 onClick={onOpenExitModal}
                 title="Exit to Adventure Map (Esc)"
                 aria-label="Exit to Adventure Map"
@@ -299,14 +299,14 @@ export const Header = ({
       </div>
 
       {/* 2. REIMAGINED HERO SCOREBOARD TELEMETRY CONSOLE */}
-      <div className="score-board hero-scoreboard-console" role="region" aria-label="Game Scoreboard">
+      <div className="score-board hero-scoreboard-console hud-stats-chassis" role="region" aria-label="Game Scoreboard">
         {/* Dominant Hero Score (Left Wing) */}
         <div className="hero-score-anchor">
           <div className="hero-score-subhead">
             <span className="score-live-beacon" aria-hidden="true" />
             <span className="score-label-text">CURRENT SCORE</span>
           </div>
-          <div className={`hero-score-number ${isScoreBumping ? 'score-pulse' : ''}`}>
+          <div className={`hero-score-number score-value hud-score-digits ${isScoreBumping ? 'score-pulse' : ''}`}>
             {Number.isFinite(score) ? score.toLocaleString() : '0'}
           </div>
         </div>
@@ -319,7 +319,7 @@ export const Header = ({
               <Trophy size={11} className="icon-best-gold" />
               <span className="telemetry-pill-lbl">BEST</span>
             </div>
-            <div className="telemetry-pill-val gold-num">
+            <div className="telemetry-pill-val gold-num best-score-number">
               {Number.isFinite(highScore) ? highScore.toLocaleString() : '0'}
             </div>
           </div>
@@ -340,7 +340,7 @@ export const Header = ({
               />
               <span className="telemetry-pill-lbl">STREAK</span>
             </div>
-            <div className="telemetry-pill-val streak-num">
+            <div className="telemetry-pill-val streak-num streak-tally-number">
               {streak > 1 ? `${streak}x` : '—'}
             </div>
           </div>
@@ -349,14 +349,14 @@ export const Header = ({
 
       {/* 3. REIMAGINED MISSION-CONTROL OBJECTIVE HUD */}
       {levelConfig && (
-        <div className="level-objective-panel mission-control-hud" role="region" aria-label="Mission Objective">
+        <div className="level-objective-panel mission-control-hud hud-mission-chassis" role="region" aria-label="Mission Objective">
           {/* Top Mission Taxonomy Header Strip */}
           <div className="mission-taxonomy-row">
             <div className="taxonomy-left">
               <span className={`taxonomy-stage-badge ${isBossLevel ? 'badge-boss' : ''}`}>
                 {isBossLevel ? 'BOSS STAGE' : `STAGE ${currentLevel}`}
               </span>
-              <span className="taxonomy-level-title">{levelConfig.title}</span>
+              <span className="taxonomy-level-title hud-mission-name">{levelConfig.title}</span>
             </div>
 
             <div className="taxonomy-right">
@@ -385,7 +385,7 @@ export const Header = ({
             </div>
 
             {/* Clear Objective Directive Sentence */}
-            <div className="directive-statement">
+            <div className="directive-statement objective-task-desc hud-instruction-text">
               <span className="directive-text">{levelConfig.description}</span>
             </div>
 

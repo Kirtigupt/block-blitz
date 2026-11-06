@@ -120,7 +120,7 @@ async function run() {
       console.log(`  Horizontal Overflow: ${auditMetrics.hasHorizontalOverflow ? 'FAIL' : 'NONE (PASS)'}`);
 
       assert.strictEqual(auditMetrics.hasCard, true, 'Achievement portal card rendered');
-      assert.strictEqual(auditMetrics.cornerCount, 4, '4 cyber corner brackets present');
+      assert.strictEqual(auditMetrics.cornerCount, 0, 'Clean modern chassis without harsh cyber corner brackets');
       assert.strictEqual(auditMetrics.hasBeacon, true, 'Telemetry live beacon present');
       assert.strictEqual(auditMetrics.hasCrest, true, 'Victory crest apparatus present');
       assert.strictEqual(auditMetrics.starCount, 3, '3 constellation star nodes rendered');

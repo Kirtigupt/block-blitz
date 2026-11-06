@@ -190,12 +190,6 @@ export const LevelCompleteModal = ({
          ========================================================================= */}
       {step === 'completed' && (
         <div className={`level-complete-card achievement-portal-card ${isCampaignComplete ? 'campaign-champion-card' : ''}`}>
-          {/* Cyber Framing Accents */}
-          <div className="cyber-frame-corner corner-tl" aria-hidden="true" />
-          <div className="cyber-frame-corner corner-tr" aria-hidden="true" />
-          <div className="cyber-frame-corner corner-bl" aria-hidden="true" />
-          <div className="cyber-frame-corner corner-br" aria-hidden="true" />
-
           {/* Multi-layered Ambient Light Blooms & Beam Flares */}
           <div className="completion-ambient-halo" />
           <div className="completion-beam-flare flare-cyan" />
@@ -422,12 +416,6 @@ export const LevelCompleteModal = ({
          ========================================================================= */}
       {step === 'leaderboard' && (
         <div className="level-complete-card completion-leaderboard-card">
-          {/* Cyber Framing Accents */}
-          <div className="cyber-frame-corner corner-tl" aria-hidden="true" />
-          <div className="cyber-frame-corner corner-tr" aria-hidden="true" />
-          <div className="cyber-frame-corner corner-bl" aria-hidden="true" />
-          <div className="cyber-frame-corner corner-br" aria-hidden="true" />
-
           {/* Ambient Glow */}
           <div className="completion-ambient-halo" />
 
@@ -610,12 +598,6 @@ export const LevelCompleteModal = ({
          ========================================================================= */}
       {step === 'unlocked' && (
         <div className="level-complete-card completion-unlock-card">
-          {/* Cyber Framing Accents */}
-          <div className="cyber-frame-corner corner-tl" aria-hidden="true" />
-          <div className="cyber-frame-corner corner-tr" aria-hidden="true" />
-          <div className="cyber-frame-corner corner-bl" aria-hidden="true" />
-          <div className="cyber-frame-corner corner-br" aria-hidden="true" />
-
           {/* Ambient Halo & Pulse Rings */}
           <div className="completion-ambient-halo" />
           <div className="unlock-ripple-ring" />

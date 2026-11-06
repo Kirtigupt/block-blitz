@@ -117,7 +117,7 @@ async function run() {
       console.log(`  Horizontal Overflow: ${metrics.hasHorizontalOverflow ? 'FAIL' : 'NONE (PASS)'}`);
 
       assert.strictEqual(metrics.hasCard, true, 'Failed portal chassis rendered');
-      assert.strictEqual(metrics.cornerCount, 4, '4 cyber corner brackets present');
+      assert.strictEqual(metrics.cornerCount, 0, 'Clean modern chassis without harsh cyber corner brackets');
       assert.strictEqual(metrics.hasBeacon, true, 'Distress beacon present');
       assert.strictEqual(metrics.hasSigil, true, 'Failure sigil apparatus present');
       assert.strictEqual(metrics.titleText, 'LEVEL 1 FAILED', 'Title matches LEVEL 1 FAILED');

@@ -167,12 +167,6 @@ export const GameOverModal = ({
       aria-labelledby="game-over-title"
     >
       <div className="game-over-card level-failed-card failed-portal-chassis">
-        {/* Cyber Framing Accents */}
-        <div className="cyber-frame-corner corner-tl" aria-hidden="true" />
-        <div className="cyber-frame-corner corner-tr" aria-hidden="true" />
-        <div className="cyber-frame-corner corner-bl" aria-hidden="true" />
-        <div className="cyber-frame-corner corner-br" aria-hidden="true" />
-
         {/* Ambient Flares */}
         <div className="failure-ambient-halo" />
         <div className="failure-beam-flare flare-crimson" />

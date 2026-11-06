@@ -175,7 +175,7 @@ export const LevelIntroModal = ({ levelConfig, onIntroComplete }) => {
 
         {/* 1. Top Telemetry Bar: Chapter Badge & Stage Classifier */}
         <div className="intro-meta-bar">
-          <div className="intro-chapter-chip">
+          <div className="intro-chapter-chip intro-chapter-badge">
             <span className="chapter-chip-icon" style={{ color: chapterData.color }}>
               {getChapterIcon(chapterData.icon)}
             </span>
@@ -184,10 +184,10 @@ export const LevelIntroModal = ({ levelConfig, onIntroComplete }) => {
             </span>
           </div>
 
-          <div className={`intro-stage-pill ${isBoss ? 'stage-pill-boss' : ''}`}>
+          <div className={`intro-stage-pill ${isBoss ? 'stage-pill-boss intro-stage-boss' : ''}`}>
             {isBoss ? (
               <>
-                <Crown size={12} className="boss-crown-icon" />
+                <Crown size={12} className="boss-crown-icon intro-boss-crown" />
                 <span>BOSS STAGE</span>
               </>
             ) : (
@@ -198,7 +198,7 @@ export const LevelIntroModal = ({ levelConfig, onIntroComplete }) => {
 
         {/* 2. Hero Level Title & Subtitle */}
         <div className="intro-hero-headline">
-          <h2 id="level-intro-title" className="intro-level-title">
+          <h2 id="level-intro-title" className="intro-level-title intro-title-text">
             {levelTitle}
           </h2>
           <span className="intro-sub-status">
@@ -207,7 +207,7 @@ export const LevelIntroModal = ({ levelConfig, onIntroComplete }) => {
         </div>
 
         {/* 3. Cohesive Mission Objective Card (Single surface, zero nested boxes) */}
-        <div className="intro-directive-card">
+        <div className="intro-directive-card intro-objective-panel">
           <div className="directive-card-top">
             <div
               className="directive-icon-pod"
@@ -232,12 +232,12 @@ export const LevelIntroModal = ({ levelConfig, onIntroComplete }) => {
             )}
           </div>
 
-          <p className="directive-statement">
+          <p className="directive-statement intro-obj-description">
             "{description}"
           </p>
 
           {hasPattern && (
-            <div className="directive-hazard-badge">
+            <div className="directive-hazard-badge intro-hazard-pill">
               <Grid3X3 size={13} className="hazard-icon" />
               <span>Grid Hazard: <strong>{patternDisplay}</strong></span>
             </div>
@@ -245,12 +245,12 @@ export const LevelIntroModal = ({ levelConfig, onIntroComplete }) => {
         </div>
 
         {/* 4. Refined Completion Reward Strip */}
-        <div className="intro-reward-strip">
+        <div className="intro-reward-strip intro-reward-badge">
           <div className="reward-strip-left">
             <Award size={16} className="reward-award-icon" />
             <span className="reward-label">Completion Reward</span>
           </div>
-          <span className="reward-value">+{bonusPoints.toLocaleString()} PTS</span>
+          <span className="reward-value intro-reward-amount">{bonusPoints.toLocaleString()}</span>
         </div>
 
         {/* 5. Tactile Start Action Button */}
@@ -263,7 +263,7 @@ export const LevelIntroModal = ({ levelConfig, onIntroComplete }) => {
             autoFocus
           >
             <Play size={16} fill="currentColor" className="btn-play-icon" />
-            <span className="btn-text">START LEVEL</span>
+            <span className="btn-text intro-btn-label">START LEVEL</span>
             <span className="btn-kbd-badge">ENTER ↵</span>
           </button>
           <span className="intro-footer-hint">

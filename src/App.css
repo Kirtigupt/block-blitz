@@ -1532,43 +1532,6 @@ body {
   text-align: center;
 }
 
-/* Cyber Framing Accents */
-.cyber-frame-corner {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  pointer-events: none;
-  z-index: 4;
-}
-
-.cyber-frame-corner.corner-tl {
-  top: 8px;
-  left: 8px;
-  border-top: 2px solid #38bdf8;
-  border-left: 2px solid #38bdf8;
-}
-
-.cyber-frame-corner.corner-tr {
-  top: 8px;
-  right: 8px;
-  border-top: 2px solid #38bdf8;
-  border-right: 2px solid #38bdf8;
-}
-
-.cyber-frame-corner.corner-bl {
-  bottom: 8px;
-  left: 8px;
-  border-bottom: 2px solid #38bdf8;
-  border-left: 2px solid #38bdf8;
-}
-
-.cyber-frame-corner.corner-br {
-  bottom: 8px;
-  right: 8px;
-  border-bottom: 2px solid #38bdf8;
-  border-right: 2px solid #38bdf8;
-}
-
 /* Ambient Flares & Light Blooms */
 .completion-beam-flare {
   position: absolute;
@@ -3013,11 +2976,6 @@ body {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   text-align: center;
-}
-
-/* Corner Cyber-Brackets in Rose Theme */
-.failed-portal-chassis .cyber-frame-corner {
-  border-color: #f43f5e;
 }
 
 /* Ambient Flares */
@@ -9143,9 +9101,10 @@ body {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: 6px 16px;
-    min-height: 48px;
-    max-height: 50px;
+    padding: 3px 14px;
+    height: 44px;
+    min-height: 40px;
+    max-height: 46px;
     box-sizing: border-box;
     gap: 12px;
   }

@@ -112,50 +112,31 @@ export const LevelMap = ({
     scrollTab(mobilePillsBarRef);
   }, [activeChapterFilter]);
 
+  // Helper to reliably scroll the view to center any target stage node
+  const scrollToStage = useCallback((stageNum, smooth = true) => {
+    if (!scrollContainerRef.current) return;
+    const container = scrollContainerRef.current;
+    const targetNode = container.querySelector(`.adv-trail-node[data-level="${stageNum}"]`);
+    if (targetNode) {
+      const containerRect = container.getBoundingClientRect();
+      const nodeRect = targetNode.getBoundingClientRect();
+      const currentScrollTop = container.scrollTop;
+      const targetTop = currentScrollTop + (nodeRect.top - containerRect.top) - (containerRect.height / 2) + (nodeRect.height / 2);
+      container.scrollTo({ top: Math.max(0, targetTop), behavior: smooth ? 'smooth' : 'auto' });
+    } else if (stageNum === 1) {
+      container.scrollTo({ top: container.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
+    }
+  }, []);
+
   // Auto-scroll selected/current level tile into view on mount or change
   useEffect(() => {
     const targetStage = Math.max(1, Math.min(currentLevel, unlockedLevel));
-
     const timer = setTimeout(() => {
-      if (activeChapterFilter !== 0) {
-        if (selectedCardRef.current) {
-          selectedCardRef.current.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-          });
-        }
-        return;
-      }
-
-      if (targetStage === 1) {
-        // Level 1 starts right at the bottom of the adventure map!
-        const node1 = scrollContainerRef.current?.querySelector('.adv-trail-node[data-level="1"]');
-        if (node1) {
-          node1.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else if (scrollContainerRef.current) {
-          scrollContainerRef.current.scrollTo({
-            top: scrollContainerRef.current.scrollHeight,
-            behavior: 'smooth'
-          });
-        }
-      } else {
-        const targetNode = scrollContainerRef.current?.querySelector(`.adv-trail-node[data-level="${targetStage}"]`);
-        if (targetNode) {
-          targetNode.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-          });
-        } else if (selectedCardRef.current) {
-          selectedCardRef.current.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-          });
-        }
-      }
-    }, 200);
+      scrollToStage(targetStage, false);
+    }, 100);
 
     return () => clearTimeout(timer);
-  }, [currentLevel, unlockedLevel, activeChapterFilter]);
+  }, [currentLevel, unlockedLevel, activeChapterFilter, scrollToStage]);
 
   // Quick action to locate and smoothly center the player's current unlocked level
   const handleLocateCurrentLevel = useCallback(() => {
@@ -163,19 +144,10 @@ export const LevelMap = ({
     const targetStage = Math.max(1, Math.min(currentLevel, unlockedLevel));
     setSelectedLevelNum(targetStage);
     setActiveChapterFilter(0);
-
     setTimeout(() => {
-      const targetNode = scrollContainerRef.current?.querySelector(`.adv-trail-node[data-level="${targetStage}"]`);
-      if (targetNode) {
-        targetNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      } else if (targetStage === 1 && scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTo({
-          top: scrollContainerRef.current.scrollHeight,
-          behavior: 'smooth'
-        });
-      }
+      scrollToStage(targetStage, true);
     }, 120);
-  }, [currentLevel, unlockedLevel]);
+  }, [currentLevel, unlockedLevel, scrollToStage]);
 
   const handleLaunchLevel = useCallback(
     (targetLevel) => {
@@ -244,43 +216,19 @@ export const LevelMap = ({
       const targetStage = Math.max(1, Math.min(currentLevel, unlockedLevel));
       setSelectedLevelNum(targetStage);
       setTimeout(() => {
-        const targetNode = scrollContainerRef.current?.querySelector(`.adv-trail-node[data-level="${targetStage}"]`);
-        if (targetNode) {
-          targetNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else if (targetStage === 1 && scrollContainerRef.current) {
-          scrollContainerRef.current.scrollTo({
-            top: scrollContainerRef.current.scrollHeight,
-            behavior: 'smooth'
-          });
-        }
+        scrollToStage(targetStage, true);
       }, 100);
     } else {
       const ch = CHAPTER_CONFIGS.find((c) => c.chapter === chapterNum);
       if (ch) {
-        // If current selected level is outside this chapter, select appropriate stage in this chapter
-        if (selectedLevelNum < ch.start || selectedLevelNum > ch.end) {
-          const targetLevel = (unlockedLevel >= ch.start && unlockedLevel <= ch.end)
-            ? unlockedLevel
-            : ch.start;
-          setSelectedLevelNum(targetLevel);
-        }
+        const targetLevel = (unlockedLevel >= ch.start && unlockedLevel <= ch.end)
+          ? unlockedLevel
+          : ch.start;
+        setSelectedLevelNum(targetLevel);
+        setTimeout(() => {
+          scrollToStage(targetLevel, true);
+        }, 100);
       }
-      setTimeout(() => {
-        if (scrollContainerRef.current) {
-          // If viewing Chapter 1, scroll to level 1 at bottom
-          if (chapterNum === 1) {
-            const node1 = scrollContainerRef.current.querySelector('.adv-trail-node[data-level="1"]');
-            if (node1) {
-              node1.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            } else {
-              scrollContainerRef.current.scrollTo({ top: scrollContainerRef.current.scrollHeight, behavior: 'smooth' });
-            }
-          } else {
-            // For other chapters, scroll smoothly to top of chapter
-            scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-        }
-      }, 100);
     }
   };
 
