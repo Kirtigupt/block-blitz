@@ -96,6 +96,21 @@ export const LevelMap = ({
   const selectedCardRef = useRef(null);
   const feedbackTimerRef = useRef(null);
   const chapterSectionRefs = useRef({});
+  const pillsBarRef = useRef(null);
+  const mobilePillsBarRef = useRef(null);
+
+  // Keep active chapter tab centered in view
+  useEffect(() => {
+    const scrollTab = (barRef) => {
+      if (!barRef.current) return;
+      const activeBtn = barRef.current.querySelector('.ch-pill-item.active');
+      if (activeBtn) {
+        activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    };
+    scrollTab(pillsBarRef);
+    scrollTab(mobilePillsBarRef);
+  }, [activeChapterFilter]);
 
   // Auto-scroll selected/current level tile into view on mount or change
   useEffect(() => {
@@ -225,8 +240,9 @@ export const LevelMap = ({
     setActiveChapterFilter(chapterNum);
 
     if (chapterNum === 0) {
-      // Scroll to current player level
+      // Return to All Realms view -> locate current stage
       const targetStage = Math.max(1, Math.min(currentLevel, unlockedLevel));
+      setSelectedLevelNum(targetStage);
       setTimeout(() => {
         const targetNode = scrollContainerRef.current?.querySelector(`.adv-trail-node[data-level="${targetStage}"]`);
         if (targetNode) {
@@ -239,16 +255,32 @@ export const LevelMap = ({
         }
       }, 100);
     } else {
-      // Scroll to that chapter section
-      const sectionEl = chapterSectionRefs.current[chapterNum];
-      if (sectionEl) {
-        sectionEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
       const ch = CHAPTER_CONFIGS.find((c) => c.chapter === chapterNum);
-      if (ch && (selectedLevelNum < ch.start || selectedLevelNum > ch.end)) {
-        const nextTarget = Math.min(ch.end, Math.max(ch.start, unlockedLevel));
-        setSelectedLevelNum(nextTarget);
+      if (ch) {
+        // If current selected level is outside this chapter, select appropriate stage in this chapter
+        if (selectedLevelNum < ch.start || selectedLevelNum > ch.end) {
+          const targetLevel = (unlockedLevel >= ch.start && unlockedLevel <= ch.end)
+            ? unlockedLevel
+            : ch.start;
+          setSelectedLevelNum(targetLevel);
+        }
       }
+      setTimeout(() => {
+        if (scrollContainerRef.current) {
+          // If viewing Chapter 1, scroll to level 1 at bottom
+          if (chapterNum === 1) {
+            const node1 = scrollContainerRef.current.querySelector('.adv-trail-node[data-level="1"]');
+            if (node1) {
+              node1.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+              scrollContainerRef.current.scrollTo({ top: scrollContainerRef.current.scrollHeight, behavior: 'smooth' });
+            }
+          } else {
+            // For other chapters, scroll smoothly to top of chapter
+            scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }
+      }, 100);
     }
   };
 
@@ -290,8 +322,10 @@ export const LevelMap = ({
       // In upward journey:
       // ch.chapter > 1 has lead-in coming up from chapter below
       // All chapters lead-out upward (ch 10 leads straight into Zenith Citadel!)
-      const hasLeadIn = ch.chapter > 1;
-      const hasLeadOut = true;
+      // When isolated in single chapter mode, starts cleanly at first node.
+      const hasLeadIn = activeChapterFilter === 0 && ch.chapter > 1;
+      // In All Realms, chapters connect upward. In single chapter mode, Chapter 10 connects to Zenith Citadel.
+      const hasLeadOut = activeChapterFilter === 0 || ch.chapter === 10;
 
       const fullPath = buildChapterPathD(pts, hasLeadIn, hasLeadOut);
       const unlockedPts = pts.filter((p) => p.level <= unlockedLevel);
@@ -310,7 +344,7 @@ export const LevelMap = ({
       };
     });
     return map;
-  }, [unlockedLevel]);
+  }, [unlockedLevel, activeChapterFilter]);
 
   // Active chapter configuration when a specific chapter filter is chosen
   const activeChapterData = useMemo(() => {
@@ -318,29 +352,17 @@ export const LevelMap = ({
     return CHAPTER_CONFIGS.find((c) => c.chapter === activeChapterFilter) || null;
   }, [activeChapterFilter]);
 
-  // Levels for specific chapter view (10 stages ascending from bottom to top)
-  const chapterViewLevels = useMemo(() => {
-    if (activeChapterFilter === 0) return [];
-    return LEVEL_CONFIGS.filter((lvl) => lvl.chapter === activeChapterFilter).reverse().map((lvl) => {
-      const isCompleted = completedLevels.has(lvl.level);
-      const isCurrent = lvl.level === unlockedLevel;
-      const isLocked = lvl.level > unlockedLevel;
-      const isSelected = lvl.level === selectedLevelNum;
-      const isBoss = Boolean(lvl.isBoss || lvl.level % 10 === 0);
-
-      return {
-        ...lvl,
-        isCompleted,
-        isCurrent,
-        isLocked,
-        isSelected,
-        isBoss
-      };
-    });
-  }, [activeChapterFilter, completedLevels, unlockedLevel, selectedLevelNum]);
-
-  // Ascent chapters list: Chapter 10 at top, down to Chapter 1 at bottom
+    // Ascent chapters list: Chapter 10 at top, down to Chapter 1 at bottom
   const ascentChapters = useMemo(() => [...CHAPTER_CONFIGS].reverse(), []);
+
+  // Displayed chapters: either all 10 in ascent order (CH 10 -> CH 1) or only the single filtered chapter
+  const displayedChapters = useMemo(() => {
+    if (activeChapterFilter === 0) {
+      return ascentChapters;
+    }
+    const filtered = CHAPTER_CONFIGS.find((c) => c.chapter === activeChapterFilter);
+    return filtered ? [filtered] : [];
+  }, [activeChapterFilter, ascentChapters]);
 
   return (
     <div
@@ -386,7 +408,7 @@ export const LevelMap = ({
       </header>
 
       {/* 2. Horizontal Realm Navigation Carousel */}
-      <nav className="desktop-chapter-pills-bar" aria-label="Desktop Chapter Navigation">
+      <nav className="desktop-chapter-pills-bar" ref={pillsBarRef} aria-label="Desktop Chapter Navigation">
         <button
           type="button"
           className={`ch-pill-item ${activeChapterFilter === 0 ? 'active' : ''}`}
@@ -423,7 +445,7 @@ export const LevelMap = ({
       </nav>
 
       {/* Mobile Chapter Switcher Bar */}
-      <nav className="mobile-chapter-switcher-bar" aria-label="Mobile Chapter Switcher">
+      <nav className="mobile-chapter-switcher-bar" ref={mobilePillsBarRef} aria-label="Mobile Chapter Switcher">
         <button
           type="button"
           className={`ch-pill-item ${activeChapterFilter === 0 ? 'active' : ''}`}
@@ -463,90 +485,128 @@ export const LevelMap = ({
             </div>
           )}
 
-          {/* VIEW A: ALL STAGES (UPWARD JOURNEY PATH: LEVEL 1 BOTTOM TO LEVEL 100 TOP) */}
-          {activeChapterFilter === 0 ? (
+          {/* UNIFIED ADVENTURE TRAIL JOURNEY (ALL REALMS OR SINGLE CHAPTER) */}
             <div className="adventure-mosaic-grid campaign-tiles-grid adventure-trail-journey">
 
-              {/* GRAND FINALE: SOVEREIGN ZENITH CITADEL AT THE VERY TOP (LEVEL 100 APEX DESTINATION) */}
-              <div
-                className="adventure-trophy-banner grand-finale-banner zenith-citadel-banner"
-                role="region"
-                aria-label="Sovereign Zenith Citadel Apex Destination"
-              >
-                <div className="adventure-trophy-pedestal citadel-pedestal">
-                  <div className="trophy-ambient-glow citadel-aurora-glow" />
-                  <svg
-                    viewBox="0 0 120 120"
-                    className={`adventure-trophy-svg citadel-spire-svg ${completedCount >= TOTAL_LEVELS ? 'trophy-champion' : ''}`}
-                    aria-hidden="true"
-                  >
-                    <defs>
-                      <linearGradient id="citadelGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#fef08a" />
-                        <stop offset="50%" stopColor="#facc15" />
-                        <stop offset="100%" stopColor="#d97706" />
-                      </linearGradient>
-                    </defs>
-                    {/* Citadel Spire & Trophy Vector */}
-                    <path
-                      d="M 28 32 C 14 32 10 50 24 62 C 30 68 38 68 42 65"
-                      fill="none"
-                      stroke="url(#citadelGoldGrad)"
-                      strokeWidth="6"
-                      strokeLinecap="round"
+              {/* GRAND FINALE: SOVEREIGN ZENITH CITADEL (SHOWN IN ALL REALMS OR CHAPTER 10) */}
+              {(activeChapterFilter === 0 || activeChapterFilter === 10) && (
+                <div
+                  className="adventure-trophy-banner grand-finale-banner zenith-citadel-banner"
+                  role="region"
+                  aria-label="Sovereign Zenith Citadel Apex Destination"
+                >
+                  <div className="adventure-trophy-pedestal citadel-pedestal">
+                    <div className="trophy-ambient-glow citadel-aurora-glow" />
+                    <svg
+                      viewBox="0 0 120 120"
+                      className={`adventure-trophy-svg citadel-spire-svg ${completedCount >= TOTAL_LEVELS ? 'trophy-champion' : ''}`}
+                      aria-hidden="true"
+                    >
+                      <defs>
+                        <linearGradient id="citadelGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#fef08a" />
+                          <stop offset="50%" stopColor="#facc15" />
+                          <stop offset="100%" stopColor="#d97706" />
+                        </linearGradient>
+                      </defs>
+                      <path
+                        d="M 28 32 C 14 32 10 50 24 62 C 30 68 38 68 42 65"
+                        fill="none"
+                        stroke="url(#citadelGoldGrad)"
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                      />
+                      <path
+                        d="M 92 32 C 106 32 110 50 96 62 C 90 68 82 68 78 65"
+                        fill="none"
+                        stroke="url(#citadelGoldGrad)"
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                      />
+                      <path
+                        d="M 32 22 L 88 22 C 88 22 88 58 60 68 C 32 58 32 22 32 22 Z"
+                        fill="url(#citadelGoldGrad)"
+                      />
+                      <rect x="30" y="20" width="60" height="5" rx="2.5" fill="rgba(255, 255, 255, 0.35)" />
+                      <path
+                        d="M 60 34 L 63 42 L 72 42 L 65 47 L 68 55 L 60 50 L 52 55 L 55 47 L 48 42 L 57 42 Z"
+                        fill="#ffffff"
+                      />
+                      <path d="M 54 68 L 66 68 L 64 82 L 56 82 Z" fill="url(#citadelGoldGrad)" />
+                      <rect x="42" y="82" width="36" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
+                      <rect x="34" y="90" width="52" height="10" rx="3" fill="url(#citadelGoldGrad)" />
+                      <polygon points="20,95 24,55 28,95" fill="rgba(250, 204, 21, 0.45)" />
+                      <polygon points="92,95 96,55 100,95" fill="rgba(250, 204, 21, 0.45)" />
+                    </svg>
+                  </div>
+
+                  <div className="trophy-finale-badge zenith-apex-badge">
+                    <Crown size={14} className="finale-crown-icon" />
+                    <span>SUMMIT CITADEL • ALTITUDE 10,000M</span>
+                  </div>
+
+                  <h2 className="adventure-trophy-headline zenith-headline">
+                    {completedCount >= TOTAL_LEVELS
+                      ? 'SOVEREIGN CHAMPION OF BLOCK BLITZ'
+                      : 'THE SOVEREIGN ZENITH CITADEL'}
+                  </h2>
+                  <p className="adventure-trophy-subtitle zenith-subtitle">
+                    {completedCount >= TOTAL_LEVELS
+                      ? 'All 100 realms conquered! You reign supreme as the Sovereign Arcade Champion.'
+                      : `The ultimate destination. Ascend through all 10 Cyber Realms and defeat Stage 100 to claim the Sovereign Throne. (${TOTAL_LEVELS - completedCount} stages remaining)`}
+                  </p>
+
+                  <div className="campaign-overall-progress-track" title={`${progressPercent}% Campaign Conquered`}>
+                    <div
+                      className="campaign-overall-progress-fill"
+                      style={{ width: `${progressPercent}%` }}
                     />
-                    <path
-                      d="M 92 32 C 106 32 110 50 96 62 C 90 68 82 68 78 65"
-                      fill="none"
-                      stroke="url(#citadelGoldGrad)"
-                      strokeWidth="6"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M 32 22 L 88 22 C 88 22 88 58 60 68 C 32 58 32 22 32 22 Z"
-                      fill="url(#citadelGoldGrad)"
-                    />
-                    <rect x="30" y="20" width="60" height="5" rx="2.5" fill="rgba(255, 255, 255, 0.35)" />
-                    {/* Central Sovereign Crown on Citadel */}
-                    <path
-                      d="M 60 34 L 63 42 L 72 42 L 65 47 L 68 55 L 60 50 L 52 55 L 55 47 L 48 42 L 57 42 Z"
-                      fill="#ffffff"
-                    />
-                    <path d="M 54 68 L 66 68 L 64 82 L 56 82 Z" fill="url(#citadelGoldGrad)" />
-                    <rect x="42" y="82" width="36" height="8" rx="2" fill="rgba(255, 255, 255, 0.2)" />
-                    <rect x="34" y="90" width="52" height="10" rx="3" fill="url(#citadelGoldGrad)" />
-                    {/* Citadel spires flanking */}
-                    <polygon points="20,95 24,55 28,95" fill="rgba(250, 204, 21, 0.45)" />
-                    <polygon points="92,95 96,55 100,95" fill="rgba(250, 204, 21, 0.45)" />
-                  </svg>
+                  </div>
                 </div>
+              )}
 
-                <div className="trophy-finale-badge zenith-apex-badge">
-                  <Crown size={14} className="finale-crown-icon" />
-                  <span>SUMMIT CITADEL • ALTITUDE 10,000M</span>
+              {/* DEDICATED CHAPTER FOCUS HEADER (SHOWN WHEN VIEWING CHAPTER 1 THROUGH 9) */}
+              {activeChapterFilter >= 1 && activeChapterFilter <= 9 && activeChapterData && (
+                <div
+                  className="chapter-focus-header"
+                  role="region"
+                  aria-label={`Chapter ${activeChapterData.chapter}: ${activeChapterData.name}`}
+                >
+                  <div className="chapter-focus-banner" style={{ '--chapter-accent': activeChapterData.color }}>
+                    <div className="chapter-focus-badge">
+                      {getChapterIcon(activeChapterData.icon, activeChapterData.color, 16)}
+                      <span className="chapter-focus-tag">CHAPTER {activeChapterData.chapter}</span>
+                      <span className="chapter-focus-alt">ALTITUDE: {(activeChapterData.chapter * 1000).toLocaleString()}M</span>
+                    </div>
+                    <h2 className="chapter-focus-title">{activeChapterData.name}</h2>
+                    <p className="chapter-focus-stages">
+                      Stages {activeChapterData.start}–{activeChapterData.end} • {activeChapterData.chapter % 2 === 0 ? 'Cyber Matrix Trail' : 'Ascent Cyber Pathway'}
+                    </p>
+                    <div className="chapter-focus-progress-wrap">
+                      <div className="chapter-focus-stat-row">
+                        <span className="chapter-focus-stat-label">
+                          {chapterProgressMap[activeChapterData.chapter]?.completed} of {chapterProgressMap[activeChapterData.chapter]?.total} Stages Cleared
+                        </span>
+                        <span className="chapter-focus-stat-percent">
+                          {chapterProgressMap[activeChapterData.chapter]?.percent}% Conquered
+                        </span>
+                      </div>
+                      <div className="campaign-overall-progress-track">
+                        <div
+                          className="campaign-overall-progress-fill"
+                          style={{
+                            width: `${chapterProgressMap[activeChapterData.chapter]?.percent}%`,
+                            background: `linear-gradient(90deg, ${activeChapterData.color}, #38bdf8)`
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
+              )}
 
-                <h2 className="adventure-trophy-headline zenith-headline">
-                  {completedCount >= TOTAL_LEVELS
-                    ? 'SOVEREIGN CHAMPION OF BLOCK BLITZ'
-                    : 'THE SOVEREIGN ZENITH CITADEL'}
-                </h2>
-                <p className="adventure-trophy-subtitle zenith-subtitle">
-                  {completedCount >= TOTAL_LEVELS
-                    ? 'All 100 realms conquered! You reign supreme as the Sovereign Arcade Champion.'
-                    : `The ultimate destination. Ascend through all 10 Cyber Realms and defeat Stage 100 to claim the Sovereign Throne. (${TOTAL_LEVELS - completedCount} stages remaining)`}
-                </p>
-
-                <div className="campaign-overall-progress-track" title={`${progressPercent}% Campaign Conquered`}>
-                  <div
-                    className="campaign-overall-progress-fill"
-                    style={{ width: `${progressPercent}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* THE 10 ASCENT CHAPTER REALMS (RENDERED CHAPTER 10 DOWN TO CHAPTER 1) */}
-              {ascentChapters.map((chapter) => {
+              {/* THE DISPLAYED CHAPTER REALMS (RENDERED CHAPTER 10 DOWN TO CHAPTER 1 OR SINGLE CHAPTER) */}
+              {displayedChapters.map((chapter) => {
                 const prog = chapterProgressMap[chapter.chapter];
                 const pathData = chapterPaths[chapter.chapter];
                 const chapterLevels = LEVEL_CONFIGS.filter((l) => l.chapter === chapter.chapter);
@@ -715,7 +775,6 @@ export const LevelMap = ({
 
                             {/* 3D Node Core Sphere */}
                             <div className="adv-orb-core">
-                              {/* Objective Micro Icon on Standard Nodes for visual variety */}
                               {!isBoss && !isMilestone && !isApex && (
                                 <span className="adv-micro-obj-badge" aria-hidden="true">
                                   {getObjectiveIcon(lvl.type, isCompleted ? '#bae6fd' : isCurrent ? '#713f12' : isLocked ? '#475569' : chapter.color)}
@@ -780,8 +839,8 @@ export const LevelMap = ({
                       </div>
                     </div>
 
-                    {/* Transitional Connector Conduit between Consecutive Realms */}
-                    {chapter.chapter > 1 && (
+                    {/* Transitional Connector Conduit between Consecutive Realms (Only in All Realms view) */}
+                    {activeChapterFilter === 0 && chapter.chapter > 1 && (
                       <div className="realm-connector-conduit" aria-hidden="true">
                         <div
                           className={`conduit-vertical-stream ${
@@ -798,146 +857,53 @@ export const LevelMap = ({
                 );
               })}
 
-              {/* EXPEDITION BASECAMP BANNER (GROUND ZERO - LEVEL 1 LAUNCH TERMINAL AT VERY BOTTOM) */}
-              <div
-                className="adventure-departure-banner expedition-basecamp-banner"
-                role="region"
-                aria-label="Expedition Basecamp Launch Pad"
-              >
-                <div className="departure-badge basecamp-badge">
-                  <Compass size={13} className="basecamp-icon" />
-                  <span>EXPEDITION BASECAMP</span>
-                  <span className="departure-stages-pill">GROUND ZERO • 0M</span>
-                </div>
-                <h2 className="departure-headline">ASCENT TO THE CITADEL</h2>
-                <p className="departure-subtext">
-                  Level 1 starts right here at the launch pad. Battle upwards sequentially through all 10 Cyber Realms to reach the Zenith Citadel at Stage 100.
-                </p>
-                <div className="departure-quick-actions">
-                  <div className="campaign-overall-progress-track" title={`${progressPercent}% Campaign Conquered`}>
-                    <div
-                      className="campaign-overall-progress-fill"
-                      style={{ width: `${progressPercent}%` }}
-                    />
+              {/* EXPEDITION BASECAMP BANNER (SHOWN IN ALL REALMS OR CHAPTER 1) */}
+              {(activeChapterFilter === 0 || activeChapterFilter === 1) && (
+                <div
+                  className="adventure-departure-banner expedition-basecamp-banner"
+                  role="region"
+                  aria-label="Expedition Basecamp Launch Pad"
+                >
+                  <div className="departure-badge basecamp-badge">
+                    <Compass size={13} className="basecamp-icon" />
+                    <span>EXPEDITION BASECAMP</span>
+                    <span className="departure-stages-pill">GROUND ZERO • 0M</span>
                   </div>
-                  <div className="departure-stats-strip">
-                    <span className="departure-stat-item">
-                      <Trophy size={12} className="dep-icon-trophy" />
-                      <strong>{completedCount}</strong> / {TOTAL_LEVELS} Cleared
-                    </span>
-                    <button
-                      type="button"
-                      className="departure-locate-btn"
-                      onClick={handleLocateCurrentLevel}
-                      title="Jump view to your current unlocked stage"
-                    >
-                      <span className="dep-locate-dot" />
-                      <span>LOCATE STAGE {unlockedLevel}</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          ) : (
-            /* VIEW B: SPECIFIC CHAPTER VIEW (10 Stages with Chapter Mission Header) */
-            <div className="chapter-view-container" role="region" aria-label={`Chapter ${activeChapterFilter} Stages`}>
-              {activeChapterData && (
-                <div className="chapter-header-strip">
-                  <div className="header-strip-meta">
-                    <span className="header-strip-chapter-tag">
-                      CHAPTER {activeChapterData.chapter} • ALT: {(activeChapterData.chapter * 1000).toLocaleString()}M
-                    </span>
-                    <h2 className="header-strip-name">{activeChapterData.name}</h2>
-                    <span className="header-strip-range">
-                      Stages {activeChapterData.start} – {activeChapterData.end} • ASCENT ASCENDING
-                    </span>
-                  </div>
-
-                  <div className="header-strip-progress">
-                    <span className="strip-progress-label">
-                      {chapterProgressMap[activeChapterData.chapter]?.completed} / {chapterProgressMap[activeChapterData.chapter]?.total} Cleared
-                    </span>
-                    <div className="strip-progress-track">
+                  <h2 className="departure-headline">ASCENT TO THE CITADEL</h2>
+                  <p className="departure-subtext">
+                    Level 1 starts right here at the launch pad. Battle upwards sequentially through all 10 Cyber Realms to reach the Zenith Citadel at Stage 100.
+                  </p>
+                  <div className="departure-quick-actions">
+                    <div className="campaign-overall-progress-track" title={`${progressPercent}% Campaign Conquered`}>
                       <div
-                        className="strip-progress-fill"
-                        style={{ width: `${chapterProgressMap[activeChapterData.chapter]?.percent}%` }}
+                        className="campaign-overall-progress-fill"
+                        style={{ width: `${progressPercent}%` }}
                       />
+                    </div>
+                    <div className="departure-stats-strip">
+                      <span className="departure-stat-item">
+                        <Trophy size={12} className="dep-icon-trophy" />
+                        <strong>{completedCount}</strong> / {TOTAL_LEVELS} Cleared
+                      </span>
+                      <button
+                        type="button"
+                        className="departure-locate-btn"
+                        onClick={handleLocateCurrentLevel}
+                        title="Jump view to your current unlocked stage"
+                      >
+                        <span className="dep-locate-dot" />
+                        <span>LOCATE STAGE {unlockedLevel}</span>
+                      </button>
                     </div>
                   </div>
                 </div>
               )}
 
-              <div className="chapter-stages-grid" role="grid" aria-label={`Stages for Chapter ${activeChapterFilter}`}>
-                {chapterViewLevels.map((lvl) => {
-                  return (
-                    <div
-                      key={lvl.level}
-                      ref={lvl.isSelected ? selectedCardRef : null}
-                      data-level={lvl.level}
-                      className={`adventure-block level-tile-stone level-card-item journey-node chapter-stage-tile ${
-                        lvl.isCompleted ? 'completed' : ''
-                      } ${lvl.isCurrent ? 'current-unlocked' : ''} ${
-                        lvl.isLocked ? 'locked-stone' : 'unlocked-stone'
-                      } ${lvl.isSelected ? 'selected-stone' : ''} ${
-                        lvl.isBoss ? 'boss-stone' : ''
-                      }`}
-                      onClick={() => handleTileClick(lvl.level)}
-                      onDoubleClick={() => handleTileDoubleClick(lvl.level)}
-                      role="button"
-                      tabIndex={0}
-                      aria-label={`Level ${lvl.level}: ${lvl.title}. ${
-                        lvl.isCompleted ? 'Completed' : lvl.isLocked ? 'Locked' : 'Unlocked'
-                      }`}
-                    >
-                      {/* Active Level Marker */}
-                      {lvl.isCurrent && (
-                        <div className="adventure-pointer-marker" aria-hidden="true">
-                          <div className="adv-hero-pin">
-                            <span className="adv-pin-label">YOU</span>
-                            <div className="adv-pin-triangle" />
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Header in Stage Card */}
-                      <div className="ch-tile-header">
-                        <span className="ch-tile-num">Stage {lvl.level}</span>
-                        {lvl.isBoss && (
-                          <span className="ch-tile-boss-tag">
-                            <Crown size={11} /> BOSS
-                          </span>
-                        )}
-                        {lvl.isCompleted && <Check size={14} className="ch-tile-check" />}
-                        {lvl.isLocked && <Lock size={12} className="ch-tile-lock" />}
-                      </div>
-
-                      {/* Title & Objective */}
-                      <div className="ch-tile-body">
-                        <div className="ch-tile-title">{lvl.title}</div>
-                        <div className="ch-tile-objective">
-                          {getObjectiveIcon(lvl.type, lvl.accentColor || '#38bdf8')}
-                          <span>{lvl.description}</span>
-                        </div>
-                      </div>
-
-                      {/* Footer */}
-                      <div className="ch-tile-footer">
-                        <span className="ch-tile-bonus">+{lvl.bonusPoints.toLocaleString()} PTS</span>
-                        <span className="ch-tile-state-cue">
-                          {lvl.isLocked ? 'LOCKED' : lvl.isCompleted ? 'REPLAY' : lvl.isCurrent ? 'YOU' : 'READY'}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
             </div>
-          )}
-        </div>
-      </main>
+          </div>
+        </main>
 
-      {/* Floating Quick-Locate Pill (When user has progressed past Level 1) */}
+        {/* Floating Quick-Locate Pill (When user has progressed past Level 1) */}
       {unlockedLevel > 1 && activeChapterFilter === 0 && (
         <button
           type="button"
