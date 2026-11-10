@@ -157,11 +157,11 @@ export const Header = ({
       {/* 1. TOP NAVIGATION COMMAND BAR */}
       <div className="header-top hud-command-bar">
         {/* Left: Branding & Current Stage Waypoint */}
-        <div className="hud-nav-left">
+        <div className="hud-nav-left header-brand-group">
           {/* Logo */}
           <button
             type="button"
-            className="hud-brand-anchor"
+            className="hud-brand-anchor logo-badge"
             onClick={onOpenLevelMap}
             title="Open Adventure Level Map"
             aria-label="BLOCK BLITZ Logo - Open Level Map"
@@ -178,7 +178,7 @@ export const Header = ({
           {/* Current Stage Waypoint Chip */}
           <button
             type="button"
-            className={`hud-waypoint-chip ${isBossLevel ? 'chip-boss' : 'chip-standard'}`}
+            className={`hud-waypoint-chip level-badge-pill ${isBossLevel ? 'chip-boss' : 'chip-standard'}`}
             onClick={onOpenLevelMap}
             title={`Stage ${currentLevel} • Open Adventure Map`}
             aria-label={`Current Stage ${currentLevel}${isBossLevel ? ' Boss Level' : ''}. Open Map`}
@@ -195,9 +195,9 @@ export const Header = ({
         </div>
 
         {/* Center/Right: Account & Controls Hub */}
-        <div className="hud-nav-right">
+        <div className="hud-nav-right header-actions">
           {/* User Profile / Guest Sign In */}
-          <div className="hud-identity-zone">
+          <div className="hud-identity-zone header-group-account">
             {user ? (
               <button
                 type="button"
@@ -209,7 +209,7 @@ export const Header = ({
                 <div className="profile-avatar-circle">
                   <User size={12} />
                 </div>
-                <span className="profile-username">{user.username}</span>
+                <span className="profile-username user-pill-name">{user.username}</span>
               </button>
             ) : (
               <button
@@ -304,7 +304,7 @@ export const Header = ({
         <div className="hero-score-anchor">
           <div className="hero-score-subhead">
             <span className="score-live-beacon" aria-hidden="true" />
-            <span className="score-label-text">CURRENT SCORE</span>
+            <span className="score-label-text">SCORE</span>
           </div>
           <div className={`hero-score-number score-value hud-score-digits ${isScoreBumping ? 'score-pulse' : ''}`}>
             {Number.isFinite(score) ? score.toLocaleString() : '0'}

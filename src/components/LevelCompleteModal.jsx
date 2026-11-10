@@ -190,188 +190,105 @@ export const LevelCompleteModal = ({
          ========================================================================= */}
       {step === 'completed' && (
         <div className={`level-complete-card achievement-portal-card ${isCampaignComplete ? 'campaign-champion-card' : ''}`}>
-          {/* Multi-layered Ambient Light Blooms & Beam Flares */}
+          {/* Subtle Ambient Halo */}
           <div className="completion-ambient-halo" />
-          <div className="completion-beam-flare flare-cyan" />
-          <div className="completion-beam-flare flare-amber" />
 
-          {/* Top Status & Sector Telemetry Banner */}
+          {/* Top Stage & Chapter Subtitle */}
           <div className="achievement-telemetry-banner">
             <div className="telemetry-live-beacon">
-              <span className="beacon-ping" />
               <span className="beacon-dot" />
-              <span className="beacon-label">SECTOR CLEARED</span>
+              <span className="beacon-label">STAGE CLEARED</span>
             </div>
             <div className="telemetry-ch-tag">
-              CHAPTER {chapterNum} • {chapterData.name.toUpperCase()}
+              Chapter {chapterNum} • {chapterData.name}
             </div>
           </div>
 
           {/* =========================================================
-              CREATIVE ACHIEVEMENT PRESENTATION (Apex Crest + Arching Constellation)
-              Replacing the generic trophy-in-a-circle + 3 isolated stars
+              CLEAN 3-STAR CELEBRATION (Visual Highlight)
              ========================================================= */}
           <div className="victory-crest-apparatus">
-            {/* Energy Halo Field */}
-            <div className="crest-energy-field" />
-
-            {/* Hero Zenith Star (Star 2 - Apex Node) */}
-            <div className="victory-star-slot star-slot-2 hero-star apex-zenith-node">
-              <div className="hero-star-chassis">
-                <Star size={36} className="star-fill-svg star-pop-2" fill="#fde047" stroke="#eab308" />
-                <Sparkles size={16} className="apex-sparkle-flair" />
-              </div>
-            </div>
-
-            {/* Constellation Triumph Arch (Left Wing, Central Core, Right Wing) */}
             <div className="triumph-constellation-arch" aria-label="3 Stars Rating Earned">
-              {/* Star 1 - Wing Left */}
+              {/* Star 1 - Left */}
               <div className="victory-star-slot star-slot-1 constellation-node left-wing">
                 <div className="star-pedestal-mount">
-                  <Star size={24} className="star-fill-svg star-pop-1" fill="#fbbf24" stroke="#f59e0b" />
-                  <span className="star-sparkle-dot" />
+                  <Star size={32} className="star-fill-svg star-pop-1" fill="#fbbf24" stroke="#d97706" />
                 </div>
               </div>
 
-              {/* Central Power Core Crest */}
-              <div className="victory-core-crest-chassis">
-                <div className={`victory-core-prism ${isCampaignComplete ? 'campaign-zenith-core' : isBossLevel ? 'boss-slayer-core' : ''}`}>
-                  <div className="core-prism-inner">
-                    {isCampaignComplete ? (
-                      <Crown size={36} className="victory-core-icon crown-glow" />
-                    ) : isBossLevel ? (
-                      <Flame size={34} className="victory-core-icon flame-glow" />
-                    ) : (
-                      <Award size={34} className="victory-core-icon award-glow" />
-                    )}
-                  </div>
-                  {/* Revolving Energy Ring */}
-                  <div className="core-orbit-ring" />
-                  <div className="core-facet-sheen" />
+              {/* Star 2 - Center Apex (Larger Hero Star) */}
+              <div className="victory-star-slot star-slot-2 hero-star apex-zenith-node">
+                <div className="hero-star-chassis">
+                  <Star size={46} className="star-fill-svg star-pop-2" fill="#fde047" stroke="#eab308" />
+                  <Sparkles size={18} className="apex-sparkle-flair" />
                 </div>
               </div>
 
-              {/* Star 3 - Wing Right */}
+              {/* Star 3 - Right */}
               <div className="victory-star-slot star-slot-3 constellation-node right-wing">
                 <div className="star-pedestal-mount">
-                  <Star size={24} className="star-fill-svg star-pop-3" fill="#fbbf24" stroke="#f59e0b" />
-                  <span className="star-sparkle-dot" />
+                  <Star size={32} className="star-fill-svg star-pop-3" fill="#fbbf24" stroke="#d97706" />
                 </div>
               </div>
             </div>
 
-            {/* Tri-Star Grade Ribbon */}
+            {/* Subtle Rating Pill */}
             <div className="triumph-grade-ribbon">
-              <span className="grade-badge">GRADE S</span>
+              <span className="grade-badge">PERFECT</span>
               <span className="grade-divider">•</span>
-              <span className="grade-sub">3-STAR OVERDRIVE</span>
+              <span className="grade-sub">3 STARS EARNED</span>
             </div>
           </div>
 
-          {/* =========================================================
-              VICTORY HEADLINE & LEVEL INFORMATION
-              Bold, stylized cyber-arcade typography with clear hierarchy
-             ========================================================= */}
-          <div className="level-complete-header achievement-headline-block">
-            <div className="achievement-title-wrap">
-              <h2 id="completion-flow-title" className="level-complete-title">
-                {isCampaignComplete ? 'Level 100 Cleared! Zenith Master!' : 'LEVEL COMPLETED!'}
-              </h2>
+          {/* Milestone Markers for Boss & Zenith */}
+          {(isBossLevel || isCampaignComplete) && (
+            <div className={`victory-core-prism ${isCampaignComplete ? 'campaign-zenith-core' : 'boss-slayer-core'}`} style={{ display: 'none' }}>
+              {isCampaignComplete && <Crown size={24} className="crown-glow" />}
             </div>
+          )}
+
+          {/* Headline & Level Information */}
+          <div className="level-complete-header achievement-headline-block">
+            <h2 id="completion-flow-title" className="level-complete-title">
+              {isCampaignComplete ? 'Level 100 Cleared! Zenith Master!' : 'LEVEL COMPLETED!'}
+            </h2>
 
             <div className="stage-identity-strip">
               <span className="stage-code-pill">STAGE {String(levelNum).padStart(2, '0')}</span>
-              <span className="stage-name-text">{levelConfig?.title || 'Grid Frontier Mastered'}</span>
+              <span className="stage-name-text">{levelConfig?.title || 'Stage Cleared'}</span>
               {isReplay && <span className="stage-replay-pill">REPLAY</span>}
             </div>
           </div>
 
-          {/* =========================================================
-              HOLOGRAPHIC OBJECTIVE VERIFICATION CARD
-              Tactical HUD terminal with status badge and directive icon
-             ========================================================= */}
+          {/* Objective Completed Pill */}
           <div className="holographic-objective-card">
-            <div className="obj-card-top-row">
-              <div className="obj-directive-tag">
-                <Target size={13} className="obj-directive-icon" />
-                <span>MISSION DIRECTIVE VERIFIED</span>
-              </div>
-              <div className="obj-status-badge">
-                <CheckCircle2 size={13} className="obj-status-icon" />
-                <span>100% COMPLETE</span>
-              </div>
+            <div className="obj-status-badge">
+              <CheckCircle2 size={15} className="obj-status-icon" />
+              <span>100% COMPLETE</span>
             </div>
-
-            <div className="obj-card-body">
-              <div className="obj-icon-pod">
-                {objectiveIcon}
-              </div>
-              <div className="obj-detail-text">
-                <span className="obj-quote-label">"{completedObjective}"</span>
-                <span className="obj-param-note">Sector clearance parameters satisfied</span>
-              </div>
+            <div className="obj-detail-text">
+              <span className="obj-quote-label">"{completedObjective}"</span>
             </div>
           </div>
 
-          {/* =========================================================
-              PERFORMANCE VAULT & REWARDS HUB
-              Asymmetric high-tech data chambers with glowing neon telemetry
-             ========================================================= */}
+          {/* Clean Dual-Metric Score & Bonus Row */}
           <div className="rewards-performance-hub">
-            {/* Left Chamber: Stage Bonus Yield */}
             <div className="reward-vault-chamber bonus-chamber">
-              <div className="chamber-header">
-                <div className="chamber-icon-wrapper bonus-glow">
-                  <Zap size={14} className="chamber-icon" />
-                </div>
-                <span className="chamber-title">STAGE BONUS</span>
-              </div>
-              <div className="chamber-value-box">
-                <span className={`stat-value bonus-val ${isReplay ? 'replay-val' : ''}`}>
-                  {bonusPoints > 0 ? `+${bonusPoints.toLocaleString()} PTS` : '0 (Replay)'}
-                </span>
-              </div>
-              <div className="chamber-subtext">
-                {bonusPoints > 0 ? 'Clearance Yield Credited' : 'Archive Replay (No Extra Bonus)'}
-              </div>
+              <span className="chamber-title">STAGE BONUS</span>
+              <span className={`stat-value bonus-val ${isReplay ? 'replay-val' : ''}`}>
+                {bonusPoints > 0 ? `+${bonusPoints.toLocaleString()} PTS` : '0 (Replay)'}
+              </span>
             </div>
 
-            {/* Right Chamber: Total Accumulated Score */}
+            <div className="rewards-v-divider" aria-hidden="true" />
+
             <div className="reward-vault-chamber score-chamber">
-              <div className="chamber-header">
-                <div className="chamber-icon-wrapper score-glow">
-                  <Trophy size={14} className="chamber-icon" />
-                </div>
-                <span className="chamber-title">FINAL SCORE</span>
-              </div>
-              <div className="chamber-value-box">
-                <span className="stat-value total-val">{totalScore.toLocaleString()}</span>
-              </div>
-              <div className="chamber-subtext">
-                <span className="score-live-tag">Total Career Blitz</span>
-              </div>
+              <span className="chamber-title">FINAL SCORE</span>
+              <span className="stat-value total-val">{totalScore.toLocaleString()}</span>
             </div>
           </div>
 
-          {/* Integrated Performance Telemetry Ribbon */}
-          <div className="performance-telemetry-ribbon">
-            <div className="perf-metric">
-              <span className="metric-dot gold" />
-              <span className="metric-lbl">EXECUTION:</span>
-              <span className="metric-val">FLAWLESS</span>
-            </div>
-            <div className="perf-divider" />
-            <div className="perf-metric">
-              <span className="metric-dot cyan" />
-              <span className="metric-lbl">GRID MULTIPLIER:</span>
-              <span className="metric-val">x1.5 BOOST</span>
-            </div>
-          </div>
-
-          {/* =========================================================
-              DISTINCTIVE COMMAND-GRADE LEADERBOARD TRIGGER
-              3D tactile physical arcade button with illuminated icon pod
-             ========================================================= */}
+          {/* Action CTAs */}
           <div className="complete-actions-wrap">
             <button
               type="button"
@@ -383,30 +300,20 @@ export const LevelCompleteModal = ({
               autoFocus
               aria-label="View Leaderboard"
             >
-              <div className="trigger-icon-pod">
-                <Trophy size={20} className="trigger-trophy-icon" />
-              </div>
-              <div className="trigger-text-column">
-                <span className="trigger-primary-label">VIEW LEADERBOARD</span>
-                <span className="trigger-sub-label">Global Standings & Player Rankings</span>
-              </div>
-              <div className="trigger-arrow-pod">
-                <ArrowRight size={18} className="trigger-arrow-icon" />
-              </div>
+              <Trophy size={18} className="trigger-trophy-icon" />
+              <span className="trigger-primary-label">VIEW LEADERBOARD</span>
+              <ArrowRight size={16} className="trigger-arrow-icon" />
             </button>
 
-            {/* Quick Skip to Map Direct Alternative */}
-            <div className="quick-advance-row">
-              <button
-                type="button"
-                className="quick-map-direct-btn"
-                onClick={handleFinishAndGoToMap}
-                aria-label="Direct to Map"
-              >
-                <Map size={14} />
-                <span>Skip Direct to Map</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              className="quick-map-direct-btn"
+              onClick={handleFinishAndGoToMap}
+              aria-label="Direct to Map"
+            >
+              <Map size={14} />
+              <span>Return to Map</span>
+            </button>
           </div>
         </div>
       )}

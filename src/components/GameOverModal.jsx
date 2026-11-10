@@ -167,43 +167,30 @@ export const GameOverModal = ({
       aria-labelledby="game-over-title"
     >
       <div className="game-over-card level-failed-card failed-portal-chassis">
-        {/* Ambient Flares */}
+        {/* Ambient Subtle Halo */}
         <div className="failure-ambient-halo" />
-        <div className="failure-beam-flare flare-crimson" />
-        <div className="failure-beam-flare flare-amber" />
 
-        {/* Top Distress & Sector Telemetry Banner */}
+        {/* Top Status & Chapter Banner */}
         <div className="distress-telemetry-banner">
           <div className="telemetry-distress-beacon">
-            <span className="distress-ping" />
             <span className="distress-dot" />
-            <span className="distress-label">GRID LOCKOUT</span>
+            <span className="distress-label">OUT OF MOVES</span>
           </div>
           {chapterName && (
             <div className="telemetry-ch-tag">
-              CH {chapterNum}: {chapterName.toUpperCase()}
+              Chapter {chapterNum} • {chapterName}
             </div>
           )}
         </div>
 
-        {/* =========================================================
-            CINEMATIC FAILURE SIGIL APPARATUS
-            Replacing generic round failure icon with an angular,
-            pulsing fractured matrix insignia.
-           ========================================================= */}
+        {/* Failure Emblem */}
         <div className="failure-sigil-apparatus">
-          <div className="sigil-warning-pulse" />
           <div className="fractured-core-prism">
-            <div className="sigil-core-inner">
-              <ShieldAlert size={38} className="failure-sigil-icon" />
-            </div>
-            <div className="fracture-sheen-ring" />
+            <ShieldAlert size={32} className="failure-sigil-icon" />
           </div>
         </div>
 
-        {/* =========================================================
-            LEVEL FAILED HEADLINE & SECTOR IDENTIFIER
-           ========================================================= */}
+        {/* Level Failed Headline */}
         <div className="failure-headline-block">
           <h2 id="game-over-title" className="game-over-title level-failed-title">
             LEVEL {level} FAILED
