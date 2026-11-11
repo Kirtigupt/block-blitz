@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   ArrowRight,
   CheckCircle2,
-  Zap,
   Trophy,
   LockKeyholeOpen,
   Map,
@@ -15,8 +14,7 @@ import {
   RotateCcw,
   Target,
   Layers,
-  Award,
-  Flame
+  Award
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { sounds } from '../utils/soundEffects';
@@ -70,24 +68,6 @@ export const LevelCompleteModal = ({
     chapter: nextChapterNum,
     name: `Chapter ${nextChapterNum}`
   };
-
-  // Objective icon helper based on objective text or target
-  const objectiveIcon = useMemo(() => {
-    const desc = (completedObjective || '').toLowerCase();
-    if (desc.includes('line') || desc.includes('row')) {
-      return <Layers size={18} className="obj-icon-symbol" />;
-    }
-    if (desc.includes('streak') || desc.includes('flame') || desc.includes('combo')) {
-      return <Flame size={18} className="obj-icon-symbol" />;
-    }
-    if (desc.includes('score') || desc.includes('point') || desc.includes('pts')) {
-      return <Award size={18} className="obj-icon-symbol" />;
-    }
-    if (desc.includes('color') || desc.includes('block') || desc.includes('tile')) {
-      return <Zap size={18} className="obj-icon-symbol" />;
-    }
-    return <Target size={18} className="obj-icon-symbol" />;
-  }, [completedObjective]);
 
   // Trigger celebration confetti on mount
   useEffect(() => {
@@ -186,109 +166,112 @@ export const LevelCompleteModal = ({
       aria-labelledby="completion-flow-title"
     >
       {/* =========================================================================
-          STEP 1: LEVEL COMPLETED SCREEN (Completely Redesigned Achievement Experience)
+          STEP 1: LEVEL COMPLETED SCREEN (Clean Casual-Arcade Completion UI)
          ========================================================================= */}
       {step === 'completed' && (
         <div className={`level-complete-card achievement-portal-card ${isCampaignComplete ? 'campaign-champion-card' : ''}`}>
-          {/* Subtle Ambient Halo */}
-          <div className="completion-ambient-halo" />
+          {/* Subtle Ambient Glow */}
+          <div className="completion-ambient-halo" aria-hidden="true" />
 
-          {/* Top Stage & Chapter Subtitle */}
+          {/* 1. Completion Header: Compact Green Indicator + Chapter Context */}
           <div className="achievement-telemetry-banner">
-            <div className="telemetry-live-beacon">
-              <span className="beacon-dot" />
-              <span className="beacon-label">STAGE CLEARED</span>
+            <div className="telemetry-live-beacon" role="status">
+              <span className="beacon-dot" aria-hidden="true" />
+              <h2 id="completion-flow-title" className="level-complete-title">
+                {isCampaignComplete ? 'Level 100 Cleared! Zenith Master!' : 'LEVEL COMPLETED!'}
+              </h2>
             </div>
             <div className="telemetry-ch-tag">
-              Chapter {chapterNum} • {chapterData.name}
+              Ch. {chapterNum} · {chapterData.name}
             </div>
           </div>
 
-          {/* =========================================================
-              CLEAN 3-STAR CELEBRATION (Visual Highlight)
-             ========================================================= */}
+          {/* Tasteful Three-Star Rating Animation */}
           <div className="victory-crest-apparatus">
             <div className="triumph-constellation-arch" aria-label="3 Stars Rating Earned">
-              {/* Star 1 - Left */}
               <div className="victory-star-slot star-slot-1 constellation-node left-wing">
                 <div className="star-pedestal-mount">
-                  <Star size={32} className="star-fill-svg star-pop-1" fill="#fbbf24" stroke="#d97706" />
+                  <Star size={26} className="star-fill-svg star-pop-1" fill="#fbbf24" stroke="#d97706" strokeWidth={1.75} />
                 </div>
               </div>
 
-              {/* Star 2 - Center Apex (Larger Hero Star) */}
               <div className="victory-star-slot star-slot-2 hero-star apex-zenith-node">
                 <div className="hero-star-chassis">
-                  <Star size={46} className="star-fill-svg star-pop-2" fill="#fde047" stroke="#eab308" />
-                  <Sparkles size={18} className="apex-sparkle-flair" />
+                  <Star size={38} className="star-fill-svg star-pop-2" fill="#fde047" stroke="#eab308" strokeWidth={1.75} />
                 </div>
               </div>
 
-              {/* Star 3 - Right */}
               <div className="victory-star-slot star-slot-3 constellation-node right-wing">
                 <div className="star-pedestal-mount">
-                  <Star size={32} className="star-fill-svg star-pop-3" fill="#fbbf24" stroke="#d97706" />
+                  <Star size={26} className="star-fill-svg star-pop-3" fill="#fbbf24" stroke="#d97706" strokeWidth={1.75} />
                 </div>
               </div>
             </div>
 
-            {/* Subtle Rating Pill */}
             <div className="triumph-grade-ribbon">
               <span className="grade-badge">PERFECT</span>
-              <span className="grade-divider">•</span>
+              <span className="grade-divider" aria-hidden="true">·</span>
               <span className="grade-sub">3 STARS EARNED</span>
             </div>
           </div>
 
-          {/* Milestone Markers for Boss & Zenith */}
-          {(isBossLevel || isCampaignComplete) && (
-            <div className={`victory-core-prism ${isCampaignComplete ? 'campaign-zenith-core' : 'boss-slayer-core'}`} style={{ display: 'none' }}>
-              {isCampaignComplete && <Crown size={24} className="crown-glow" />}
-            </div>
-          )}
-
-          {/* Headline & Level Information */}
+          {/* Stage Number & Stage Name Headline */}
           <div className="level-complete-header achievement-headline-block">
-            <h2 id="completion-flow-title" className="level-complete-title">
-              {isCampaignComplete ? 'Level 100 Cleared! Zenith Master!' : 'LEVEL COMPLETED!'}
-            </h2>
+            {(isBossLevel || isCampaignComplete) && (
+              <div className={`victory-core-prism ${isCampaignComplete ? 'campaign-zenith-core' : 'boss-slayer-core'}`}>
+                {isCampaignComplete ? (
+                  <>
+                    <Crown size={13} className="crown-glow" />
+                    <span>ZENITH CHAMPION</span>
+                  </>
+                ) : (
+                  <>
+                    <Trophy size={13} className="crown-glow" />
+                    <span>BOSS STAGE</span>
+                  </>
+                )}
+              </div>
+            )}
 
             <div className="stage-identity-strip">
               <span className="stage-code-pill">STAGE {String(levelNum).padStart(2, '0')}</span>
+              <span className="stage-id-sep" aria-hidden="true">·</span>
               <span className="stage-name-text">{levelConfig?.title || 'Stage Cleared'}</span>
               {isReplay && <span className="stage-replay-pill">REPLAY</span>}
             </div>
           </div>
 
-          {/* Objective Completed Pill */}
+          {/* 2. Mission Result (Clear Objective + Compact 100% Indicator) */}
           <div className="holographic-objective-card">
-            <div className="obj-status-badge">
-              <CheckCircle2 size={15} className="obj-status-icon" />
-              <span>100% COMPLETE</span>
+            <div className="obj-card-top-meta">
+              <span className="obj-status-badge">
+                <CheckCircle2 size={14} className="obj-status-icon" />
+                <span>100% COMPLETE</span>
+              </span>
             </div>
             <div className="obj-detail-text">
               <span className="obj-quote-label">"{completedObjective}"</span>
             </div>
           </div>
 
-          {/* Clean Dual-Metric Score & Bonus Row */}
-          <div className="rewards-performance-hub">
+          {/* 3. Score Summary (Final Score Primary + Stage Bonus Secondary, Balanced Horizontal Row) */}
+          <div className="rewards-performance-hub" aria-label="Score Summary">
+            <div className="reward-vault-chamber score-chamber">
+              <span className="chamber-title">FINAL SCORE</span>
+              <span className="stat-value total-val">{totalScore.toLocaleString()}</span>
+            </div>
+
+            <div className="rewards-v-divider" aria-hidden="true" />
+
             <div className="reward-vault-chamber bonus-chamber">
               <span className="chamber-title">STAGE BONUS</span>
               <span className={`stat-value bonus-val ${isReplay ? 'replay-val' : ''}`}>
                 {bonusPoints > 0 ? `+${bonusPoints.toLocaleString()} PTS` : '0 (Replay)'}
               </span>
             </div>
-
-            <div className="rewards-v-divider" aria-hidden="true" />
-
-            <div className="reward-vault-chamber score-chamber">
-              <span className="chamber-title">FINAL SCORE</span>
-              <span className="stat-value total-val">{totalScore.toLocaleString()}</span>
-            </div>
           </div>
 
-          {/* Action CTAs */}
+          {/* 4. Action CTAs */}
           <div className="complete-actions-wrap">
             <button
               type="button"
@@ -297,10 +280,9 @@ export const LevelCompleteModal = ({
                 sounds.playSelect();
                 setStep('leaderboard');
               }}
-              autoFocus
               aria-label="View Leaderboard"
             >
-              <Trophy size={18} className="trigger-trophy-icon" />
+              <Trophy size={17} className="trigger-trophy-icon" />
               <span className="trigger-primary-label">VIEW LEADERBOARD</span>
               <ArrowRight size={16} className="trigger-arrow-icon" />
             </button>
@@ -309,10 +291,10 @@ export const LevelCompleteModal = ({
               type="button"
               className="quick-map-direct-btn"
               onClick={handleFinishAndGoToMap}
-              aria-label="Direct to Map"
+              aria-label="Skip to Map"
             >
-              <Map size={14} />
-              <span>Return to Map</span>
+              <Map size={15} />
+              <span>SKIP TO MAP</span>
             </button>
           </div>
         </div>

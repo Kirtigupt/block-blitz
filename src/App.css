@@ -1471,14 +1471,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
   animation: modal-fade-in 0.2s ease-out;
 }
 
 @media (max-width: 600px) {
   .modal-backdrop,
   .modal-overlay {
-    padding: 8px;
+    padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
   }
 }
 
@@ -1521,7 +1521,7 @@ body {
 }
 
 /* ==========================================================================
-   Level Complete Modal — Premium Cyber-Arcade Achievement Experience
+   Level Complete Modal — Clean Casual Arcade Result Screen (Step 1)
    ========================================================================== */
 
 .level-complete-card {
@@ -1529,76 +1529,9 @@ body {
   gap: 12px;
 }
 
-.level-complete-card.achievement-portal-card {
-  max-width: 420px;
-  width: min(90vw, 420px);
-  background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  box-shadow:
-    0 20px 45px -8px rgba(0, 0, 0, 0.65),
-    0 0 1px 1px rgba(255, 255, 255, 0.05);
-  padding: 22px 20px;
-  position: relative;
-  overflow: hidden;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-}
-
-/* Ambient Subtle Halo */
-.completion-ambient-halo {
-  position: absolute;
-  top: -40px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 260px;
-  height: 140px;
-  border-radius: 50%;
-  pointer-events: none;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
-  filter: blur(35px);
-  opacity: 0.6;
-}
-
-.completion-beam-flare {
-  display: none !important;
-}
-
-/* Top Telemetry Banner */
-.achievement-telemetry-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  position: relative;
-  z-index: 2;
-}
-
-.telemetry-live-beacon {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.beacon-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
-}
-
-.beacon-label {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: #34d399;
-}
-
+/* Shared helper styles preserved for GameOverModal & Steps 2-3 */
 .telemetry-ch-tag {
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: #94a3b8;
   background: rgba(255, 255, 255, 0.05);
@@ -1607,142 +1540,8 @@ body {
   border-radius: 9999px;
 }
 
-/* =========================================================
-   CLEAN 3-STAR CELEBRATION (Visual Highlight)
-   ========================================================= */
-
-.victory-crest-apparatus {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  margin: 4px 0 2px;
-  z-index: 2;
-}
-
-.triumph-constellation-arch {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 16px;
-  width: 100%;
-  position: relative;
-  z-index: 2;
-}
-
-.victory-star-slot {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.star-pedestal-mount {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.star-fill-svg {
-  filter: drop-shadow(0 4px 10px rgba(245, 158, 11, 0.45));
-}
-
-.victory-star-slot.constellation-node.left-wing {
-  transform: translateY(4px) rotate(-6deg);
-}
-
-.victory-star-slot.constellation-node.right-wing {
-  transform: translateY(4px) rotate(6deg);
-}
-
-.victory-star-slot.star-slot-2.hero-star {
-  z-index: 3;
-}
-
-.hero-star-chassis {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.apex-sparkle-flair {
-  position: absolute;
-  top: -4px;
-  right: -6px;
-  color: #ffffff;
-  animation: sparkle-flare 2s infinite ease-in-out;
-}
-
-@keyframes sparkle-flare {
-  0%, 100% { transform: scale(0.8) rotate(0deg); opacity: 0.7; }
-  50% { transform: scale(1.15) rotate(45deg); opacity: 1; }
-}
-
-.triumph-grade-ribbon {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 8px;
-  background: rgba(245, 158, 11, 0.1);
-  border: 1px solid rgba(245, 158, 11, 0.25);
-  border-radius: 9999px;
-  padding: 3px 12px;
-  white-space: nowrap;
-}
-
-.grade-badge {
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: #fbbf24;
-}
-
-.grade-divider {
-  color: rgba(245, 158, 11, 0.5);
-  font-size: 0.7rem;
-}
-
-.grade-sub {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: #fde68a;
-}
-
-/* Animations for Stars */
-.star-pop-1 {
-  animation: star-bounce-pop 0.4s 0.1s cubic-bezier(0.18, 0.89, 0.32, 1.28) both;
-}
-
-.star-pop-2 {
-  animation: star-bounce-pop 0.4s 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28) both;
-}
-
-.star-pop-3 {
-  animation: star-bounce-pop 0.4s 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) both;
-}
-
-@keyframes star-bounce-pop {
-  0% { transform: scale(0); opacity: 0; }
-  75% { transform: scale(1.15); }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-/* =========================================================
-   HEADLINE & LEVEL INFORMATION
-   ========================================================= */
-
-.achievement-headline-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  position: relative;
-  z-index: 2;
-  width: 100%;
-}
-
 .level-complete-title {
-  font-size: 1.55rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #ffffff;
   letter-spacing: -0.01em;
@@ -1753,6 +1552,7 @@ body {
 .stage-identity-strip {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1762,694 +1562,667 @@ body {
 
 .stage-code-pill {
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 800;
   color: #38bdf8;
 }
 
 .stage-name-text {
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: 0.84rem;
+  font-weight: 700;
   color: #e2e8f0;
 }
 
 .stage-replay-pill {
-  font-size: 0.65rem;
-  font-weight: 700;
+  font-size: 0.62rem;
+  font-weight: 800;
   color: #fbbf24;
-  background: rgba(245, 158, 11, 0.15);
+  background: rgba(245, 158, 11, 0.14);
   padding: 1px 6px;
   border-radius: 4px;
 }
 
-/* =========================================================
-   OBJECTIVE COMPLETED PILL
-   ========================================================= */
-
-.holographic-objective-card {
-  width: 100%;
-  border-radius: 12px;
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.22);
-  padding: 8px 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  box-sizing: border-box;
-  text-align: left;
+/* --- Primary Stage Completed Card --- */
+.level-complete-card.achievement-portal-card {
+  max-width: 400px;
+  width: min(92vw, 400px);
+  max-height: calc(100dvh - 20px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: linear-gradient(180deg, #131c31 0%, #0b1120 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.75);
+  padding: 20px 20px 18px;
   position: relative;
-  z-index: 2;
-}
-
-.obj-status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: #34d399;
-  flex-shrink: 0;
-}
-
-.obj-status-icon {
-  color: #10b981;
-}
-
-.obj-detail-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.obj-quote-label {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #f1f5f9;
-}
-
-/* =========================================================
-   REWARDS ROW (STAGE BONUS & FINAL SCORE)
-   ========================================================= */
-
-.rewards-performance-hub {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 14px;
-  padding: 10px 14px;
-  box-sizing: border-box;
-  position: relative;
-  z-index: 2;
-}
-
-.reward-vault-chamber {
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  flex: 1;
+  gap: 13px;
+  box-sizing: border-box;
 }
 
-.chamber-title {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #94a3b8;
-  letter-spacing: 0.02em;
+.level-complete-card.achievement-portal-card .completion-ambient-halo {
+  position: absolute;
+  top: -48px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 240px;
+  height: 110px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.14) 0%, rgba(16, 185, 129, 0.08) 50%, transparent 72%);
+  filter: blur(28px);
+  opacity: 0.85;
+  z-index: 0;
 }
 
-.chamber-value-box .stat-value {
-  font-size: 1.25rem;
-  font-weight: 800;
+/* 1. Completion Header: Compact Green Indicator + Chapter Context */
+.achievement-portal-card .achievement-telemetry-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+  position: relative;
+  z-index: 2;
 }
 
-.bonus-val {
-  color: #facc15;
+.achievement-portal-card .telemetry-live-beacon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  max-width: 100%;
 }
 
-.bonus-val.replay-val {
-  color: #94a3b8;
-  font-size: 0.95rem;
-}
-
-.total-val {
-  color: #f8fafc;
-}
-
-.rewards-v-divider {
-  width: 1px;
-  height: 30px;
-  background: rgba(255, 255, 255, 0.08);
+.achievement-portal-card .beacon-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
   flex-shrink: 0;
 }
 
-/* =========================================================
-   ACTION BUTTONS
-   ========================================================= */
+.achievement-portal-card .level-complete-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #34d399;
+  text-transform: uppercase;
+  margin: 0;
+  line-height: 1.2;
+}
 
-.complete-actions-wrap {
+.achievement-portal-card .telemetry-ch-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  padding: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+/* Three-Star Rating Triad */
+.achievement-portal-card .victory-crest-apparatus {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin: 2px 0 0;
+  z-index: 2;
+}
+
+.achievement-portal-card .triumph-constellation-arch {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+}
+
+.achievement-portal-card .victory-star-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.achievement-portal-card .star-pedestal-mount,
+.achievement-portal-card .hero-star-chassis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.achievement-portal-card .star-fill-svg {
+  filter: drop-shadow(0 3px 8px rgba(245, 158, 11, 0.35));
+}
+
+.achievement-portal-card .victory-star-slot.left-wing {
+  transform: translateY(3px) rotate(-8deg);
+}
+
+.achievement-portal-card .victory-star-slot.right-wing {
+  transform: translateY(3px) rotate(8deg);
+}
+
+.achievement-portal-card .victory-star-slot.hero-star {
+  transform: translateY(-2px);
+}
+
+.achievement-portal-card .star-pop-1 {
+  animation: star-bounce-pop 0.38s 0.08s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.achievement-portal-card .star-pop-2 {
+  animation: star-bounce-pop 0.42s 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.achievement-portal-card .star-pop-3 {
+  animation: star-bounce-pop 0.38s 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes star-bounce-pop {
+  0% { transform: scale(0.35); opacity: 0; }
+  75% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.achievement-portal-card .triumph-grade-ribbon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 6px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.achievement-portal-card .grade-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #fbbf24;
+}
+
+.achievement-portal-card .grade-divider {
+  font-size: 0.68rem;
+  color: rgba(251, 191, 36, 0.55);
+}
+
+.achievement-portal-card .grade-sub {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fde68a;
+}
+
+/* Stage Headline & Number */
+.achievement-portal-card .achievement-headline-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.achievement-portal-card .victory-core-prism {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 9999px;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.achievement-portal-card .victory-core-prism.boss-slayer-core {
+  background: rgba(245, 158, 11, 0.14);
+  color: #fbbf24;
+}
+
+.achievement-portal-card .victory-core-prism.campaign-zenith-core {
+  background: rgba(250, 204, 21, 0.18);
+  color: #fde047;
+}
+
+.achievement-portal-card .crown-glow {
+  color: currentColor;
+}
+
+.achievement-portal-card .stage-identity-strip {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+.achievement-portal-card .stage-code-pill {
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #38bdf8;
+}
+
+.achievement-portal-card .stage-id-sep {
+  color: #475569;
+  font-weight: 700;
+}
+
+.achievement-portal-card .stage-name-text {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+
+/* 2. Mission Result (Clean Single-Surface Block, Zero Thick Borders) */
+.achievement-portal-card .holographic-objective-card {
+  width: 100%;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.06);
+  border: 1px solid rgba(16, 185, 129, 0.16);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  box-sizing: border-box;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.achievement-portal-card .obj-card-top-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.achievement-portal-card .obj-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #34d399;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.achievement-portal-card .obj-status-icon {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.achievement-portal-card .obj-detail-text {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.achievement-portal-card .obj-quote-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #e2e8f0;
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* 3. Score Summary (Unified Horizontal Layout: Final Score Primary + Stage Bonus Secondary) */
+.achievement-portal-card .rewards-performance-hub {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1.15fr 1px 1fr;
+  align-items: stretch;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 2;
+}
+
+.achievement-portal-card .reward-vault-chamber {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  min-width: 0;
+  padding: 2px 4px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.achievement-portal-card .chamber-title {
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  color: #94a3b8;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.achievement-portal-card .stat-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.achievement-portal-card .total-val {
+  font-size: 1.62rem;
+  font-weight: 900;
+  color: #f8fafc;
+}
+
+.achievement-portal-card .bonus-val {
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+.achievement-portal-card .bonus-val.replay-val {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.achievement-portal-card .rewards-v-divider {
+  width: 1px;
+  height: 36px;
+  align-self: center;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* 4. Primary & Secondary Actions */
+.achievement-portal-card .complete-actions-wrap {
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 100%;
+  margin-top: 2px;
   position: relative;
   z-index: 2;
 }
 
-.complete-continue-btn.command-leaderboard-trigger {
-  display: inline-flex;
+.achievement-portal-card .complete-continue-btn.complete-leaderboard-btn.command-leaderboard-trigger {
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   width: 100%;
-  height: 48px;
-  border-radius: 9999px;
-  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+  height: 46px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
   border: none;
-  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.35);
+  box-shadow: 0 6px 18px rgba(14, 165, 233, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.22);
   color: #ffffff;
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-size: 0.90rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
   cursor: pointer;
-  transition: all 0.16s ease;
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
   user-select: none;
 }
 
-.complete-continue-btn.command-leaderboard-trigger:hover {
+.achievement-portal-card .complete-continue-btn.complete-leaderboard-btn.command-leaderboard-trigger:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.45);
   filter: brightness(1.06);
+  box-shadow: 0 8px 22px rgba(14, 165, 233, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
-.complete-continue-btn.command-leaderboard-trigger:active {
+.achievement-portal-card .complete-continue-btn.complete-leaderboard-btn.command-leaderboard-trigger:active {
   transform: translateY(1px);
   filter: brightness(0.96);
 }
 
-.trigger-primary-label {
-  font-weight: 800;
+.achievement-portal-card .command-leaderboard-trigger:focus-visible,
+.achievement-portal-card .quick-map-direct-btn:focus-visible {
+  outline: 2px solid rgba(56, 189, 248, 0.75);
+  outline-offset: 2px;
 }
 
-.quick-map-direct-btn {
-  display: inline-flex;
+.achievement-portal-card .trigger-trophy-icon {
+  color: #fde047;
+  flex-shrink: 0;
+}
+
+.achievement-portal-card .trigger-primary-label {
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.achievement-portal-card .trigger-arrow-icon {
+  flex-shrink: 0;
+  opacity: 0.9;
+  transition: transform 0.15s ease;
+}
+
+.achievement-portal-card .command-leaderboard-trigger:hover .trigger-arrow-icon {
+  transform: translateX(3px);
+}
+
+.achievement-portal-card .quick-map-direct-btn {
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   width: 100%;
   height: 40px;
-  border-radius: 9999px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #94a3b8;
-  font-size: 0.84rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.quick-map-direct-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #ffffff;
-}
-
-.grade-badge {
-  font-size: 0.74rem;
-  font-weight: 900;
-  color: #fde047;
-  text-shadow: 0 0 8px rgba(250, 204, 21, 0.7);
-}
-
-.grade-divider {
-  color: rgba(250, 204, 21, 0.6);
-  font-size: 0.7rem;
-}
-
-.grade-sub {
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: #fef08a;
-}
-
-/* Animations for Stars */
-.star-pop-1 {
-  animation: star-bounce-pop 0.45s 0.15s cubic-bezier(0.18, 0.89, 0.32, 1.28) both;
-}
-
-.star-pop-2 {
-  animation: star-bounce-pop 0.45s 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28) both;
-}
-
-.star-pop-3 {
-  animation: star-bounce-pop 0.45s 0.45s cubic-bezier(0.18, 0.89, 0.32, 1.28) both;
-}
-
-@keyframes star-bounce-pop {
-  0% { transform: scale(0) rotate(-25deg); opacity: 0; }
-  70% { transform: scale(1.22) rotate(6deg); }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-
-@keyframes victory-medal-pop {
-  0% { transform: scale(0.6); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-/* =========================================================
-   HEADLINE & LEVEL INFORMATION
-   ========================================================= */
-
-.achievement-headline-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  position: relative;
-  z-index: 2;
-  margin-top: 2px;
-}
-
-.level-complete-title {
-  font-size: 1.55rem;
-  font-weight: 900;
-  color: #ffffff;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
-  margin: 0;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
-}
-
-.stage-identity-strip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(56, 189, 248, 0.1);
-  border: 1px solid rgba(56, 189, 248, 0.32);
-  border-radius: 20px;
-  padding: 3px 12px;
-}
-
-.stage-code-pill {
-  font-size: 0.68rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  color: #38bdf8;
-  margin-right: 2px;
-}
-
-.stage-name-text {
-  font-size: 0.82rem;
-  font-weight: 800;
-  color: #ffffff;
-}
-
-.stage-replay-pill {
-  font-size: 0.58rem;
-  font-weight: 900;
-  color: #f59e0b;
-  background: rgba(245, 158, 11, 0.2);
-  border: 1px solid rgba(245, 158, 11, 0.4);
-  padding: 1px 5px;
-  border-radius: 4px;
-}
-
-/* =========================================================
-   HOLOGRAPHIC OBJECTIVE VERIFICATION CARD
-   ========================================================= */
-
-.holographic-objective-card {
-  width: 100%;
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(10, 16, 30, 0.95) 100%);
-  border: 1px solid rgba(56, 189, 248, 0.28);
-  border-left: 3.5px solid #22c55e;
-  padding: 10px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  text-align: left;
-  position: relative;
-  z-index: 2;
-}
-
-.obj-card-top-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.obj-directive-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.64rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  color: #94a3b8;
-  text-transform: uppercase;
-}
-
-.obj-directive-icon {
-  color: #38bdf8;
-}
-
-.obj-status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.64rem;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  color: #22c55e;
-  background: rgba(34, 197, 94, 0.14);
-  border: 1px solid rgba(34, 197, 94, 0.4);
-  padding: 1px 7px;
-  border-radius: 20px;
-  box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
-}
-
-.obj-status-icon {
-  color: #22c55e;
-}
-
-.obj-card-body {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-}
-
-.obj-icon-pod {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: rgba(56, 189, 248, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #38bdf8;
-  flex-shrink: 0;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
-}
-
-.obj-icon-symbol {
-  color: #38bdf8;
-}
-
-.obj-detail-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  overflow: hidden;
-}
-
-.obj-quote-label {
-  font-size: 0.86rem;
-  font-weight: 800;
-  color: #ffffff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.obj-param-note {
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: #64748b;
-}
-
-/* =========================================================
-   PERFORMANCE VAULT & REWARDS HUB
-   ========================================================= */
-
-.rewards-performance-hub {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  width: 100%;
-  position: relative;
-  z-index: 2;
-}
-
-.reward-vault-chamber {
-  border-radius: 14px;
-  padding: 10px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  text-align: left;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-}
-
-.reward-vault-chamber.bonus-chamber {
-  background: linear-gradient(135deg, rgba(30, 27, 18, 0.9) 0%, rgba(20, 17, 10, 0.95) 100%);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-}
-
-.reward-vault-chamber.score-chamber {
-  background: linear-gradient(135deg, rgba(14, 25, 45, 0.9) 0%, rgba(8, 15, 30, 0.95) 100%);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-}
-
-.chamber-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.chamber-icon-wrapper {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.chamber-icon-wrapper.bonus-glow {
-  background: rgba(245, 158, 11, 0.2);
-  color: #facc15;
-}
-
-.chamber-icon-wrapper.score-glow {
-  background: rgba(56, 189, 248, 0.2);
-  color: #38bdf8;
-}
-
-.chamber-title {
-  font-size: 0.64rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: #94a3b8;
-  text-transform: uppercase;
-}
-
-.chamber-value-box .stat-value {
-  font-size: 1.25rem;
-  font-weight: 900;
-  font-variant-numeric: tabular-nums;
-  display: block;
-}
-
-.bonus-val {
-  color: #fde047;
-  text-shadow: 0 0 12px rgba(250, 204, 21, 0.6);
-}
-
-.bonus-val.replay-val {
-  color: var(--text-muted);
-  font-size: 0.95rem;
-  text-shadow: none;
-}
-
-.total-val {
-  color: #ffffff;
-  text-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
-}
-
-.chamber-subtext {
-  font-size: 0.64rem;
-  font-weight: 700;
-  color: #64748b;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.score-live-tag {
-  color: #38bdf8;
-}
-
-/* Integrated Performance Telemetry Ribbon */
-.performance-telemetry-ribbon {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  width: 100%;
+  min-height: 40px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  padding: 5px 12px;
-  position: relative;
-  z-index: 2;
-  margin-top: -2px;
-}
-
-.perf-metric {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.64rem;
-  font-weight: 800;
-}
-
-.metric-dot.gold {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #facc15;
-  box-shadow: 0 0 6px #facc15;
-}
-
-.metric-dot.cyan {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #38bdf8;
-  box-shadow: 0 0 6px #38bdf8;
-}
-
-.metric-lbl {
-  color: #94a3b8;
-}
-
-.metric-val {
-  color: #ffffff;
-}
-
-.perf-divider {
-  width: 1px;
-  height: 12px;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* =========================================================
-   DISTINCTIVE COMMAND-GRADE LEADERBOARD ACTION TRIGGER
-   ========================================================= */
-
-.complete-actions-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-  margin-top: 4px;
-  position: relative;
-  z-index: 2;
-}
-
-.complete-continue-btn.complete-leaderboard-btn.command-leaderboard-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  height: 54px;
-  border-radius: 16px;
-  padding: 0 16px;
-  background: linear-gradient(180deg, #0284c7 0%, #0369a1 40%, #075985 100%);
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
-  box-shadow:
-    0 4px 0 #0c4a6e,
-    0 10px 25px rgba(2, 132, 199, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  color: #ffffff;
-  cursor: pointer;
-  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
-  user-select: none;
-  text-align: left;
-  gap: 12px;
-}
-
-.complete-continue-btn.complete-leaderboard-btn.command-leaderboard-trigger:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
-  box-shadow:
-    0 5px 0 #0c4a6e,
-    0 14px 30px rgba(2, 132, 199, 0.65);
-}
-
-.complete-continue-btn.complete-leaderboard-btn.command-leaderboard-trigger:active {
-  transform: translateY(3px);
-  box-shadow:
-    0 1px 0 #0c4a6e,
-    0 4px 10px rgba(2, 132, 199, 0.35);
-}
-
-.trigger-icon-pod {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.trigger-trophy-icon {
-  color: #fde047;
-  filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.8));
-}
-
-.trigger-text-column {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  flex: 1;
-}
-
-.trigger-primary-label {
-  font-size: 0.92rem;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-}
-
-.trigger-sub-label {
-  font-size: 0.64rem;
-  font-weight: 700;
-  color: rgba(224, 242, 254, 0.85);
-}
-
-.trigger-arrow-pod {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  transition: transform 0.15s ease;
-}
-
-.complete-continue-btn.complete-leaderboard-btn.command-leaderboard-trigger:hover .trigger-arrow-icon {
-  transform: translateX(3px);
-}
-
-/* Quick Advance Direct to Map */
-.quick-advance-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  margin-top: 2px;
-}
-
-.quick-map-direct-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
   color: #94a3b8;
-  font-size: 0.74rem;
+  font-size: 0.80rem;
   font-weight: 700;
-  padding: 6px 14px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
-.quick-map-direct-btn:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: #ffffff;
-  border-color: rgba(56, 189, 248, 0.4);
+.achievement-portal-card .quick-map-direct-btn:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #f8fafc;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Campaign Complete Hero Variant */
+.level-complete-card.achievement-portal-card.campaign-champion-card {
+  border-color: rgba(250, 204, 21, 0.28);
+}
+
+.achievement-portal-card.campaign-champion-card .achievement-telemetry-banner {
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+}
+
+.achievement-portal-card.campaign-champion-card .telemetry-live-beacon {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.achievement-portal-card.campaign-champion-card .beacon-dot {
+  background: #fbbf24;
+}
+
+.achievement-portal-card.campaign-champion-card .level-complete-title {
+  color: #fde047;
+}
+
+/* Responsive Proportions for Compact & Narrow Mobile Viewports */
+@media (max-width: 480px) {
+  .level-complete-card.achievement-portal-card {
+    width: min(94vw, 390px);
+    padding: 16px 15px 15px;
+    border-radius: 18px;
+    gap: 11px;
+  }
+
+  .achievement-portal-card .telemetry-ch-tag {
+    max-width: 155px;
+    font-size: 0.68rem;
+  }
+
+  .achievement-portal-card .triumph-constellation-arch {
+    gap: 10px;
+  }
+
+  .achievement-portal-card .victory-star-slot.left-wing svg,
+  .achievement-portal-card .victory-star-slot.right-wing svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .achievement-portal-card .victory-star-slot.hero-star svg {
+    width: 34px;
+    height: 34px;
+  }
+
+  .achievement-portal-card .stage-name-text {
+    font-size: 1.15rem;
+  }
+
+  .achievement-portal-card .total-val {
+    font-size: 1.48rem;
+  }
+
+  .achievement-portal-card .bonus-val {
+    font-size: 1.04rem;
+  }
+
+  .achievement-portal-card .complete-continue-btn.complete-leaderboard-btn.command-leaderboard-trigger {
+    height: 44px;
+    min-height: 44px;
+    font-size: 0.86rem;
+  }
+
+  .achievement-portal-card .quick-map-direct-btn {
+    height: 38px;
+    min-height: 38px;
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 360px), (max-height: 675px) {
+  .level-complete-card.achievement-portal-card {
+    width: min(94vw, 360px);
+    padding: 13px 13px 12px;
+    gap: 9px;
+  }
+
+  .achievement-portal-card .level-complete-title {
+    font-size: 0.66rem;
+  }
+
+  .achievement-portal-card .telemetry-live-beacon {
+    padding: 3px 8px;
+  }
+
+  .achievement-portal-card .telemetry-ch-tag {
+    max-width: 120px;
+    font-size: 0.64rem;
+  }
+
+  .achievement-portal-card .victory-star-slot.left-wing svg,
+  .achievement-portal-card .victory-star-slot.right-wing svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .achievement-portal-card .victory-star-slot.hero-star svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .achievement-portal-card .triumph-grade-ribbon {
+    margin-top: 3px;
+  }
+
+  .achievement-portal-card .stage-code-pill {
+    font-size: 0.75rem;
+  }
+
+  .achievement-portal-card .stage-name-text {
+    font-size: 1.05rem;
+  }
+
+  .achievement-portal-card .holographic-objective-card {
+    padding: 8px 10px;
+    gap: 3px;
+  }
+
+  .achievement-portal-card .obj-quote-label {
+    font-size: 0.78rem;
+    line-height: 1.28;
+  }
+
+  .achievement-portal-card .rewards-performance-hub {
+    padding: 9px 10px;
+    gap: 8px;
+  }
+
+  .achievement-portal-card .total-val {
+    font-size: 1.32rem;
+  }
+
+  .achievement-portal-card .bonus-val {
+    font-size: 0.94rem;
+  }
+
+  .achievement-portal-card .complete-actions-wrap {
+    gap: 6px;
+  }
+
+  .achievement-portal-card .complete-continue-btn.complete-leaderboard-btn.command-leaderboard-trigger {
+    height: 42px;
+    min-height: 42px;
+    font-size: 0.82rem;
+    padding: 0 12px;
+  }
+
+  .achievement-portal-card .quick-map-direct-btn {
+    height: 36px;
+    min-height: 36px;
+    font-size: 0.74rem;
+  }
 }
 
 /* Fallback & Legacy classes preserved for Step 2 & Step 3 buttons */
@@ -3088,882 +2861,708 @@ body {
 }
 
 /* ==========================================================================
-   Level Failed Modal — Premium Cyber-Arcade Game Over Experience
+   Level Failed Modal — Clean Casual Arcade Game Over Screen
    ========================================================================== */
 
 .level-failed-card {
   align-items: center;
-  gap: 11px;
+  gap: 12px;
 }
 
-.level-failed-card.failed-portal-chassis {
-  max-width: 420px;
-  width: min(90vw, 420px);
-  background: #0f172a;
+.game-over-card.level-failed-card.failed-portal-chassis {
+  max-width: 400px;
+  width: min(92vw, 400px);
+  max-height: calc(100dvh - 20px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: linear-gradient(180deg, #131c31 0%, #0b1120 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  box-shadow:
-    0 20px 45px -8px rgba(0, 0, 0, 0.65),
-    0 0 1px 1px rgba(255, 255, 255, 0.05);
-  padding: 22px 20px;
+  border-radius: 22px;
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.75);
+  padding: 20px 20px 18px;
   position: relative;
-  overflow: hidden;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 11px;
+  box-sizing: border-box;
 }
 
-/* Ambient Subtle Halo */
-.failure-ambient-halo {
+.failed-portal-chassis .failure-ambient-halo {
   position: absolute;
-  top: -40px;
+  top: -48px;
   left: 50%;
   transform: translateX(-50%);
-  width: 260px;
-  height: 120px;
-  background: radial-gradient(circle, rgba(244, 63, 94, 0.18) 0%, transparent 70%);
+  width: 240px;
+  height: 110px;
   border-radius: 50%;
-  filter: blur(35px);
   pointer-events: none;
+  background: radial-gradient(circle, rgba(244, 63, 94, 0.14) 0%, rgba(251, 113, 133, 0.05) 55%, transparent 72%);
+  filter: blur(28px);
+  opacity: 0.85;
   z-index: 0;
 }
 
-.failure-beam-flare {
-  display: none !important;
-}
-
-/* Top Distress Banner */
-.distress-telemetry-banner {
+/* 1. Compact Status Pill + Chapter Context */
+.failed-portal-chassis .distress-telemetry-banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
   width: 100%;
   position: relative;
   z-index: 2;
 }
 
-.telemetry-distress-beacon {
+.failed-portal-chassis .telemetry-distress-beacon {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  max-width: 100%;
 }
 
-.distress-dot {
+.failed-portal-chassis .distress-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: #f43f5e;
-  box-shadow: 0 0 6px rgba(244, 63, 94, 0.6);
+  flex-shrink: 0;
 }
 
-.distress-ping {
-  display: none;
-}
-
-.distress-label {
-  font-size: 0.72rem;
-  font-weight: 700;
+.failed-portal-chassis .distress-label {
+  font-size: 0.70rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
   color: #fb7185;
+  text-transform: uppercase;
+  line-height: 1.2;
 }
 
-.distress-telemetry-banner .telemetry-ch-tag {
-  font-size: 0.74rem;
+.failed-portal-chassis .telemetry-ch-tag {
+  font-size: 0.72rem;
   font-weight: 600;
   color: #94a3b8;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 2px 10px;
-  border-radius: 9999px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 175px;
 }
 
-/* =========================================================
-   CLEAN FAILURE EMBLEM
-   ========================================================= */
-
-.failure-sigil-apparatus {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  margin: 2px 0 2px;
-  z-index: 2;
-}
-
-.sigil-warning-pulse {
-  display: none;
-}
-
-.fractured-core-prism {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  background: rgba(244, 63, 94, 0.1);
-  border: 1.5px solid rgba(244, 63, 94, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.failure-sigil-icon {
-  color: #fb7185;
-}
-
-.fracture-sheen-ring {
-  display: none;
-}
-
-/* =========================================================
-   HEADLINE & STAGE IDENTIFIER
-   ========================================================= */
-
-.failure-headline-block {
+/* Failure Emblem, Title & Stage Identity */
+.failed-portal-chassis .failure-headline-block {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  width: 100%;
   position: relative;
   z-index: 2;
-  width: 100%;
 }
 
-.game-over-title.level-failed-title {
-  font-size: 1.55rem;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: -0.01em;
-  margin: 0;
-  line-height: 1.25;
-}
-
-.stage-identity-strip.failed-stage-strip {
-  display: inline-flex;
+.failed-portal-chassis .failure-sigil-apparatus {
+  display: flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 9999px;
-  padding: 3px 12px;
+  justify-content: center;
+  margin-bottom: 2px;
 }
 
-.failed-code-pill {
-  font-size: 0.72rem;
-  font-weight: 700;
+.failed-portal-chassis .fractured-core-prism {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: star-bounce-pop 0.36s 0.06s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.failed-portal-chassis .failure-sigil-icon {
   color: #fb7185;
 }
 
-.lockout-status-badge {
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: #f43f5e;
-  background: rgba(244, 63, 94, 0.12);
-  padding: 1px 6px;
-  border-radius: 4px;
+.failed-portal-chassis .game-over-title.level-failed-title {
+  font-size: 1.32rem;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: -0.015em;
+  margin: 0;
+  line-height: 1.2;
 }
 
-/* =========================================================
-   OBJECTIVE DEFICIT STATUS
-   ========================================================= */
+.failed-portal-chassis .stage-identity-strip.failed-stage-strip {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
 
-.failed-objective-terminal {
+.failed-portal-chassis .stage-code-pill.failed-code-pill {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #38bdf8;
+}
+
+.failed-portal-chassis .stage-id-sep {
+  color: #475569;
+  font-weight: 700;
+}
+
+.failed-portal-chassis .stage-name-text {
+  font-size: 0.90rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  line-height: 1.25;
+}
+
+/* 2. Objective Progress Block (Clean Single-Surface Container) */
+.failed-portal-chassis .failed-objective-terminal {
   width: 100%;
-  border-radius: 14px;
+  border-radius: 12px;
   background: rgba(244, 63, 94, 0.06);
-  border: 1px solid rgba(244, 63, 94, 0.18);
-  padding: 10px 14px;
+  border: 1px solid rgba(244, 63, 94, 0.16);
+  padding: 10px 13px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
   text-align: left;
   box-sizing: border-box;
   position: relative;
   z-index: 2;
 }
 
-.obj-terminal-top {
+.failed-portal-chassis .obj-terminal-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 8px;
   width: 100%;
 }
 
-.obj-terminal-label {
+.failed-portal-chassis .obj-terminal-label {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: #94a3b8;
+  gap: 6px;
+  min-width: 0;
 }
 
-.obj-terminal-icon {
-  color: #fb7185;
-}
-
-.obj-deficit-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: #fb7185;
-  background: rgba(244, 63, 94, 0.15);
-  border: 1px solid rgba(244, 63, 94, 0.3);
-  padding: 2px 8px;
-  border-radius: 9999px;
-}
-
-.deficit-x-icon {
-  color: #fb7185;
-}
-
-.obj-terminal-body {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-}
-
-.obj-terminal-icon-pod {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: rgba(244, 63, 94, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.failed-portal-chassis .obj-terminal-icon {
   color: #fb7185;
   flex-shrink: 0;
 }
 
-.obj-directive-quote {
-  font-size: 0.86rem;
-  font-weight: 600;
+.failed-portal-chassis .obj-progress-main {
+  font-size: 0.80rem;
+  font-weight: 700;
   color: #f1f5f9;
-  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
 }
 
-.failed-meter-container {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 100%;
+.failed-portal-chassis .obj-deficit-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fb7185;
+  background: transparent;
+  border: none;
+  padding: 0;
+  white-space: nowrap;
 }
 
-.failed-meter-track {
+.failed-portal-chassis .failed-meter-track {
   width: 100%;
-  height: 6px;
+  height: 5px;
   background: rgba(255, 255, 255, 0.08);
   border-radius: 9999px;
   overflow: hidden;
 }
 
-.failed-meter-fill {
+.failed-portal-chassis .failed-meter-fill {
   height: 100%;
   border-radius: 9999px;
-  transition: width 0.3s ease;
+  transition: width 0.35s ease;
 }
 
-.failed-meter-stats {
+.failed-portal-chassis .failed-meter-stats {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+}
+
+.failed-portal-chassis .obj-directive-quote {
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: #cbd5e1;
+  line-height: 1.3;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.failed-portal-chassis .meter-count {
   font-size: 0.72rem;
-  font-weight: 600;
-}
-
-.meter-label {
-  color: #94a3b8;
-}
-
-.meter-count {
-  color: #ffffff;
   font-weight: 700;
-}
-
-.meter-divider {
-  color: #64748b;
-  margin: 0 2px;
-}
-
-/* =========================================================
-   ATTEMPT SCORE DISPLAY
-   ========================================================= */
-
-.hero-attempt-score-chassis {
-  width: 100%;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  padding: 8px 14px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-sizing: border-box;
-  position: relative;
-  z-index: 2;
-}
-
-.attempt-score-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.attempt-score-label {
-  font-size: 0.74rem;
-  font-weight: 600;
   color: #94a3b8;
-}
-
-.final-score-number {
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: #ffffff;
   font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
 }
 
-/* =========================================================
-   SEPARATE CELEBRATORY PERSONAL RECORD
-   ========================================================= */
-
-.personal-record-celebration-trophy {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* 3. Performance Summary (Unified Single Panel: Scores + Run Stats + Optional Record) */
+.failed-portal-chassis .failed-performance-surface {
   width: 100%;
-  background: rgba(245, 158, 11, 0.1);
-  border: 1px solid rgba(245, 158, 11, 0.25);
-  border-radius: 12px;
-  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 11px 14px;
   box-sizing: border-box;
   position: relative;
   z-index: 2;
-  text-align: left;
 }
 
-.record-trophy-badge {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: #f59e0b;
+.failed-portal-chassis .personal-record-celebration-trophy {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1e1b4b;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 9px;
+  background: rgba(245, 158, 11, 0.12);
+  border: none;
+  text-align: left;
+  animation: star-bounce-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.failed-portal-chassis .record-trophy-svg {
+  color: #fbbf24;
   flex-shrink: 0;
 }
 
-.record-text-group {
+.failed-portal-chassis .record-text-group {
   display: flex;
   flex-direction: column;
   gap: 1px;
-  overflow: hidden;
+  min-width: 0;
 }
 
-.record-hero-text {
-  font-size: 0.78rem;
+.failed-portal-chassis .record-hero-text {
+  font-size: 0.70rem;
   font-weight: 800;
+  letter-spacing: 0.03em;
+  color: #fde047;
+  line-height: 1.2;
+}
+
+.failed-portal-chassis .record-sub-text {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.failed-portal-chassis .hero-attempt-score-chassis {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1.15fr 1px 1fr;
+  align-items: stretch;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+}
+
+.failed-portal-chassis .reward-vault-chamber {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 3px;
+  min-width: 0;
+  padding: 0 4px;
+}
+
+.failed-portal-chassis .chamber-title {
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  color: #94a3b8;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.failed-portal-chassis .stat-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.failed-portal-chassis .total-val.final-score-number {
+  font-size: 1.56rem;
+  font-weight: 900;
+  color: #f8fafc;
+}
+
+.failed-portal-chassis .best-val {
+  font-size: 1.20rem;
+  font-weight: 800;
+  color: #cbd5e1;
+}
+
+.failed-portal-chassis .best-val.is-new-best {
   color: #fbbf24;
 }
 
-.record-sub-text {
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: #cbd5e1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.failed-portal-chassis .rewards-v-divider {
+  width: 1px;
+  height: 34px;
+  align-self: center;
+  background: rgba(255, 255, 255, 0.1);
 }
 
-.record-sparkle-flair {
-  color: #facc15;
-  margin-left: auto;
-  flex-shrink: 0;
-}
-
-/* =========================================================
-   STATISTICS RIBBON
-   ========================================================= */
-
-.telemetry-stats-ribbon {
+.failed-portal-chassis .telemetry-stats-ribbon {
   display: flex;
   align-items: center;
   justify-content: space-around;
   width: 100%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 12px;
-  padding: 8px 14px;
-  box-sizing: border-box;
-  position: relative;
-  z-index: 2;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding-top: 8px;
+  margin-top: 1px;
+  background: transparent;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  border-radius: 0;
 }
 
-.telemetry-stat-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.stat-col-lbl {
+.failed-portal-chassis .telemetry-stat-item {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 0.68rem;
+  gap: 5px;
+}
+
+.failed-portal-chassis .stat-item-lbl {
+  font-size: 0.72rem;
   font-weight: 600;
   color: #94a3b8;
 }
 
-.stat-col-val {
-  font-size: 0.95rem;
+.failed-portal-chassis .stat-item-val {
+  font-size: 0.80rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #f1f5f9;
   font-variant-numeric: tabular-nums;
 }
 
-.telemetry-col-divider {
+.failed-portal-chassis .telemetry-col-divider {
   width: 1px;
-  height: 22px;
-  background: rgba(255, 255, 255, 0.08);
+  height: 14px;
+  background: rgba(255, 255, 255, 0.1);
 }
 
-.col-icon.gold-icon { color: #facc15; }
-.col-icon.cyan-icon { color: #38bdf8; }
-.col-icon.orange-icon { color: #fb923c; }
+.failed-portal-chassis .col-icon.cyan-icon { color: #38bdf8; }
+.failed-portal-chassis .col-icon.orange-icon { color: #fb923c; }
 
-/* =========================================================
-   ACTION BUTTONS
-   ========================================================= */
+/* Cloud Backup / Guest Sign-In Inline Utility */
+.failed-portal-chassis .guest-auth-callout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  padding: 2px 6px;
+  color: #38bdf8;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  position: relative;
+  z-index: 2;
+  white-space: nowrap;
+}
 
-.failed-actions-container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
+.failed-portal-chassis .guest-auth-callout:hover {
+  color: #7dd3fc;
+  text-decoration: underline;
+}
+
+.failed-portal-chassis .cloud-saved-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 0.70rem;
+  font-weight: 600;
+  color: #64748b;
   position: relative;
   z-index: 2;
 }
 
-.play-again-btn.retry-level-btn.primary-retry-trigger {
-  display: inline-flex;
+/* 4. Primary & Secondary Actions (Consistent with Stage Completed Modal) */
+.failed-portal-chassis .failed-actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-top: 1px;
+  position: relative;
+  z-index: 2;
+}
+
+.failed-portal-chassis .play-again-btn.retry-level-btn.primary-retry-trigger {
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   width: 100%;
-  height: 48px;
-  border-radius: 9999px;
-  background: linear-gradient(135deg, #e11d48 0%, #f43f5e 100%);
+  height: 46px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
   border: none;
-  box-shadow: 0 4px 14px rgba(244, 63, 94, 0.35);
+  box-shadow: 0 6px 18px rgba(244, 63, 94, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   color: #ffffff;
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-size: 0.90rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
   cursor: pointer;
-  transition: all 0.16s ease;
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
   user-select: none;
 }
 
-.play-again-btn.retry-level-btn.primary-retry-trigger:hover {
-  filter: brightness(1.06);
+.failed-portal-chassis .play-again-btn.retry-level-btn.primary-retry-trigger:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(244, 63, 94, 0.45);
+  filter: brightness(1.06);
+  box-shadow: 0 8px 22px rgba(244, 63, 94, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
-.play-again-btn.retry-level-btn.primary-retry-trigger:active {
+.failed-portal-chassis .play-again-btn.retry-level-btn.primary-retry-trigger:active {
   transform: translateY(1px);
   filter: brightness(0.96);
 }
 
-.game-over-map-btn.secondary-map-trigger {
-  display: inline-flex;
+.failed-portal-chassis .retry-spin-icon {
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.failed-portal-chassis .primary-retry-trigger:hover .retry-spin-icon {
+  transform: rotate(-45deg);
+}
+
+.failed-portal-chassis .retry-primary-text {
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.failed-portal-chassis .game-over-map-btn.secondary-map-trigger {
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   width: 100%;
   height: 40px;
-  border-radius: 9999px;
-  background: transparent;
+  min-height: 40px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #94a3b8;
-  font-size: 0.84rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.game-over-map-btn.secondary-map-trigger:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #ffffff;
-}
-
-.failed-meter-track {
-  width: 100%;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 9999px;
-  overflow: hidden;
-}
-
-.failed-meter-fill {
-  height: 100%;
-  border-radius: 9999px;
-  box-shadow: 0 0 10px rgba(244, 63, 94, 0.8);
-  transition: width 0.4s ease;
-}
-
-.failed-meter-stats {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.68rem;
-  font-weight: 700;
-}
-
-.meter-label {
-  color: #94a3b8;
-}
-
-.meter-count {
-  color: #ffffff;
-  font-weight: 800;
-}
-
-.meter-divider {
-  color: #64748b;
-  margin: 0 2px;
-}
-
-/* =========================================================
-   HERO ATTEMPT SCORE DISPLAY
-   ========================================================= */
-
-.hero-attempt-score-chassis {
-  width: 100%;
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(25, 14, 25, 0.9) 0%, rgba(15, 8, 16, 0.95) 100%);
-  border: 1px solid rgba(244, 63, 94, 0.3);
-  padding: 8px 14px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-  z-index: 2;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-}
-
-.attempt-score-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.attempt-score-label {
-  font-size: 0.68rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  color: #94a3b8;
-  text-transform: uppercase;
-}
-
-.final-score-number {
-  font-size: 1.45rem;
-  font-weight: 900;
-  color: #ffffff;
-  text-shadow: 0 0 14px rgba(244, 63, 94, 0.5);
-  font-variant-numeric: tabular-nums;
-}
-
-/* =========================================================
-   SEPARATE CELEBRATORY PERSONAL RECORD MEDALLION
-   ========================================================= */
-
-.personal-record-celebration-trophy {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(217, 119, 6, 0.12) 100%);
-  border: 1.5px solid rgba(250, 204, 21, 0.55);
-  border-radius: 12px;
-  padding: 8px 12px;
-  box-shadow: 0 0 16px rgba(250, 204, 21, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  position: relative;
-  z-index: 2;
-  animation: victory-medal-pop 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-  text-align: left;
-}
-
-.record-trophy-badge {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #facc15 0%, #d97706 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #451a03;
-  flex-shrink: 0;
-  box-shadow: 0 0 10px rgba(250, 204, 21, 0.7);
-}
-
-.record-text-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  overflow: hidden;
-}
-
-.record-hero-text {
-  font-size: 0.78rem;
-  font-weight: 900;
-  color: #fde047;
-  text-shadow: 0 0 8px rgba(250, 204, 21, 0.7);
-}
-
-.record-sub-text {
-  font-size: 0.64rem;
-  font-weight: 700;
-  color: #fef08a;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.record-sparkle-flair {
-  color: #ffffff;
-  animation: sparkle-flare 2s infinite ease-in-out;
-  margin-left: auto;
-  flex-shrink: 0;
-}
-
-/* =========================================================
-   UNIFIED TACTICAL TELEMETRY STATISTICS RIBBON
-   ========================================================= */
-
-.telemetry-stats-ribbon {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 10px;
-  padding: 6px 14px;
-  position: relative;
-  z-index: 2;
-}
-
-.telemetry-stat-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.stat-col-lbl {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  color: #94a3b8;
-}
-
-.stat-col-val {
-  font-size: 0.95rem;
-  font-weight: 900;
-  color: #ffffff;
-  font-variant-numeric: tabular-nums;
-}
-
-.telemetry-col-divider {
-  width: 1px;
-  height: 20px;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.col-icon.gold-icon { color: #facc15; }
-.col-icon.cyan-icon { color: #38bdf8; }
-.col-icon.orange-icon { color: #fb923c; }
-
-/* =========================================================
-   CLOUD BACKUP STATUS / GUEST AUTH CALLOUT
-   ========================================================= */
-
-.guest-auth-callout {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  height: 36px;
-  border-radius: 10px;
-  background: rgba(56, 189, 248, 0.08);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  color: #38bdf8;
-  font-size: 0.75rem;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  position: relative;
-  z-index: 2;
-}
-
-.guest-auth-callout:hover {
-  background: rgba(56, 189, 248, 0.18);
-  border-color: #38bdf8;
-  color: #ffffff;
-}
-
-.cloud-saved-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-size: 0.70rem;
-  font-weight: 700;
-  color: #94a3b8;
-  width: 100%;
-  position: relative;
-  z-index: 2;
-}
-
-/* =========================================================
-   REDESIGNED COMMAND ACTION BUTTONS
-   ========================================================= */
-
-.failed-actions-container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-  margin-top: 3px;
-  position: relative;
-  z-index: 2;
-}
-
-.play-again-btn.retry-level-btn.primary-retry-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  height: 52px;
-  border-radius: 16px;
-  padding: 0 16px;
-  background: linear-gradient(180deg, #f43f5e 0%, #e11d48 40%, #be123c 100%);
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
-  box-shadow:
-    0 4px 0 #881337,
-    0 10px 25px rgba(244, 63, 94, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  color: #ffffff;
-  cursor: pointer;
-  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
-  user-select: none;
-  text-align: left;
-  gap: 12px;
-}
-
-.play-again-btn.retry-level-btn.primary-retry-trigger:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
-  box-shadow:
-    0 5px 0 #881337,
-    0 14px 30px rgba(244, 63, 94, 0.6);
-}
-
-.play-again-btn.retry-level-btn.primary-retry-trigger:active {
-  transform: translateY(3px);
-  box-shadow:
-    0 1px 0 #881337,
-    0 4px 10px rgba(244, 63, 94, 0.3);
-}
-
-.retry-icon-pod {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.retry-spin-icon {
-  color: #ffffff;
-  transition: transform 0.3s ease;
-}
-
-.play-again-btn.retry-level-btn.primary-retry-trigger:hover .retry-spin-icon {
-  transform: rotate(-90deg);
-}
-
-.retry-text-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  flex: 1;
-}
-
-.retry-primary-text {
-  font-size: 0.94rem;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-}
-
-.retry-sub-text {
-  font-size: 0.64rem;
-  font-weight: 700;
-  color: rgba(254, 205, 211, 0.9);
-}
-
-.retry-arrow-pod {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  transition: transform 0.15s ease;
-}
-
-.play-again-btn.retry-level-btn.primary-retry-trigger:hover .retry-arrow-icon {
-  transform: translateX(3px);
-}
-
-/* Secondary Action: Level Map */
-.game-over-map-btn.secondary-map-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  height: 40px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #cbd5e1;
   font-size: 0.80rem;
-  font-weight: 800;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
-.game-over-map-btn.secondary-map-trigger:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(56, 189, 248, 0.4);
-  color: #ffffff;
+.failed-portal-chassis .game-over-map-btn.secondary-map-trigger:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #f8fafc;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.failed-portal-chassis .primary-retry-trigger:focus-visible,
+.failed-portal-chassis .secondary-map-trigger:focus-visible,
+.failed-portal-chassis .guest-auth-callout:focus-visible {
+  outline: 2px solid rgba(56, 189, 248, 0.75);
+  outline-offset: 2px;
+}
+
+/* Responsive Proportions for Compact & Narrow Mobile Viewports */
+@media (max-width: 480px) {
+  .game-over-card.level-failed-card.failed-portal-chassis {
+    width: min(94vw, 390px);
+    padding: 16px 15px 15px;
+    border-radius: 18px;
+    gap: 10px;
+  }
+
+  .failed-portal-chassis .telemetry-ch-tag {
+    max-width: 155px;
+    font-size: 0.68rem;
+  }
+
+  .failed-portal-chassis .fractured-core-prism {
+    width: 34px;
+    height: 34px;
+  }
+
+  .failed-portal-chassis .fractured-core-prism svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .failed-portal-chassis .game-over-title.level-failed-title {
+    font-size: 1.22rem;
+  }
+
+  .failed-portal-chassis .stage-name-text {
+    font-size: 0.86rem;
+  }
+
+  .failed-portal-chassis .total-val.final-score-number {
+    font-size: 1.44rem;
+  }
+
+  .failed-portal-chassis .best-val {
+    font-size: 1.12rem;
+  }
+
+  .failed-portal-chassis .play-again-btn.retry-level-btn.primary-retry-trigger {
+    height: 44px;
+    min-height: 44px;
+    font-size: 0.86rem;
+  }
+
+  .failed-portal-chassis .game-over-map-btn.secondary-map-trigger {
+    height: 38px;
+    min-height: 38px;
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 360px), (max-height: 675px) {
+  .game-over-card.level-failed-card.failed-portal-chassis {
+    width: min(94vw, 360px);
+    padding: 13px 13px 12px;
+    gap: 8px;
+  }
+
+  .failed-portal-chassis .telemetry-distress-beacon {
+    padding: 3px 8px;
+  }
+
+  .failed-portal-chassis .distress-label {
+    font-size: 0.66rem;
+  }
+
+  .failed-portal-chassis .telemetry-ch-tag {
+    max-width: 125px;
+    font-size: 0.64rem;
+  }
+
+  .failed-portal-chassis .fractured-core-prism {
+    width: 30px;
+    height: 30px;
+  }
+
+  .failed-portal-chassis .fractured-core-prism svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .failed-portal-chassis .game-over-title.level-failed-title {
+    font-size: 1.12rem;
+  }
+
+  .failed-portal-chassis .stage-code-pill.failed-code-pill {
+    font-size: 0.72rem;
+  }
+
+  .failed-portal-chassis .stage-name-text {
+    font-size: 0.80rem;
+  }
+
+  .failed-portal-chassis .failed-objective-terminal {
+    padding: 8px 10px;
+    gap: 5px;
+  }
+
+  .failed-portal-chassis .obj-progress-main {
+    font-size: 0.74rem;
+  }
+
+  .failed-portal-chassis .obj-deficit-badge {
+    font-size: 0.68rem;
+  }
+
+  .failed-portal-chassis .obj-directive-quote {
+    font-size: 0.72rem;
+  }
+
+  .failed-portal-chassis .failed-performance-surface {
+    padding: 9px 10px;
+    gap: 6px;
+  }
+
+  .failed-portal-chassis .total-val.final-score-number {
+    font-size: 1.30rem;
+  }
+
+  .failed-portal-chassis .best-val {
+    font-size: 1.02rem;
+  }
+
+  .failed-portal-chassis .telemetry-stats-ribbon {
+    padding-top: 6px;
+  }
+
+  .failed-portal-chassis .guest-auth-callout {
+    font-size: 0.70rem;
+  }
+
+  .failed-portal-chassis .failed-actions-container {
+    gap: 6px;
+  }
+
+  .failed-portal-chassis .play-again-btn.retry-level-btn.primary-retry-trigger {
+    height: 42px;
+    min-height: 42px;
+    font-size: 0.82rem;
+  }
+
+  .failed-portal-chassis .game-over-map-btn.secondary-map-trigger {
+    height: 36px;
+    min-height: 36px;
+    font-size: 0.74rem;
+  }
 }
 
 

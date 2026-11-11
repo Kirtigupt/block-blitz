@@ -10,9 +10,7 @@ import {
   Layers,
   Gem,
   Sparkles,
-  XCircle,
   ShieldAlert,
-  ArrowRight,
   Target
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -20,9 +18,8 @@ import { CHAPTER_CONFIGS, calculateLevelProgressPercent } from '../constants/lev
 import { sounds } from '../utils/soundEffects';
 
 /**
- * Premium Game Over / Level Failed Experience
- * Completely redesigned to replace ordinary stacked boxes with an immersive,
- * unified cyber-arcade failure presentation.
+ * Clean Casual-Arcade Game Over / Level Failed Modal
+ * Matches the Stage Completed visual design system while preserving distinct failure hierarchy.
  */
 export const GameOverModal = ({
   score = 0,
@@ -73,30 +70,30 @@ export const GameOverModal = ({
   }, [level, onRestart, onOpenLevelMap]);
 
   const chapterNum = levelConfig?.chapter || Math.ceil(level / 10);
-  const chapterName = levelConfig?.chapter
-    ? CHAPTER_CONFIGS.find((c) => c.chapter === levelConfig.chapter)?.name
-    : `Chapter ${chapterNum}`;
+  const chapterName =
+    (levelConfig?.chapter && CHAPTER_CONFIGS.find((c) => c.chapter === levelConfig.chapter)?.name) ||
+    `Chapter ${chapterNum}`;
 
   const progressPercent = levelConfig
     ? calculateLevelProgressPercent(levelProgress, levelConfig.target)
     : 0;
 
   const renderObjectiveIcon = () => {
-    if (!levelConfig) return <Target size={18} className="mission-icon" />;
+    if (!levelConfig) return <Target size={14} className="obj-terminal-icon" />;
     switch (levelConfig.type) {
       case 'streak':
-        return <Flame size={18} className="mission-icon streak-icon" />;
+        return <Flame size={14} className="obj-terminal-icon" />;
       case 'multilines':
       case 'lines':
-        return <Layers size={18} className="mission-icon lines-icon" />;
+        return <Layers size={14} className="obj-terminal-icon" />;
       case 'clear_pattern':
-        return <Gem size={18} className="mission-icon gem-icon" />;
+        return <Gem size={14} className="obj-terminal-icon" />;
       case 'placed':
-        return <Sparkles size={18} className="mission-icon pieces-icon" />;
+        return <Sparkles size={14} className="obj-terminal-icon" />;
       case 'score':
-        return <Trophy size={18} className="mission-icon score-icon" />;
+        return <Trophy size={14} className="obj-terminal-icon" />;
       default:
-        return <Target size={18} className="mission-icon target-icon" />;
+        return <Target size={14} className="obj-terminal-icon" />;
     }
   };
 
@@ -107,52 +104,38 @@ export const GameOverModal = ({
     switch (levelConfig.type) {
       case 'lines':
         return {
-          label: 'Lines Cleared',
-          current: levelProgress,
-          target: levelConfig.target,
+          progressText: `${levelProgress} / ${levelConfig.target} ${levelConfig.target === 1 ? 'line' : 'lines'} cleared`,
           statusText: `${remaining} more ${remaining === 1 ? 'line' : 'lines'} needed`
         };
       case 'score':
         return {
-          label: 'Target Score',
-          current: levelProgress.toLocaleString(),
-          target: levelConfig.target.toLocaleString(),
-          statusText: `${remaining.toLocaleString()} points needed`
+          progressText: `${levelProgress.toLocaleString()} / ${levelConfig.target.toLocaleString()} pts`,
+          statusText: `${remaining.toLocaleString()} more pts needed`
         };
       case 'streak':
         return {
-          label: 'Streak Reached',
-          current: `${levelProgress}x`,
-          target: `${levelConfig.target}x`,
-          statusText: `${remaining}x combo needed`
+          progressText: `${levelProgress}x / ${levelConfig.target}x streak`,
+          statusText: `${remaining}x higher streak needed`
         };
       case 'multilines':
         return {
-          label: 'Combos Achieved',
-          current: levelProgress,
-          target: levelConfig.target,
-          statusText: `${remaining} more combo clear needed`
+          progressText: `${levelProgress} / ${levelConfig.target} multi-line clears`,
+          statusText: `${remaining} more ${remaining === 1 ? 'clear' : 'clears'} needed`
         };
       case 'clear_pattern':
         return {
-          label: 'Pattern Gems Cleared',
-          current: levelProgress,
-          target: levelConfig.target,
-          statusText: `${remaining} ${remaining === 1 ? 'gem' : 'gems'} remaining`
+          progressText: `${levelProgress} / ${levelConfig.target} ${levelConfig.target === 1 ? 'gem' : 'gems'} cleared`,
+          statusText: `${remaining} more ${remaining === 1 ? 'gem' : 'gems'} needed`
         };
       case 'placed':
         return {
-          label: 'Pieces Placed',
-          current: levelProgress,
-          target: levelConfig.target,
-          statusText: `${remaining} more pieces needed`
+          progressText: `${levelProgress} / ${levelConfig.target} ${levelConfig.target === 1 ? 'piece' : 'pieces'} placed`,
+          statusText: `${remaining} more ${remaining === 1 ? 'piece' : 'pieces'} needed`
         };
       default:
         return {
-          label: 'Progress',
-          current: levelProgress,
-          target: levelConfig.target,
-          statusText: `${remaining} needed`
+          progressText: `${levelProgress} / ${levelConfig.target} completed`,
+          statusText: `${remaining} remaining`
         };
     }
   };
@@ -167,150 +150,121 @@ export const GameOverModal = ({
       aria-labelledby="game-over-title"
     >
       <div className="game-over-card level-failed-card failed-portal-chassis">
-        {/* Ambient Subtle Halo */}
-        <div className="failure-ambient-halo" />
+        {/* Subtle Ambient Coral Halo */}
+        <div className="failure-ambient-halo" aria-hidden="true" />
 
-        {/* Top Status & Chapter Banner */}
+        {/* 1. Compact Status Pill + Chapter Context */}
         <div className="distress-telemetry-banner">
-          <div className="telemetry-distress-beacon">
-            <span className="distress-dot" />
+          <div className="telemetry-distress-beacon" role="status">
+            <span className="distress-dot" aria-hidden="true" />
             <span className="distress-label">OUT OF MOVES</span>
           </div>
           {chapterName && (
             <div className="telemetry-ch-tag">
-              Chapter {chapterNum} • {chapterName}
+              Ch. {chapterNum} · {chapterName}
             </div>
           )}
         </div>
 
-        {/* Failure Emblem */}
-        <div className="failure-sigil-apparatus">
-          <div className="fractured-core-prism">
-            <ShieldAlert size={32} className="failure-sigil-icon" />
-          </div>
-        </div>
-
-        {/* Level Failed Headline */}
+        {/* Failure Emblem, Headline & Stage Identity */}
         <div className="failure-headline-block">
+          <div className="failure-sigil-apparatus" aria-hidden="true">
+            <div className="fractured-core-prism">
+              <ShieldAlert size={20} className="failure-sigil-icon" />
+            </div>
+          </div>
+
           <h2 id="game-over-title" className="game-over-title level-failed-title">
             LEVEL {level} FAILED
           </h2>
+
           <div className="stage-identity-strip failed-stage-strip">
-            <span className="stage-code-pill failed-code-pill">STAGE {String(level).padStart(2, '0')}</span>
+            <span className="stage-code-pill failed-code-pill">
+              STAGE {String(level).padStart(2, '0')}
+            </span>
+            <span className="stage-id-sep" aria-hidden="true">·</span>
             <span className="stage-name-text">{levelConfig?.title || 'Grid Frontier'}</span>
-            <span className="lockout-status-badge">OUT OF MOVES</span>
           </div>
         </div>
 
-        {/* =========================================================
-            TACTICAL OBJECTIVE DEBRIEF TERMINAL
-            Highlights what was needed, actual progress, and exact deficit.
-           ========================================================= */}
+        {/* 2. Objective Progress (Clean Single-Surface Block) */}
         {levelConfig && objDetails && (
-          <div className="failed-objective-terminal">
+          <div className="failed-objective-terminal" aria-label="Objective Progress">
             <div className="obj-terminal-top">
               <div className="obj-terminal-label">
-                <Target size={13} className="obj-terminal-icon" />
-                <span>OBJECTIVE DEFICIT</span>
-              </div>
-              <div className="obj-deficit-badge">
-                <XCircle size={13} className="deficit-x-icon" />
-                <span>{objDetails.statusText.toUpperCase()}</span>
-              </div>
-            </div>
-
-            <div className="obj-terminal-body">
-              <div className="obj-terminal-icon-pod">
                 {renderObjectiveIcon()}
+                <span className="obj-progress-main">{objDetails.progressText}</span>
               </div>
-              <div className="obj-terminal-text-block">
-                <span className="obj-directive-quote">"{levelConfig.description}"</span>
-              </div>
+              <span className="obj-deficit-badge">{objDetails.statusText}</span>
             </div>
 
-            {/* Visual Progress Meter & Metric Counter */}
-            <div className="failed-meter-container">
-              <div className="failed-meter-track">
-                <div
-                  className="failed-meter-fill"
-                  style={{
-                    width: `${progressPercent}%`,
-                    backgroundColor: levelConfig.accentColor || '#f43f5e'
-                  }}
-                />
-              </div>
-              <div className="failed-meter-stats">
-                <span className="meter-label">PROGRESS: {progressPercent}% COMPLETED</span>
-                <span className="meter-count">
-                  {objDetails.current} <span className="meter-divider">/</span> {objDetails.target}
-                </span>
-              </div>
+            <div className="failed-meter-track" aria-hidden="true">
+              <div
+                className="failed-meter-fill"
+                style={{
+                  width: `${progressPercent}%`,
+                  backgroundColor: levelConfig.accentColor || '#f43f5e'
+                }}
+              />
+            </div>
+
+            <div className="failed-meter-stats">
+              <span className="obj-directive-quote">"{levelConfig.description}"</span>
+              <span className="meter-count">{progressPercent}%</span>
             </div>
           </div>
         )}
 
-        {/* =========================================================
-            HERO ATTEMPT SCORE DISPLAY
-           ========================================================= */}
-        <div className="hero-attempt-score-chassis">
-          <div className="attempt-score-meta">
-            <span className="attempt-score-label">ATTEMPT SCORE</span>
-            <span className="final-score-number">{score.toLocaleString()}</span>
+        {/* 3. Performance Summary (Unified Single Panel: Final Score + Best Score + Run Stats) */}
+        <div className="failed-performance-surface" aria-label="Performance Summary">
+          {isNewHigh && score > 0 && (
+            <div className="personal-record-celebration-trophy">
+              <Trophy size={14} className="record-trophy-svg" />
+              <div className="record-text-group">
+                <span className="record-hero-text">NEW ALL-TIME PERSONAL RECORD!</span>
+                <span className="record-sub-text">Personal best updated</span>
+              </div>
+            </div>
+          )}
+
+          <div className="hero-attempt-score-chassis">
+            <div className="reward-vault-chamber score-chamber">
+              <span className="chamber-title">FINAL SCORE</span>
+              <span className="stat-value total-val final-score-number">
+                {score.toLocaleString()}
+              </span>
+            </div>
+
+            <div className="rewards-v-divider" aria-hidden="true" />
+
+            <div className="reward-vault-chamber best-chamber">
+              <span className="chamber-title">BEST SCORE</span>
+              <span className={`stat-value best-val ${isNewHigh && score > 0 ? 'is-new-best' : ''}`}>
+                {highScore.toLocaleString()}
+              </span>
+            </div>
+          </div>
+
+          <div className="telemetry-stats-ribbon">
+            <div className="telemetry-stat-item">
+              <Zap size={12} className="col-icon cyan-icon" aria-hidden="true" />
+              <span className="stat-item-lbl">Lines</span>
+              <span className="stat-item-val">{linesCleared}</span>
+            </div>
+            <div className="telemetry-col-divider" aria-hidden="true" />
+            <div className="telemetry-stat-item">
+              <Flame size={12} className="col-icon orange-icon" aria-hidden="true" />
+              <span className="stat-item-lbl">Best Streak</span>
+              <span className="stat-item-val">x{maxStreak}</span>
+            </div>
           </div>
         </div>
 
-        {/* =========================================================
-            SEPARATE CELEBRATORY PERSONAL RECORD MEDALLION
-            Rendered as a prominent celebratory badge when player sets a new record.
-           ========================================================= */}
-        {isNewHigh && score > 0 && (
-          <div className="personal-record-celebration-trophy">
-            <div className="record-trophy-badge">
-              <Trophy size={18} className="record-trophy-svg" />
-            </div>
-            <div className="record-text-group">
-              <span className="record-hero-text">NEW ALL-TIME PERSONAL RECORD!</span>
-              <span className="record-sub-text">Surpassed previous career high • Saved to record books</span>
-            </div>
-            <Sparkles size={16} className="record-sparkle-flair" />
-          </div>
-        )}
-
-        {/* =========================================================
-            UNIFIED TACTICAL TELEMETRY STATISTICS RIBBON
-            Avoids excessive boxed containers by presenting stats in a
-            single, elegant data ribbon.
-           ========================================================= */}
-        <div className="telemetry-stats-ribbon">
-          <div className="telemetry-stat-col">
-            <span className="stat-col-lbl">
-              <Trophy size={12} className="col-icon gold-icon" /> BEST
-            </span>
-            <span className="stat-col-val">{highScore.toLocaleString()}</span>
-          </div>
-          <div className="telemetry-col-divider" />
-          <div className="telemetry-stat-col">
-            <span className="stat-col-lbl">
-              <Zap size={12} className="col-icon cyan-icon" /> LINES
-            </span>
-            <span className="stat-col-val">{linesCleared}</span>
-          </div>
-          <div className="telemetry-col-divider" />
-          <div className="telemetry-stat-col">
-            <span className="stat-col-lbl">
-              <Flame size={12} className="col-icon orange-icon" /> STREAK
-            </span>
-            <span className="stat-col-val">x{maxStreak}</span>
-          </div>
-        </div>
-
-        {/* =========================================================
-            CLOUD BACKUP STATUS / GUEST AUTH CALLOUT
-           ========================================================= */}
+        {/* Cloud Backup Status / Guest Sign-In Utility */}
         {user ? (
           scoreSaved && (
             <div className="cloud-saved-badge">
-              <CloudCheck size={14} className="cloud-icon" />
+              <CloudCheck size={13} className="cloud-icon" />
               <span>Score verified and synced to cloud</span>
             </div>
           )
@@ -321,16 +275,12 @@ export const GameOverModal = ({
             onClick={onOpenAuth}
             aria-label="Sign in to save scores"
           >
-            <LogIn size={14} className="guest-login-icon" />
-            <span>Sign in to save scores to Global Leaderboard</span>
+            <LogIn size={13} className="guest-login-icon" />
+            <span>Sign in to save score &amp; rank</span>
           </button>
         )}
 
-        {/* =========================================================
-            REDESIGNED COMMAND ACTION BUTTONS
-            Primary: RETRY LEVEL (High-impact 3D arcade button)
-            Secondary: LEVEL MAP (Tactical glassmorphic button)
-           ========================================================= */}
+        {/* 4. Primary & Secondary Actions */}
         <div className="failed-actions-container">
           <button
             type="button"
@@ -339,19 +289,10 @@ export const GameOverModal = ({
               sounds.playSelect();
               onRestart(level);
             }}
-            autoFocus
             aria-label={`Retry Level ${level}`}
           >
-            <div className="retry-icon-pod">
-              <RotateCcw size={18} className="retry-spin-icon" />
-            </div>
-            <div className="retry-text-group">
-              <span className="retry-primary-text">RETRY LEVEL {level}</span>
-              <span className="retry-sub-text">Relaunch mission from checkpoint</span>
-            </div>
-            <div className="retry-arrow-pod">
-              <ArrowRight size={18} className="retry-arrow-icon" />
-            </div>
+            <RotateCcw size={16} className="retry-spin-icon" />
+            <span className="retry-primary-text">RETRY LEVEL</span>
           </button>
 
           {onOpenLevelMap && (
@@ -362,10 +303,10 @@ export const GameOverModal = ({
                 sounds.playSelect();
                 onOpenLevelMap();
               }}
-              aria-label="Return to Adventure Map"
+              aria-label="Back to Adventure Map"
             >
-              <Map size={16} />
-              <span>LEVEL MAP</span>
+              <Map size={15} />
+              <span>BACK TO MAP</span>
             </button>
           )}
         </div>
