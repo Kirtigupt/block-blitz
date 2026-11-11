@@ -225,83 +225,86 @@ export const Header = ({
             )}
           </div>
 
-          {/* Group 1: Meta Controls (Leaderboard, Sound, Settings, Help) */}
-          <div className="hud-control-pod meta-pod header-tools-cluster">
-            <button
-              type="button"
-              className="hud-tactile-btn hud-btn-leaderboard action-btn leaderboard-btn"
-              onClick={onOpenLeaderboard}
-              title="Global Leaderboard"
-              aria-label="Global Leaderboard"
-            >
-              <Crown size={14} />
-            </button>
-
-            <button
-              type="button"
-              className={`hud-tactile-btn hud-btn-audio action-btn audio-btn ${isMuted ? 'is-muted btn-muted' : ''}`}
-              onClick={onToggleMute}
-              title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
-              aria-label="Toggle Sound Effects"
-            >
-              {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
-            </button>
-
-            <button
-              type="button"
-              className="hud-tactile-btn hud-btn-settings action-btn settings-btn"
-              onClick={onOpenSettings}
-              title="Game Settings"
-              aria-label="Game Settings"
-            >
-              <Settings size={14} />
-            </button>
-
-            <button
-              type="button"
-              className="hud-tactile-btn hud-btn-help action-btn help-btn"
-              onClick={onOpenHelp}
-              title="How to Play"
-              aria-label="How to Play"
-            >
-              <HelpCircle size={14} />
-            </button>
-          </div>
-
-          {/* Micro Vertical Light Divider */}
-          <div className="hud-v-divider" aria-hidden="true" />
-
-          {/* Group 2: Match Operations (Restart, Exit) */}
-          <div className="hud-control-pod match-pod">
-            <button
-              type="button"
-              className="hud-tactile-btn hud-btn-restart action-btn restart-btn"
-              onClick={onRestart}
-              title="Restart Level (R)"
-              aria-label="Restart Level"
-            >
-              <RotateCcw size={14} />
-            </button>
-
-            {onOpenExitModal && (
+          {/* Unified Evenly Spaced Action Controls Pod */}
+          <div className="hud-actions-cluster header-tools-cluster">
+            {/* Group 1: Meta Controls (Leaderboard, Sound, Settings, Help) */}
+            <div className="hud-control-pod meta-pod">
               <button
                 type="button"
-                className="hud-tactile-btn hud-btn-exit action-btn exit-btn"
-                onClick={onOpenExitModal}
-                title="Exit to Adventure Map (Esc)"
-                aria-label="Exit to Adventure Map"
+                className="hud-tactile-btn hud-btn-leaderboard action-btn leaderboard-btn"
+                onClick={onOpenLeaderboard}
+                title="Global Leaderboard"
+                aria-label="Global Leaderboard"
               >
-                <LogOut size={14} />
+                <Crown size={14} />
               </button>
-            )}
+
+              <button
+                type="button"
+                className={`hud-tactile-btn hud-btn-audio action-btn audio-btn ${isMuted ? 'is-muted btn-muted' : ''}`}
+                onClick={onToggleMute}
+                title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
+                aria-label="Toggle Sound Effects"
+              >
+                {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+              </button>
+
+              <button
+                type="button"
+                className="hud-tactile-btn hud-btn-settings action-btn settings-btn"
+                onClick={onOpenSettings}
+                title="Game Settings"
+                aria-label="Game Settings"
+              >
+                <Settings size={14} />
+              </button>
+
+              <button
+                type="button"
+                className="hud-tactile-btn hud-btn-help action-btn help-btn"
+                onClick={onOpenHelp}
+                title="How to Play"
+                aria-label="How to Play"
+              >
+                <HelpCircle size={14} />
+              </button>
+            </div>
+
+            {/* Micro Vertical Light Divider (Desktop Only) */}
+            <div className="hud-v-divider" aria-hidden="true" />
+
+            {/* Group 2: Match Operations (Restart, Exit) */}
+            <div className="hud-control-pod match-pod">
+              <button
+                type="button"
+                className="hud-tactile-btn hud-btn-restart action-btn restart-btn"
+                onClick={onRestart}
+                title="Restart Level (R)"
+                aria-label="Restart Level"
+              >
+                <RotateCcw size={14} />
+              </button>
+
+              {onOpenExitModal && (
+                <button
+                  type="button"
+                  className="hud-tactile-btn hud-btn-exit action-btn exit-btn"
+                  onClick={onOpenExitModal}
+                  title="Exit to Adventure Map (Esc)"
+                  aria-label="Exit to Adventure Map"
+                >
+                  <LogOut size={14} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* 2. REIMAGINED HERO SCOREBOARD TELEMETRY CONSOLE */}
+      {/* 2. THREE-COLUMN BALANCED HERO SCOREBOARD */}
       <div className="score-board hero-scoreboard-console hud-stats-chassis" role="region" aria-label="Game Scoreboard">
-        {/* Dominant Hero Score (Left Wing) */}
-        <div className="hero-score-anchor">
+        {/* Column 1: Dominant Hero Score */}
+        <div className="scoreboard-col scoreboard-current hero-score-anchor">
           <div className="hero-score-subhead">
             <span className="score-live-beacon" aria-hidden="true" />
             <span className="score-label-text">SCORE</span>
@@ -311,10 +314,10 @@ export const Header = ({
           </div>
         </div>
 
-        {/* Secondary Telemetry Cluster (Right Wing: Best Record & Dynamic Streak Reactor) */}
+        {/* Columns 2 & 3: Secondary Telemetry (display: contents on desktop & mobile) */}
         <div className="secondary-telemetry-anchor">
-          {/* Personal Best Telemetry */}
-          <div className="telemetry-pill best-score-pill" title="Personal Best Score for this account">
+          {/* Column 2: Personal Best Telemetry */}
+          <div className="scoreboard-col scoreboard-best telemetry-pill best-score-pill" title="Personal Best Score for this account">
             <div className="telemetry-pill-head">
               <Trophy size={11} className="icon-best-gold" />
               <span className="telemetry-pill-lbl">BEST</span>
@@ -324,9 +327,9 @@ export const Header = ({
             </div>
           </div>
 
-          {/* Dynamic Streak / Combo Reactor */}
+          {/* Column 3: Dynamic Streak / Multiplier Reactor */}
           <div
-            className={`telemetry-pill streak-reactor-pill ${
+            className={`scoreboard-col scoreboard-streak telemetry-pill streak-reactor-pill ${
               streak > 1 ? (streak >= 4 ? 'reactor-hyper' : 'reactor-active') : 'reactor-idle'
             }`}
             title={streak > 1 ? `Current Combo Streak: ${streak}x multiplier` : 'Achieve consecutive line clears to trigger streak multipliers'}
