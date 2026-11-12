@@ -310,14 +310,10 @@ export const LevelCompleteModal = ({
 
           {/* Header */}
           <div className="completion-flow-header">
-            <div className="complete-tag-badge">
-              <Trophy size={12} />
-              <span>WORLDWIDE STANDINGS</span>
-            </div>
             <h2 id="completion-flow-title" className="level-complete-title">
               GLOBAL LEADERBOARD
             </h2>
-            <span className="level-complete-sub">Top Blitz Masters & Your Personal Ranking</span>
+            <span className="level-complete-sub">Top Players &amp; Your Standing</span>
           </div>
 
           {/* Loading State */}
@@ -404,7 +400,7 @@ export const LevelCompleteModal = ({
               <div className="current-player-highlight-strip">
                 <div className="player-highlight-left">
                   <span className="highlight-tag">YOU</span>
-                  <span className="highlight-username">{currentUsername}</span>
+                  <span className="highlight-username" title={currentUsername}>{currentUsername}</span>
                 </div>
                 <div className="player-highlight-right">
                   <span className="highlight-score">{totalScore.toLocaleString()} PTS</span>
@@ -444,8 +440,10 @@ export const LevelCompleteModal = ({
                               <span>#{item.rank}</span>
                             </td>
                             <td className="user-cell">
-                              <span className="table-username">{item.username}</span>
-                              {isMe && <span className="table-me-badge">YOU</span>}
+                              <div className="table-user-cell-inner">
+                                <span className="table-username" title={item.username}>{item.username}</span>
+                                {isMe && <span className="table-me-badge">YOU</span>}
+                              </div>
                             </td>
                             <td className="align-right score-cell">
                               {item.totalScore?.toLocaleString() || item.highScore?.toLocaleString() || 0}
@@ -472,7 +470,6 @@ export const LevelCompleteModal = ({
                 sounds.playSelect();
                 setStep('unlocked');
               }}
-              autoFocus
               aria-label="Continue to Next Level Unlocked Screen"
             >
               <span>CONTINUE</span>

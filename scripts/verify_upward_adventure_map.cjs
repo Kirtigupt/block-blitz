@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 
 const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-const FRONTEND_URL = 'http://localhost:5173';
+const FRONTEND_URL = 'http://127.0.0.1:5173';
 const ARTIFACT_DIR = path.resolve('C:/Users/kirti/.gemini/antigravity/brain/3ac25ba8-43d2-4529-867b-c5d5adc7cb54');
 
 const VIEWPORTS = [

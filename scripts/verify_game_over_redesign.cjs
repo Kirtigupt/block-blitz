@@ -1,9 +1,9 @@
 const puppeteer = require('puppeteer-core');
 const assert = require('assert');
 const path = require('path');
+const { createServer } = require('vite');
 
 const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-const APP_URL = 'http://localhost:5173';
 const ARTIFACT_DIR = 'C:\\Users\\kirti\\.gemini\\antigravity\\brain\\3ac25ba8-43d2-4529-867b-c5d5adc7cb54';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -20,6 +20,13 @@ async function run() {
   console.log('========================================================================');
   console.log('BLOCK BLITZ — GAME OVER / LEVEL FAILED UI REDESIGN COMPREHENSIVE AUDIT');
   console.log('========================================================================\n');
+
+  const vite = await createServer({
+    server: { port: 5195, host: '127.0.0.1' },
+    logLevel: 'error'
+  });
+  await vite.listen();
+  const APP_URL = `http://127.0.0.1:${vite.httpServer.address().port}`;
 
   const browser = await puppeteer.launch({
     executablePath: CHROME_PATH,
@@ -240,6 +247,7 @@ async function run() {
     console.log('========================================================================\n');
   } finally {
     await browser.close();
+    await vite.close();
   }
 }
 

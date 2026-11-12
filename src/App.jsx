@@ -1692,6 +1692,11 @@ export function App() {
         <LevelIntroModal
           levelConfig={introLevelConfig}
           onIntroComplete={handleIntroComplete}
+          onClose={() => {
+            sounds.playSelect();
+            setShowLevelIntro(false);
+            setShowLevelMap(true);
+          }}
         />
       )}
 
